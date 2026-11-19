@@ -77,7 +77,7 @@ A residual of -2 means that the year was two SDs below what the earlier years le
   The prediction for 2005 uses the observations up to 2004; the [fixed parameters](../learners/reference.md#glossary), such as sigma, were estimated from all years.
   [Episode 11](11-forecasting.Rmd) goes further and refits the model to the earlier years only.
 
-The productivity used to predict 2005 comes from the years before 2005, not from 2005 itself, so the [random effects](../learners/reference.md#glossary) cannot absorb the 2005 surprise.
+The yearly productivity used to predict 2005 is worked out from the years before 2005, not from 2005 itself, so the [random effects](../learners/reference.md#glossary) cannot absorb the 2005 surprise.
 This is why one-step-ahead residuals work for models with and without random effects.
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: instructor
@@ -345,7 +345,7 @@ Row 5 records these three checks; the plot against spawners is optional.
 
 :::::::::::::::::::::::: hint
 
-Copy the recipe chunks in order and change the names: `my_stock` to `pitt`, `ricker` and `walk` to `ricker_pitt` and `walk_pitt`, and `res_long` to `res_long_pitt`.
+Copy the recipe chunks in order and change three names: `my_stock` to `pitt`, `res_long` to `res_long_pitt`, and the fitted models in `osa_residuals(ricker)` and `osa_residuals(walk)` to `ricker_pitt` and `walk_pitt`.
 If `ricker_pitt` and `walk_pitt` are not in your workspace, fit them first, as in Episodes 5 and 6.
 For the random walk's QQ plot, change `res_ricker` to `res_walk` and `(Ricker)` to `(random walk)`, as you did for Stellako.
 
@@ -375,7 +375,7 @@ ggplot(pitt, aes(sample = res_ricker)) +
   labs(x = "Expected quantile (normal)", y = "One-step-ahead residual (Ricker)")
 ```
 
-```{r ch2-solution-qq-walk, fig.width=6, fig.height=4, fig.alt="Normal quantile-quantile plot of the Upper Pitt River random-walk one-step-ahead residuals. The points follow the straight line closely from the lowest, near minus 2.4, to the highest, near plus 2.5, with no bend at either end."}
+```{r ch2-solution-qq-walk, fig.width=6, fig.height=4, fig.alt="Normal quantile-quantile plot of the Upper Pitt River random-walk one-step-ahead residuals. The points follow the straight line closely from the lowest, near minus 2.4, to the highest, near plus 2.5, with no bend at either end; a few points near plus 1.4 lie slightly below it."}
 ggplot(pitt, aes(sample = res_walk)) +
   stat_qq() +
   stat_qq_line() +
@@ -403,12 +403,10 @@ Table: The three residual checks for the two Upper Pitt River models.
 | Pattern over time | long waves above and below zero: fails | no long runs: passes |
 | Independence (limit 0.23) | 0.47, above the limit: fails | 0.13: passes |
 
-The Ricker fails all three checks.
-Its residuals run in long waves: above zero in the 1960s and the 1990s, below zero around 1980 and after 2010.
-The random walk passes all three.
+The Ricker fails all three checks, and the random walk passes all three.
 
-Row 5: "Ricker: fails all three residual checks: lag-1 correlation 0.47 (limit 0.23), long waves over time (above zero in the 1960s and 1990s, below zero around 1980 and after 2010), and a QQ plot that bends below the line at both ends.
-Random walk: passes all three: lag-1 correlation 0.13, no long runs, QQ plot close to the line."
+Row 5: "Ricker: fails all three residual checks, with lag-1 correlation 0.47 (limit 0.23), long waves over time (above zero in the 1960s and 1990s, below zero around 1980 and after 2010) and a QQ plot that bends below the line at both ends.
+Random walk: passes all three, with lag-1 correlation 0.13, no long runs and a QQ plot close to the line."
 In `report-card.R` it reads `# Row 5 (residuals): Ricker fails all three checks (lag-1 0.47, limit 0.23; long waves over time; QQ plot bends at both ends); random walk passes all three (lag-1 0.13).`
 
 As for Stellako, the Ricker misses productivity that changes over time, and the random walk captures it.
@@ -479,7 +477,7 @@ The finished box is [cookbook.R](files/cookbook.R).
 
 Any series in time works the same way: counts per survey, monthly case numbers, yearly growth.
 One-step-ahead residuals work for any RTMB model whose observations are marked with `OBS()`; if more than one set of observations is marked, `oneStepPredict()` returns residuals for the first set only.
-`osa_residuals()` uses `method = "fullGaussian"`, which is exact only when the data are normal and every random effect is normal and added to the expected value, as here.
+`osa_residuals()` uses `method = "fullGaussian"`, which is exact only when the data are normal and every random effect is normal and added to the expected value of the data, as here.
 For counts, other distributions, or a random effect inside a curve (such as a random S_max), use another `method`: `?TMB::oneStepPredict` explains the choices, and the help page `?RTMB::oneStepPredict` ends with an example for counts.
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::
