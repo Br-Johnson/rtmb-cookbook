@@ -5,7 +5,7 @@ title: 'Instructor Notes'
 These notes are for instructors and helpers.
 They cover preparation, teaching, timing, checkpoints, feedback, the data and the answer keys.
 The design record (objectives, report card, assessment map, misconceptions and concept map) is on the [Lesson Design](lesson-design.md) page.
-Below these notes, this page also collects the instructor notes from every episode, in the order they appear.
+In the Instructor View, the instructor notes from every episode follow these notes, in episode order.
 
 ## The Lesson in One Paragraph
 
@@ -22,7 +22,7 @@ Learners copy each recipe into their own `my-recipes.R`; [the finished recipe bo
 - Collect the answers to the three self-check questions on the Setup page.
   Anyone who gets two of the three wrong should take an introductory R lesson first; tell them before the workshop, kindly.
 - Prepare:
-  - sticky notes in two colours (green: done; another colour: I need help);
+  - sticky notes in two colours that colour-blind learners can tell apart: green for "done" and pink for "I need help" (avoid red and orange, which many colour-blind people cannot tell from green); learners also write a question mark on a help note, so that colour is not the only cue;
   - a shared notes document with a "parking lot" section for questions that a later episode answers;
   - a shared table for the capstone share-out, with the columns listed in the capstone (stock; best by AIC, with the AIC difference to the next; best by hindcast skill; random-walk 80% coverage; do AIC and the hindcast agree?; one sentence);
   - printed copies of the [Recipe Index](../learners/recipe-index.md);
@@ -54,8 +54,8 @@ Learners copy each recipe into their own `my-recipes.R`; [the finished recipe bo
 - Teach by participatory live coding, with a large font and dark text on a light background.
   Type everything, say each line as you type it, then explain it again.
 - There are three exceptions to typing:
-  - learners who fall behind in the Quick Start may paste from [the Quick Start script (quick-start.R)](../episodes/files/quick-start.R); this is the only episode where pasting is the plan;
-  - `naive_forecast()` in Episode 11 is read together, not typed (learners copy it from `cookbook.R`);
+  - learners who fall behind in the Quick Start may paste from [the Quick Start script (quick-start.R)](../episodes/files/quick-start.R); the Quick Start is the only episode where learners may paste whole steps;
+  - `naive_forecast()` in Episode 11 is read together, not typed: it comes from `source("files/cookbook.R")` in the Starting Point, so learners who skipped the Starting Point run that line (or paste the function into `my-recipes.R`);
   - the capstone uses [the capstone template (capstone-template.R)](../episodes/files/capstone-template.R).
 - Make the planned mistakes live, and let learners read the output before you explain it:
   - the missing minus sign in front of `sum()` (Episode 4);
@@ -64,11 +64,15 @@ Learners copy each recipe into their own `my-recipes.R`; [the finished recipe bo
 - Ask "What questions do you have?", not "Any questions?".
   Write deep questions in the parking lot, labelled with the episode that answers them, and come back to them there.
 - Keep to the lesson's one way per task.
-  If someone asks about another method (`optim()`, `lm()`, Bayesian fitting, `REPORT()`), say that it exists, and point to the [Going Further](../learners/going-further.md) page.
+  If someone asks about another method, say that it exists and point to where the lesson covers it:
+  - `lm()`: the callout "If You Know lm()" in [Writing a Model as a Likelihood](../episodes/03-likelihoods.Rmd);
+  - Bayesian fitting, `REPORT()` and formula packages such as glmmTMB: the [Going Further](../learners/going-further.md) page;
+  - `optim()`: `nlminb()` does the same job, and the lesson uses one optimiser throughout.
 
 ## Timing and Cuts
 
-The time budget, in minutes. The schedule on the home page is generated from these numbers.
+The time budget, in minutes.
+The schedule on the home page (Instructor View) is built from the `teaching:` and `exercises:` values at the top of each episode, which are these numbers.
 
 Table: Time budget per episode (minutes) and number of challenges.
 
@@ -84,14 +88,14 @@ Table: Time budget per episode (minutes) and number of challenges.
 | **Day 1** | **205** | **145** | **350** | |
 | [08 Checking a Model with Simulation](../episodes/08-simulation.Rmd) | 25 | 25 | 50 | 5 |
 | [09 Comparing Models with AIC](../episodes/09-model-selection.Rmd) | 35 | 30 | 65 | 5 |
-| [10 Many Stocks: Random Effects for Groups (optional)](../episodes/10-many-stocks.Rmd) | 25 | 20 | 45 | 4 |
+| [10 Many Stocks: Random Effects for Groups](../episodes/10-many-stocks.Rmd) (optional) | 25 | 20 | 45 | 4 |
 | [11 Forecasting and Testing Forecasts](../episodes/11-forecasting.Rmd) | 40 | 35 | 75 | 5 |
-| [12 Capstone: A Model Report for a New Stock](../episodes/12-capstone.Rmd) | 10 | 80 | 90 | 2 |
+| [12 Capstone: A Model Report for a New Stock](../episodes/12-capstone.Rmd) | 10 | 80 | 90 | 2 (+1 optional) |
 | **Day 2** | **135** | **190** | **325** | |
-| **Total** | **340** | **335** | **675** | **50** |
+| **Total** | **340** | **335** | **675** | **49 (+2 optional)** |
 
 - Exercises take half of the time.
-  Episodes 1 to 11 have 48 challenges in 330 minutes of teaching: one every 7 minutes on average.
+  Episodes 1 to 11 have 48 challenges (one of them optional) in 330 minutes of teaching: one every 7 minutes on average.
 - All times are first estimates.
   After you teach, replace `teaching:` and `exercises:` at the top of each episode with the times you measured.
 
@@ -108,7 +112,7 @@ Never cut the Quick Start, Episode 4, the core of Episodes 7, 9 and 11, or capst
 
 A workshop can stop at two points and still be useful:
 
-- after Episode 7: fitting and checking one stock is complete (lesson objectives 1 to 5);
+- after Episode 7: one stock is fitted, reported and checked with residuals (lesson objectives 1 to 4, and the residual part of objective 5);
 - after Episode 9: models can also be compared (objectives 1 to 6).
 
 ## Two-Day Schedule
@@ -139,7 +143,7 @@ Table: Day 2, check, compare, forecast.
 | Time | Session | Minutes |
 |-----|-------------------------|----:|
 | 09:00 | What we changed after Day 1's feedback | 5 |
-| 09:05 | 08 Checking a Model with Simulation (opens with the Parsons warm-up) | 50 |
+| 09:05 | 08 Checking a Model with Simulation (opens with the Parsons warm-up, in which learners put shuffled lines of code in order) | 50 |
 | 09:55 | 09 Comparing Models with AIC | 65 |
 | 11:00 | Break | 15 |
 | 11:15 | 10 Many Stocks: Random Effects for Groups (optional) | 45 |
@@ -201,7 +205,7 @@ Table: Misconceptions, the evidence to re-teach with, and where the lesson targe
 | M7 | `random =` means "draw random numbers"; an SD at zero means the fit failed | Harrison: four checks TRUE, sd_walk 5e-6, AIC exactly 2.00 above the Ricker | E06.C1, E06.C4 |
 | M8 | Observed-minus-fitted residuals are fine for random-effect models | conditional residuals have SD 0.96 and lag-1 correlation -0.17; one-step-ahead residuals have SD 1.00 and -0.10 | Episode 7 spoiler and keypoint |
 | M9 | Models fitted to different rows can be compared by AIC | the Ricker on 1958-2021 has AIC 177.2 and appears to beat the random walk on 1948-2021 (178.3); on the same rows the walk wins by 17.6 | E09.C3 |
-| M10 | Lower AIC means better forecasts | Upper Pitt River: AIC prefers the random walk by 11.8, but the Ricker's hindcast errors are slightly smaller (skill 0.78 against 0.82); Chilko and Late Stuart in the capstone | E11.C4, capstone share-out |
+| M10 | Lower AIC means better forecasts | Upper Pitt River: AIC prefers the random walk by 11.8, but the Ricker's hindcast errors are slightly smaller (skill 0.78 against 0.82); Chilko and Birkenhead in the capstone (AIC and the hindcast choose different models), and Late Stuart (the lowest-AIC model forecasts no better than the recent-average benchmark) | E11.C4, capstone share-out |
 | M11 | Changing `dat` after a fit is harmless | with the raw RTMB calls, `dat$S_new <- 150` after fitting silently changed `sdreport()`'s `mu_new` from 1.97 to 1.16 | Episode 4 spoiler (demonstration) |
 | M12 | A covariate that lowers AIC is robust | pooled NPGO: AIC changes by -16.0 without year effects and +0.57 with them | E10.C4 |
 | M13 | An SD estimated at zero proves there is no variation | self-test: 11 of 50 data sets simulated with sd_walk 0.13 gave an estimate of about zero | E06.C4 (option c), E08.C5 |
@@ -225,7 +229,7 @@ Table: Misconceptions, the evidence to re-teach with, and where the lesson targe
 - Harrison is the only stock with brood year 2022, so its hindcast from 2007 has 16 forecasts instead of 15.
 - Quesnel and Late Stuart have strong four-year cycles and years with under 1 thousand spawners (25 years for Quesnel, 9 for Late Stuart).
   Every fit still passes all four checks, but under the random walk Quesnel's S_max (3481 thousand) is far beyond its data.
-- Early Stuart (two brood years with 15 and 46 spawners) and Late Shuswap (S_max beyond the data) are left out of the examples on purpose.
+- Early Stuart (in 2019 and 2020 only 46 and 15 fish spawned: 0.046 and 0.015 thousand) and Late Shuswap (S_max beyond the data) are left out of the examples on purpose.
 - Cultus, Portage and Scotch Creek have missing years.
   Every recipe handles them, but they are not on the capstone menu.
 - The data were supplied with the Pacific Salmon Commission RTMB workshop and described there as "not necessarily official numbers".
@@ -245,8 +249,9 @@ Say these out loud when they first come up; experienced R users do them without 
 
 ## Answer Keys
 
-- **Upper Pitt River**: the full solutions are in the "Your Turn" challenges of Episodes 1 to 11. The completed report card is summarised below.
-- **Capstone**: the answer key for Quesnel, Late Stuart, Chilko, Harrison and Birkenhead is an instructor note in the [Capstone](../episodes/12-capstone.Rmd), and is collected at the bottom of this page.
+- **Upper Pitt River**: the full solutions are in the "Your Turn" challenges of Episodes 1 to 11.
+  The completed report card is summarised below.
+- **Capstone**: the answer key for Quesnel, Late Stuart, Chilko, Harrison and Birkenhead is an instructor note in the [Capstone](../episodes/12-capstone.Rmd), also collected at the bottom of this page in the Instructor View.
 
 Table: The Upper Pitt River report card (answer key for the "Your Turn" challenges).
 
@@ -257,14 +262,16 @@ Table: The Upper Pitt River report card (answer key for the "Your Turn" challeng
 | 3 | Estimates | alpha 8.9 recruits per spawner (95% CI 6.5 to 12.1); S_max 20 thousand spawners (15 to 28), inside the observed range | E05.C4 |
 | 4 | Random effect | sd_walk 0.33 (0.14 to 0.78): productivity typically changes by about a third from year to year; 10.4 recruits per spawner in 1948, 16.3 in 1965, 4.7 in 1980, 10.9 in 2000, 2.9 in 2021 | E06.C3 |
 | 5 | Residuals | Ricker lag-1 0.47 against a limit of 0.23, long waves over time, QQ plot bends below the line at both ends; random walk lag-1 0.13 | E07.C2 |
-| 6 | Simulation | observed lag-1 0.58: reached by 0 of 200 Ricker simulations and 63% of random-walk simulations; self-test of the walk: 30 of 30 refits pass, no sd_walk at zero | E08.C4 |
+| 6 | Simulation | observed lag-1 0.58: reached by 0 of 200 Ricker simulations and 62.5% of random-walk simulations; self-test of the walk: 30 of 30 refits pass, no sd_walk at zero | E08.C4 |
 | 7 | Comparison | random walk best: 6.2 below Ricker + NPGO, 7.5 below Beverton-Holt, 11.8 below the Ricker; NPGO helps here (b_npgo 0.28, 95% CI 0.09 to 0.48) | E09.C4 |
 | 8 | Forecast skill | hindcast from 2007: Ricker skill 0.78, bias +0.74, coverage 0.67; random walk skill 0.82, bias 0.00, coverage 0.60; benchmark coverage 0.40. AIC and the hindcast disagree | E11.C4 |
 | 9 | Forecast | random walk: median 12 thousand recruits (80% prediction interval 4.4 to 35 thousand) from 5.3 thousand spawners | E11.C4 |
 
 ## Building the Lesson
 
-- Each episode is knitted in a fresh R session, so its Starting Point chunk recreates everything it needs.
+- Each episode is knitted in a fresh R session.
+  Episodes 1 and 2 load the data themselves, and Episodes 3 to 11 start with a Starting Point chunk that recreates everything they need.
+  The capstone runs no code: its template and solutions are shown, not run.
 - `episodes/files/cookbook.R` must stay identical to the code taught in the episodes.
   If you change a recipe, change it in both places, and in every episode that uses it.
 - `config.yaml` sets `fail_on_error: true`, so any unplanned error stops the build.

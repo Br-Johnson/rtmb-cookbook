@@ -2,7 +2,7 @@
 title: Setup
 ---
 
-Set up your computer before the workshop: it takes about 20 minutes, longer on Linux.
+Set up your computer before the workshop: it takes about 20 minutes, or longer if R has to compile the packages, as it may on Linux.
 At the end, a short script tells you whether everything works.
 
 ## Data Sets and Files
@@ -10,6 +10,8 @@ At the end, a short script tells you whether everything works.
 Make a project folder (an RStudio or Positron project) with two subfolders, `data/` and `files/`, and two empty scripts, `my-recipes.R` (your recipe box) and `report-card.R` (your report card).
 In RStudio, use File > New Project > New Directory > New Project.
 In Positron, make a new folder and open it with File > Open Folder.
+
+To download a file, right-click its link and choose Save Link As (in Safari, Download Linked File), save it in the folder shown, and check that its name has not gained a `.txt` ending.
 
 Download these two data files into `data/`:
 
@@ -58,12 +60,16 @@ Some stocks start after 1948, and three stocks (Cultus, Portage and Scotch Creek
 
 You need:
 
-- R 4.1 or later, from [CRAN, the R download site](https://cran.r-project.org/);
+- the current version of R (4.5 or later), installed from [CRAN, the R download site](https://cran.r-project.org/), not from Homebrew or conda;
 - [RStudio Desktop](https://posit.co/download/rstudio-desktop/) or [Positron](https://positron.posit.co/);
 - the R packages RTMB, dplyr and ggplot2.
 
+CRAN keeps its ready-made Windows and macOS packages up to date only for the current version of R and the one before it.
+With an older R, you may get an old version of RTMB, or R may ask you to compile it.
 The lesson was tested with R 4.3.3, RTMB 2.0 and TMB 1.9.25.
-Install the packages by running this in the R console:
+RTMB never compiles your models, so once the packages are installed you never need a compiler.
+
+Install the packages by running this in the R console (on Linux, read the Linux section below first):
 
 ```r
 install.packages(c("RTMB", "dplyr", "ggplot2"))
@@ -78,6 +84,7 @@ To find out which versions you have, run `R.version.string` and `packageVersion(
 
 R installs ready-made (binary) versions of RTMB, dplyr and ggplot2, so you do not need a compiler.
 If R asks "Do you want to install from sources the packages which need compilation?", answer `no`.
+If R offers RTMB only as a source package, update R instead of installing a compiler.
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::
 
@@ -87,6 +94,7 @@ If R asks "Do you want to install from sources the packages which need compilati
 
 R installs ready-made (binary) versions of RTMB, dplyr and ggplot2, so you do not need a compiler.
 If R asks "Do you want to install from sources the packages which need compilation?", answer `no`.
+If R offers RTMB only as a source package, update R instead of installing a compiler.
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::
 
@@ -94,14 +102,19 @@ If R asks "Do you want to install from sources the packages which need compilati
 
 ### Linux
 
-On Linux, R compiles RTMB from its source code.
-This needs a C++ compiler, for example on Debian or Ubuntu:
+CRAN has no ready-made packages for Linux, so by default R compiles RTMB and the other packages from their source code.
+Use Posit Package Manager instead: it has ready-made packages for Ubuntu, Debian, Red Hat and SUSE.
+On Ubuntu 24.04, run this line before `install.packages()` (on Ubuntu 22.04, write `jammy` instead of `noble`):
 
-```bash
-sudo apt install build-essential
+```r
+options(repos = c(CRAN = "https://packagemanager.posit.co/cran/__linux__/noble/latest"))
 ```
 
-Compiling RTMB and TMB takes several minutes, so install the packages before the workshop, not on the day.
+For other systems, copy the repository line from the setup page of [Posit Package Manager](https://packagemanager.posit.co/).
+The installation messages then say `installing *binary* package`.
+
+To compile the packages instead, first install the compilers and libraries R needs for this (on Debian or Ubuntu, run `sudo apt install r-base-dev`).
+Compiling RTMB, TMB, dplyr, ggplot2 and the packages they need takes 20 minutes or more, so do it before the workshop, not on the day.
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::
 
@@ -171,4 +184,4 @@ They test the R and statistics the lesson assumes.
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::
 
-If two of the three are hard, take an introductory R lesson first, such as Data Carpentry's [R for Ecologists](https://datacarpentry.org/R-ecology-lesson/).
+If two of the three are hard, take an introductory R lesson first, such as Data Carpentry's [R for Ecologists][r-ecology].

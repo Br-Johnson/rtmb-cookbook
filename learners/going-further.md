@@ -19,15 +19,15 @@ For an SD estimated at zero the profile is flat and its interval is unreliable t
 **REML for variance components.**
 Extends [Many Stocks](../episodes/10-many-stocks.Rmd).
 Standard deviations of random effects estimated by maximum likelihood are a little too small.
-Listing the fixed means in `random =` as well (restricted maximum likelihood, REML) gives less biased SDs.
-In the design research for this lesson, the between-stock SD rose from 0.106 to 0.127.
+Listing the overall mean in `random =` as well, `random = c("log_alpha_stock", "mean_log_alpha")` (restricted maximum likelihood, REML), gives a less biased SD.
+For Episode 10's stock model, the between-stock SD rises from 0.106 to 0.127.
 Use REML to report SDs, not to compare models: AIC needs the ordinary fits.
 
 **Heavier tails for extreme years.**
 Extends [Residuals](../episodes/07-residuals.Rmd) and [Simulation](../episodes/08-simulation.Rmd).
 Stellako's brood year 2005 is far below every other year, and a normal distribution finds it very surprising.
 A Student-t distribution, RTMB's `dt()`, expects an occasional extreme year.
-In the design research, a Student-t random walk lowered Stellako's AIC from 178.3 to 170.9.
+For Stellako, a random walk with Student-t yearly scatter lowers AIC from 178.3 to 170.9.
 
 **Year effects correlated from year to year.**
 Extends [Random Effects](../episodes/06-random-effects.Rmd) and [Many Stocks](../episodes/10-many-stocks.Rmd).
@@ -78,7 +78,7 @@ Extends [Likelihoods](../episodes/03-likelihoods.Rmd).
 RTMB has the usual R distributions; the RTMBdist package adds more, and you can write your own with support for simulation.
 
 **Documentation and derivations.**
-The [RTMB documentation](https://kaskr.github.io/RTMB/), the [TMB documentation](https://kaskr.github.io/adcomp/) and the materials of the original Pacific Salmon Commission RTMB workshop contain the derivations this lesson leaves out: gradients, the Laplace approximation and the delta method.
+The [RTMB documentation][rtmb-docs], the [TMB documentation][tmb-docs] and the materials of the original Pacific Salmon Commission RTMB workshop contain the derivations this lesson leaves out: gradients, the Laplace approximation and the delta method.
 
 ## Extra Challenges
 
@@ -98,8 +98,8 @@ npgo    <- read.csv("data/npgo.csv")
 
 ### Challenge 1 (Optional): A Larkin Model for Chilko (not timed)
 
-Chilko sockeye have a four-year cycle.
-The Larkin model lets this year's recruits per spawner depend on the spawners of the three previous brood years as well:
+Chilko's recruits per spawner may also depend on how many spawners there were in the previous few brood years.
+The Larkin model tests this:
 
 $$\log(R_t/S_t) = \log\alpha - S_t/S_{max} - b_1 S_{t-1} - b_2 S_{t-2} - b_3 S_{t-3} + \text{noise}$$
 
@@ -234,7 +234,8 @@ above_zero below_zero
 ```
 
 All 19 fits pass the four checks.
-Sixteen of the 19 estimates are positive, five intervals lie above zero and none lie below: higher NPGO tends to go with more recruits per spawner.
+Seventeen of the 19 estimates are positive; only Bowron and Early Stuart are negative.
+Five intervals lie above zero and none lie below: higher NPGO tends to go with more recruits per spawner.
 Two things call for caution.
 With 19 separate intervals, about one in 20 would exclude zero by chance even with no effect at all.
 And good and bad ocean years affect all stocks at once, so the 19 results are not independent pieces of evidence.
@@ -295,7 +296,7 @@ tail(ci_table(walk_es100, "random"), 1)
 
 The fit passes all four checks and puts productivity in the forecast year at 24 recruits per spawner.
 But brood years 2019 and 2020 had 46 and 15 spawners (0.046 and 0.015 thousand), and 15 spawners producing 1170 recruits gives the highest log(R/S) in the series, 4.36.
-The random walk follows the last years, so these two counts nearly double the forecast productivity: without them it is 14 recruits per spawner.
+The random walk follows the last years, so these two counts raise the forecast productivity by about three quarters: without them it is 14 recruits per spawner instead of 24.
 The four checks only say that the optimiser found the best values for these data; they cannot say whether the data make sense.
 Before you trust a model, plot the data, look at the smallest and largest values, ask the people who collected them about anything odd, and report how much the result depends on those years.
 

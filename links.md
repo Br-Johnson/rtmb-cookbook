@@ -8,5 +8,4 @@ Links used on more than one page. Any page of the lesson can refer to these labe
 [r-ecology]: https://datacarpentry.org/R-ecology-lesson/
 [care]: https://www.gida-global.org/care
 [workbench]: https://carpentries.github.io/sandpaper-docs/
-[carpentries-workbench]: https://carpentries.github.io/sandpaper-docs/
 

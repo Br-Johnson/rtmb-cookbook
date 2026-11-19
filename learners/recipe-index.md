@@ -9,8 +9,8 @@ alt="Nine numbered boxes in a row joined by arrows: 1 data, 2 model, 3 fit, 4 ch
 }
 
 Print this page and keep it next to you while you work.
-Every recipe's code is in your `my-recipes.R` and in [the finished recipe box (cookbook.R)](../episodes/files/cookbook.R).
-In the table, `m` is any fitted model and `nll_x`, `start_x` stand for any model function and its starting values.
+The functions these recipes use are in your `my-recipes.R` and in [the finished recipe box (cookbook.R)](../episodes/files/cookbook.R).
+In the table, `m` is any fitted model, `df` is one stock's data frame, and `nll_x`, `start_x` stand for any model function and its starting values.
 CI is a confidence interval, PI a prediction interval, SD a standard deviation and AIC the Akaike information criterion.
 
 ## Which Recipe Do I Need?
@@ -36,9 +36,11 @@ Table: Which recipe do I need? Each row gives the recipe, the sign that it worke
 | ask whether the recipe recovers the truth | `self_test(m, n_sim = 30)` | refits pass; medians near the truth | [08 Simulation](../episodes/08-simulation.Rmd) |
 | compare models | `aic_table(list(a = m1, b = m2))` | same rows; all checks TRUE | [09 Comparing Models](../episodes/09-model-selection.Rmd) |
 | add a covariate | `left_join()` by year; `+ b_x * x` in `mu` and `mu_new`; start `b_x = 0` | no `NA`; CI for `b_x` | [09 Comparing Models](../episodes/09-model-selection.Rmd) |
-| let groups differ | a group index; `dnorm(group_values, mean, exp(log_sd))`; `random =` | estimates shrink toward the mean | [10 Many Stocks](../episodes/10-many-stocks.Rmd) |
+| let groups differ | a group index; `dnorm(group_values, mean, exp(log_sd))`; `random =` | estimates shrink towards the mean | [10 Many Stocks](../episodes/10-many-stocks.Rmd) |
+| share good and bad years across groups | `+ year_effect[year]` in `mu`; `dnorm(year_effect, 0, exp(log_sd_year))`; `random = c("log_alpha_stock", "year_effect")` | four TRUE; both SDs have usable intervals; AIC drops | [10 Many Stocks](../episodes/10-many-stocks.Rmd) |
 | forecast | `predict_recruits(m)` | median with 80% PI, units | [11 Forecasting](../episodes/11-forecasting.Rmd) |
-| test forecasts | `hindcast(m, df, 2007)`, `naive_forecast(df, 2007)`, `score_forecasts()` | skill below 1 beats the benchmark | [11 Forecasting](../episodes/11-forecasting.Rmd) |
+| test forecasts | `hc <- bind_rows(m = hindcast(m, df, 2007), naive = naive_forecast(df, 2007), .id = "model")`; `score_forecasts(hc)` | `all(hc$fit_ok)` is TRUE; skill below 1 beats the benchmark | [11 Forecasting](../episodes/11-forecasting.Rmd) |
+| use my own data | `read.csv()`; `rename()` columns to `brood_year`, `spawners`, `recruits`; `arrange(brood_year)` | one row per year, in time order, no `NA` | [12 Capstone](../episodes/12-capstone.Rmd) |
 
 The [Reference](reference.md#glossary) page defines every term.
 If something goes wrong, the [Troubleshooting](troubleshooting.md) page lists the messages and their fixes.

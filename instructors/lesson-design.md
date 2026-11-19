@@ -9,9 +9,9 @@ Every number on this page was produced by running the lesson's code.
 
 ## Learner Profiles
 
-The lesson is written for four fictional learners, described on the [Learner Profiles](../profiles/learner-profiles.md) page:
+The lesson is written for four fictional learners, described on the <a href="profiles.html">Learner Profiles</a> page:
 
-- **Mira**, a stock assessment biologist, who needs benchmarks with intervals and a forecast that allows for falling productivity;
+- **Mira**, a stock assessment biologist, who needs reference points with intervals and a forecast that allows for falling productivity;
 - **Tomás**, an MSc student, who needs a curve of his own with a random effect for each site;
 - **Dana**, a biologist with an Indigenous fisheries organisation, who reviews forecasts made by others;
 - **Sam**, a public health analyst learning alone from the website.
@@ -33,12 +33,13 @@ After the workshop, learners will be able to:
 These are seven objectives for about 11 hours of episodes.
 A workshop can stop at two checkpoints and still be useful:
 
-- after [Episode 7](../episodes/07-residuals.Rmd) (LO1 to LO5 for one stock);
+- after [Episode 7](../episodes/07-residuals.Rmd) (LO1 to LO4 and the residual part of LO5, for one stock);
 - after [Episode 9](../episodes/09-model-selection.Rmd) (LO1 to LO6).
 
 ## The Report Card and Rubric
 
-The end goal of the lesson is a model report card for one stock. It appears three times:
+The end goal of the lesson is a model report card for one stock.
+It appears three times:
 
 - completed for Stellako in the [Introduction](../episodes/01-introduction.Rmd), as the target;
 - one row at a time for Upper Pitt River in the "Your Turn" challenges, which learners keep in `report-card.R`;
@@ -64,6 +65,7 @@ Table: The model report card, with Stellako as the worked example.
 
 Each objective is practised at least twice before the capstone.
 Challenge IDs are `E<episode>.C<challenge>`: E03.C2 means Episode 3, Challenge 2.
+A Parsons problem gives learners shuffled lines of code to put in order; a faded example gives them code with blanks to fill in.
 
 Table: Where each objective is assessed.
 
@@ -77,7 +79,7 @@ Table: Where each objective is assessed.
 | LO6 Compare | E02.C3, E09.C1, E09.C2, E09.C3, E09.C5, E10.C4 | row 7 (E09.C4) | 7 |
 | LO7 Forecast and test | E02.C4, E11.C1, E11.C2, E11.C3, E11.C5 | rows 8, 9 (E11.C4) | 8, 9, 10 |
 
-Episodes 1 to 11 have 48 challenges in 585 minutes, 330 of them teaching: about one challenge every 7 minutes of teaching, plus a sticky-note checkpoint after every recipe ("Check it worked").
+Episodes 1 to 11 have 48 challenges (one of them optional) in 585 minutes, 330 of them teaching: about one challenge every 7 minutes of teaching, plus a sticky-note checkpoint after every recipe ("Check it worked").
 The capstone is one long applied assessment.
 
 ## Misconceptions and the Answer Plan
@@ -98,7 +100,7 @@ Table: Misconceptions, the evidence for them, and where the lesson targets them.
 | M7 | `random =` means "draw random numbers"; an SD at zero means the fit failed | Harrison: four checks TRUE, sd_walk 5e-6, AIC exactly 2.00 above the Ricker | E06.C1, E06.C4 |
 | M8 | Observed-minus-fitted residuals are fine for random-effect models | conditional residuals have SD 0.96 and lag-1 correlation -0.17; one-step-ahead residuals have SD 1.00 and -0.10 | Episode 7 spoiler and keypoint |
 | M9 | Models fitted to different rows can be compared by AIC | the Ricker on 1958-2021 has AIC 177.2 and appears to beat the random walk on 1948-2021 (178.3); on the same rows the walk wins by 17.6 | E09.C3 |
-| M10 | Lower AIC means better forecasts | Upper Pitt River: AIC prefers the random walk by 11.8, but the Ricker's hindcast errors are slightly smaller (skill 0.78 against 0.82); Chilko and Late Stuart in the capstone | E11.C4, capstone share-out |
+| M10 | Lower AIC means better forecasts | Upper Pitt River: AIC prefers the random walk by 11.8, but the Ricker's hindcast errors are slightly smaller (skill 0.78 against 0.82); Chilko and Birkenhead in the capstone (AIC and the hindcast choose different models), and Late Stuart (the lowest-AIC model forecasts no better than the recent-average benchmark) | E11.C4, capstone share-out |
 | M11 | Changing `dat` after a fit is harmless | with the raw RTMB calls, `dat$S_new <- 150` after fitting silently changed `sdreport()`'s `mu_new` from 1.97 to 1.16 | Episode 4 spoiler (demonstration) |
 | M12 | A covariate that lowers AIC is robust | pooled NPGO: AIC changes by -16.0 without year effects and +0.57 with them | E10.C4 |
 | M13 | An SD estimated at zero proves there is no variation | self-test: 11 of 50 data sets simulated with sd_walk 0.13 gave an estimate of about zero | E06.C4 (option c), E08.C5 |
@@ -152,6 +154,18 @@ flowchart LR
   FC --> RC
 ```
 
+The same map in words:
+
+1. A data frame becomes a data list.
+2. A model in words gives an expected value and a spread, which together form the negative log-likelihood.
+3. With starting values, `MakeADFun()` builds an object that `nlminb()` fits, and four checks decide whether the fit can be used.
+4. `sdreport()` then gives standard errors, 95% intervals and derived quantities.
+5. Random effects feed the object and add an estimated standard deviation.
+6. The object also gives one-step-ahead residuals and simulations; the simulations give a simulated-data check and a self-test.
+7. Fits give AIC for model choice, and refits on past years give a hindcast, scored against the naive benchmark.
+8. Derived quantities give the forecast with its 80% prediction interval.
+9. All of these feed the report card.
+
 ## Decision Log: One Way per Task
 
 The lesson is a cookbook: it teaches one recommended way to do each task, and no second method.
@@ -163,7 +177,7 @@ Table: Design decisions and the evidence for them.
 |-----|----------|--------------|
 | One fitting function | `fit_model()` packages the Quick Start's three RTMB calls (`MakeADFun()`, `nlminb()`, `sdreport()`) and the four checks | It stops with a clear message when the negative log-likelihood is not a finite number at the starting values, raises the evaluation limits to 10 000, and restarts the optimiser once. All 76 single-stock fits (4 models on 19 stocks) pass all four checks |
 | One rule for starting values | Typical values from the data (`start_ricker()`, `start_bh()`, `start_walk()`), with the random-walk SD started at 0.1 | Another rule reached a local optimum for Nadina (sd_walk about 0.036). With these starting values, Nadina and Harrison reach the boundary (sd_walk about 7e-6 and 5e-6), with AIC exactly 2.00 above the Ricker |
-| Wald intervals on the estimation scale | `ci_table()` builds the 95% interval on the log scale and back-transforms it with `exp()`, except for SDs near zero | Back-transforming the standard error instead gives 122.2 to 123.3 thousand for S_max instead of 73 to 207 (M4). Intervals are never printed for an SD near zero (Harrison's sd_walk, the pooled sd_stock); profile intervals are an optional spoiler |
+| Wald intervals (estimate ± 1.96 standard errors) on the estimation scale | `ci_table()` builds every 95% interval on the scale the parameter is estimated on, and back-transforms both ends of anything named `log_...` with `exp()`; the interval of an SD near zero, or of a very uncertain SD, is not reported | Adding ±1.96 log-scale standard errors to the back-transformed estimate instead (exp(4.81) ± 1.96 × 0.27) gives 122.2 to 123.3 thousand for S_max, instead of 73 to 207 (M4). Intervals for an SD near zero or a very uncertain SD are printed only as a warning sign and never reported (Harrison's sd_walk: 0 to `Inf`; the pooled sd_stock: 0.024 to 0.46); profile intervals are an optional spoiler (Episodes 6 and 10) |
 | `ADREPORT()` for derived quantities | Derived quantities are computed inside the model function and reported with `ADREPORT()`; `REPORT()` is not taught | One function, `ci_table(m, "report")`, gives their intervals. `predict_recruits()` reads only the rows named `mu_new`. `obj$report()` without arguments returns values from the parameters evaluated last, a trap the lesson avoids |
 | One-step-ahead residuals only | `osa_residuals()` for every model | Observed-minus-fitted residuals of the random walk have SD 0.96 and lag-1 correlation -0.17, against 1.00 and -0.10 for one-step-ahead residuals: they hide what the model misses (M8) |
 | AIC for explanation, hindcasts for forecasting | `aic_table()` compares models on identical rows; `hindcast()` and `score_forecasts()` test forecasts against a naive benchmark | `aic_table()` stops unless every model was fitted to the same rows (M9). On Upper Pitt River, AIC prefers the random walk by 11.8 but the Ricker's hindcast errors are slightly smaller (M10) |
@@ -172,7 +186,7 @@ Table: Design decisions and the evidence for them.
 
 ## What Was Left Out of the Original Workshop
 
-The lesson was developed from the materials of the RTMB workshop taught by the Pacific Salmon Commission in November 2026.
+The lesson was developed from the materials of the RTMB workshop hosted by the Pacific Salmon Commission in November 2026 (slides and examples by Paul van Dam-Bates).
 Topics from that workshop were left out when no row of the report card needs them.
 Each was moved to the [Going Further](../learners/going-further.md) page or dropped.
 

@@ -23,7 +23,7 @@ Benchmark (naive forecast)
 : A plain forecasting rule, such as "recruits per spawner as in the last four years", that a model must beat to be useful.
 
 Beverton-Holt model
-: A stock-recruitment curve in which recruits rise and then level off as spawners increase, instead of turning down.
+: A curve of recruits against spawners (a stock-recruitment curve) in which recruits rise and then level off as spawners increase, instead of turning down.
 
 Bias (of forecasts)
 : The average of log(forecast / observed). Above zero means forecasts were too high.
@@ -35,7 +35,7 @@ Confidence interval
 : A range of values for a parameter or a curve that is consistent with the data. This lesson uses 95%.
 
 Convergence
-: The optimiser's report that it has stopped. Necessary but not enough: use the four checks.
+: The optimiser's report that it stopped normally (`opt$convergence` is 0, the `finished` check). Necessary but not enough: use the four checks.
 
 Coverage
 : The share of observations that fell inside a prediction interval. An 80% interval should cover about 80%.
@@ -95,7 +95,7 @@ OBS()
 : An RTMB function that marks the observations, so that residuals and simulations can find them.
 
 One-step-ahead residual
-: Each observation's surprise given all earlier observations, on a standard normal scale. The residual used throughout this lesson.
+: How far each observation is from what the model predicted from the earlier years only, scaled so that a good model gives values like draws from a normal distribution with mean 0 and standard deviation 1. The residual used throughout this lesson.
 
 Optimiser
 : The function (`nlminb()`) that searches for the parameter values with the smallest negative log-likelihood.
@@ -108,6 +108,12 @@ Prediction interval
 
 Productivity
 : Recruits per spawner when spawners are few (alpha).
+
+QQ plot (quantile-quantile plot)
+: Sorted residuals plotted against the values a normal distribution would give. Points close to the line mean the normal distribution fits.
+
+R_max
+: In the Ricker model, the largest number of recruits the curve predicts, produced by S_max spawners.
 
 Random effect
 : A set of related unknown values (one per year, or one per group) that come from a distribution. RTMB averages over them and estimates the distribution's standard deviation.
@@ -125,10 +131,10 @@ Residual
 : How far an observation is from what the model expected, on a standard scale.
 
 Ricker model
-: A stock-recruitment curve in which recruits per spawner fall steadily as spawners increase, so the number of recruits peaks at S_max.
+: A curve of recruits against spawners (a stock-recruitment curve) in which recruits per spawner fall steadily as spawners increase, so the number of recruits peaks at S_max.
 
 RTMB
-: An R package that fits models written as ordinary R functions, with exact slopes and random effects. It is the R interface to Template Model Builder.
+: An R package that fits models written as ordinary R functions, with exact slopes and random effects. It lets you use Template Model Builder (TMB) without writing any C++.
 
 S_half
 : In the Beverton-Holt model, the spawner count that produces half the maximum recruits.
@@ -137,7 +143,7 @@ S_max
 : In the Ricker model, the spawner count that produces the most recruits. Not a carrying capacity.
 
 S_MSY
-: The spawner count that gives the maximum sustainable yield.
+: The spawner count that gives the largest catch that can be taken year after year (the maximum sustainable yield).
 
 S_rep
 : The spawner count at which each spawner exactly replaces itself (log(R/S) = 0).
@@ -149,7 +155,7 @@ Self-test
 : Simulating data sets from a fitted model, refitting the model to each, and checking that the known values are recovered.
 
 Shrinkage
-: In a model with a random effect for groups, the movement of each group's estimate toward the overall average. It is largest for groups whose own estimates are extreme and uncertain.
+: In a model with a random effect for groups, the movement of each group's estimate towards the overall average. It is largest for groups whose own estimates are extreme and uncertain.
 
 Sigma
 : The standard deviation of the yearly scatter of log(R/S) around the curve.
@@ -173,14 +179,14 @@ Template Model Builder (TMB)
 : The C++ library behind RTMB.
 
 U_MSY
-: The harvest rate that gives the maximum sustainable yield.
+: The share of recruits caught (the harvest rate) that gives the maximum sustainable yield.
 
 Year effect
 : A random effect shared by all stocks in a brood year: good and bad years common to all.
 
 ## Functions by Episode
 
-Every function the lesson uses beyond basic R, in the order the episodes introduce it.
+The functions the lesson uses beyond basic R (such as `mean()`, `log()` or `sapply()`), in the order the episodes introduce them.
 The episodes are
 [01 Introduction](../episodes/01-introduction.Rmd),
 [02 Quick Start](../episodes/02-quick-start.Rmd),
@@ -204,8 +210,8 @@ Table: Functions by episode. "Lesson" means a function written in the lesson, wh
 | `mutate()` | dplyr | add or change a column, such as `logRS` | 01 |
 | `distinct()`, `count()` | dplyr | list the unique combinations of columns; count rows per group | 01 |
 | `case_when()` | dplyr | choose a value by conditions, such as a period for each brood year | 01 |
-| `group_by()`, `summarise()` | dplyr | summarise rows by group, such as by period, parameter or model | 01 |
-| `ggplot()`, `geom_point()`, `geom_line()`, `labs()` | ggplot2 | start a plot; draw points; draw lines; label the axes with units | 01 |
+| `group_by()`, `summarise()`, `n()` | dplyr | summarise rows by group, such as by period, parameter or model; `n()` counts the rows in each group | 01 |
+| `ggplot()`, `aes()`, `geom_point()`, `geom_line()`, `labs()` | ggplot2 | start a plot; map columns to x, y and other features; draw points; draw lines; label the axes with units | 01 |
 | `geom_hline()` | ggplot2 | draw a horizontal reference line, such as log(R/S) = 0 | 01 |
 | `getAll()` | RTMB | make every element of `par` and `dat` available by name inside a model function | 02 |
 | `OBS()` | RTMB | mark the observations, so residuals and simulations can find them | 02 |
@@ -228,6 +234,7 @@ Table: Functions by episode. "Lesson" means a function written in the lesson, wh
 | `start_ricker()`, `start_bh()` | lesson | starting values taken from the data | 03 |
 | `nll_bh()` | lesson | the Beverton-Holt model | 03 |
 | `bind_rows()` | dplyr | stack data frames, with a column saying which one each row came from | 03 |
+| `scale_linetype_manual()` | ggplot2 | choose the line type (solid, dotted, dashed) for each group, so the plot does not rely on colour | 03 |
 | `fit_model()` | lesson | build, fit and check a model, and keep its data and recipe for refits | 04 |
 | `ci_table()` | lesson | 95% confidence intervals, back-transformed to the natural scale | 05 |
 | `predict_recruits()` | lesson | recruits for `S_new` spawners, with a confidence band (05) or a prediction interval (11) | 05, 11 |
@@ -235,9 +242,9 @@ Table: Functions by episode. "Lesson" means a function written in the lesson, wh
 | `uniroot()` | base R | find where a function crosses zero, for S_MSY (optional) | 05 |
 | `start_walk()` | lesson | starting values for the random walk: one value per year, plus the next year | 06 |
 | `summary(sdr, "random")` | RTMB | estimates and standard errors of the random effects (used by `ci_table(m, "random")`) | 06 |
-| `TMB::tmbprofile()` | TMB | a profile interval for one parameter (optional) | 06, 10 |
+| `TMB::tmbprofile()`, `confint()` | TMB | a profile interval for one parameter (optional) | 06, 10 |
 | `osa_residuals()` | lesson | one-step-ahead residuals of a fitted model | 07 |
-| `arrange()` | dplyr | sort rows, for example by brood year | 07 |
+| `arrange()` | dplyr | sort rows, for example by brood year | 07, 10 |
 | `stat_qq()`, `stat_qq_line()` | ggplot2 | a QQ plot of residuals against the normal distribution, with its reference line | 07 |
 | `facet_wrap()` | ggplot2 | one panel per model or group | 07 |
 | `obj$simulate()` | RTMB | simulate a new data set from the model | 08 |
@@ -246,14 +253,20 @@ Table: Functions by episode. "Lesson" means a function written in the lesson, wh
 | `replicate()` | base R | repeat a calculation many times and collect the results | 08 |
 | `simulate_stat()` | lesson | a statistic, such as `lag1()`, computed on many data sets simulated from a fitted model | 08 |
 | `self_test()` | lesson | simulate from a fitted model, refit to each data set and compare with the known values | 08 |
+| `first()` | dplyr | the first value in each group, inside `summarise()` | 08 |
 | `geom_histogram()`, `geom_vline()` | ggplot2 | a histogram; a vertical reference line, such as the observed value | 08 |
+| `scale_x_log10()`, `scale_y_log10()` | ggplot2 | a logarithmic x or y axis | 08, 11 |
 | `aic_table()` | lesson | an AIC table; stops if the models were fitted to different rows | 09 |
 | `nll_ricker_npgo()` | lesson | the Ricker model plus the NPGO index in the year the young fish enter the ocean | 09 |
 | `select()`, `left_join()` | dplyr | keep some columns; add columns from another table by a shared column, such as brood year | 09 |
 | `nll_stocks()`, `nll_stocks_years()` | lesson | all stocks with a random effect for stock productivity, then with a shared year effect | 10 |
+| `tapply()` | base R | apply a function to each group, such as the mean spawner count of each stock | 10 |
+| `desc()` | dplyr | sort from largest to smallest, inside `arrange()` | 10 |
 | `geom_pointrange()`, `geom_segment()` | ggplot2 | a point with its interval; a line segment between two points | 10 |
+| `reorder()` | base R | order the groups on a plot axis by another value, such as stocks by their estimate | 10 |
+| `arrow()`, `unit()` | ggplot2 (from grid) | arrowheads for `geom_segment()`, and their size | 10 |
 | `hindcast()` | lesson | refit to the years before each test year and forecast that year | 11 |
 | `naive_forecast()` | lesson | the benchmark: recruits per spawner as in the previous four brood years | 11 |
 | `score_forecasts()` | lesson | bias, mean absolute error, 80% coverage and skill against the benchmark | 11 |
-| `scale_y_log10()` | ggplot2 | a logarithmic y axis | 11 |
+| `rename()` | dplyr | rename the columns of your own data | 12 |
 | `obj$env$parList()` | RTMB | the estimates as a list shaped like the starting values, to refit from them | [Troubleshooting](troubleshooting.md) |

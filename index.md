@@ -4,9 +4,9 @@ site: sandpaper::sandpaper_site
 
 In two hands-on days you will write your own statistical model as a short R function, fit it with RTMB, check that the fit worked, compare it with other models and test its forecasts on years it never saw, using one tested recipe for each step and no proofs.
 
-This is a lesson in the style of [Data Carpentry](https://datacarpentry.org/), built with [The Carpentries Workbench](https://carpentries.github.io/sandpaper-docs/).
+This is a lesson in the style of [Data Carpentry](https://datacarpentry.org/), built with [The Carpentries Workbench][workbench].
 It is not an official Carpentries lesson.
-It was developed from the materials of the RTMB workshop taught by the Pacific Salmon Commission in November 2026.
+It was developed from the materials of the RTMB workshop hosted by the Pacific Salmon Commission in November 2026 (slides and examples by Paul van Dam-Bates).
 
 ## Who It Is For
 
@@ -41,7 +41,7 @@ You can:
 - read an estimate and its standard error from a regression.
 
 Not needed: calculus, matrix algebra, C++, TMB, Bayesian statistics, likelihood theory, fisheries science.
-The Data Carpentry lesson [R for Ecologists](https://datacarpentry.org/R-ecology-lesson/), or any introductory R course, is enough.
+The Data Carpentry lesson [R for Ecologists][r-ecology], or any introductory R course, is enough.
 
 Not sure? Answer the three questions under "Before You Come" in the [Setup](learners/setup.md) instructions below.
 
@@ -51,14 +51,14 @@ Not sure? Answer the three questions under "Before You Come" in the [Setup](lear
 
 - Your own recipe box, `my-recipes.R`: every function the lesson teaches, typed by you.
 - A completed model report card for a stock you chose: data, fits, estimates, checks, model comparison and a tested forecast.
-- A template for your next analysis: [the capstone template (capstone-template.R)](episodes/files/capstone-template.R) runs the whole workflow on another stock or on your own data.
+- A template for your next analysis: [the capstone template (capstone-template.R)](episodes/files/capstone-template.R), a fill-in-the-blanks script for the whole workflow, on another stock or on your own data.
 - The one-page [Recipe Index](learners/recipe-index.md), which answers "Which recipe do I need?".
 
 ## How the Lesson Works
 
 - The [Quick Start](episodes/02-quick-start.Rmd) runs the whole workflow first, in nine steps on one stock: data, model, fit, check the fit, estimates, check the model, random effect, compare, forecast.
 - Each later episode opens one of those steps and turns it into recipes you can reuse.
-- Every episode ends with a "your turn" challenge on a second stock, Upper Pitt River, which fills one row of your report card.
+- Most episodes include a "your turn" challenge on a second stock, Upper Pitt River, which fills in your report card one row at a time.
 - The [capstone](episodes/12-capstone.Rmd) repeats the workflow on a stock you choose, or on your own data.
 
 From Episode 3 on, every episode opens with a Starting Point box that recreates everything it needs.
@@ -68,13 +68,15 @@ Episode 10 (many stocks) is optional.
 ## About the Data
 
 The data are spawner and recruit estimates for 19 Fraser River sockeye salmon stocks, brood years 1948-2022, in thousands of fish.
-They were supplied with the Pacific Salmon Commission RTMB workshop and described there as not necessarily official numbers.
+Spawners are the adult fish that spawned in a given year, called the brood year, and recruits are the adult offspring they produced.
+A stock is a group of salmon that spawn in the same place at the same time of year.
+The data were supplied with the Pacific Salmon Commission RTMB workshop and described there as not necessarily official numbers.
 The lesson also uses the North Pacific Gyre Oscillation index, a measure of ocean conditions.
 The script `scripts/prepare-data.R` in the lesson's source repository records every cleaning step.
 
 These stocks matter to First Nations and to commercial and recreational fisheries.
 The lesson uses them to teach methods; nothing in it is management advice.
 
-The lesson follows the [CARE principles for Indigenous data governance](https://www.gida-global.org/care): collective benefit, authority to control, responsibility and ethics.
+The lesson follows the [CARE principles for Indigenous data governance][care]: collective benefit, authority to control, responsibility and ethics.
 
 Licence and attribution: to be confirmed with the data providers before the lesson is shared.

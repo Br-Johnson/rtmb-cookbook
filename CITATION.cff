@@ -1,5 +1,8 @@
 # Citation information for this lesson, in the Citation File Format (https://citation-file-format.github.io/).
 # Keep the author list and the other fields up to date.
+# When you first share the lesson, add `version:` and `date-released:` (YYYY-MM-DD).
+# Once GitHub Pages serves the lesson, point `url` at the published site
+# (for example https://br-johnson.github.io/rtmb-cookbook/).
 
 cff-version: 1.2.0
 title: "RTMB Cookbook: Fit, Check, Compare and Forecast with Your Own Models"
@@ -10,7 +13,11 @@ message: >-
   training material.
 type: dataset
 authors:
+  # The lesson's Cite page prints only given-names and family-names.
+  # family-names repeats the GitHub alias so that the page shows an author;
+  # replace it with your given-names and family-names if you want them shown.
   - alias: Br-Johnson
+    family-names: Br-Johnson
 abstract: >-
   In two hands-on days you will write your own statistical model as a
   short R function, fit it with RTMB, check that the fit worked, compare
@@ -36,7 +43,8 @@ references:
     title: "RTMB workshop materials, Pacific Salmon Commission, November 2026"
     authors:
       - given-names: Paul
-        family-names: van Dam-Bates
+        name-particle: van
+        family-names: Dam-Bates
     year: 2026
     month: 11
     institution:
@@ -44,4 +52,5 @@ references:
     url: "https://github.com/Pacific-salmon-assess/RTMBWorkshop_Nov2026"
     notes: >-
       Slides, examples and the sockeye salmon data of the two-day RTMB
-      workshop from which this lesson was developed.
+      workshop hosted by the Pacific Salmon Commission, from which this
+      lesson was developed.

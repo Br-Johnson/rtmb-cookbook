@@ -4,7 +4,7 @@ title: "Licenses"
 
 ## Before you share this lesson
 
-This lesson was adapted from the materials of the RTMB workshop taught by the
+This lesson was adapted from the materials of the RTMB workshop hosted by the
 Pacific Salmon Commission in November 2026 (slides and examples by Paul van
 Dam-Bates). That repository does not state a license. The licenses below are
 the Carpentries defaults that come with the lesson template. Confirm with the
