@@ -77,7 +77,7 @@ A residual of -2 means that the year was two SDs below what the earlier years le
   The prediction for 2005 uses the observations up to 2004; the [fixed parameters](../learners/reference.md#glossary), such as sigma, were estimated from all years.
   [Episode 11](11-forecasting.Rmd) goes further and refits the model to the earlier years only.
 
-The yearly productivity used to predict 2005 is worked out from the years before 2005, not from 2005 itself, so the [random effects](../learners/reference.md#glossary) cannot absorb the 2005 surprise.
+The yearly productivity used to predict 2005 is estimated from the years before 2005, not from 2005 itself, so the [random effects](../learners/reference.md#glossary) cannot absorb the 2005 surprise.
 This is why one-step-ahead residuals work for models with and without random effects.
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: instructor

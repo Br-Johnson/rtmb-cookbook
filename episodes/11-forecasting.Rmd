@@ -529,7 +529,7 @@ Row 8: "Both models beat the recent-average benchmark in these 15 years (skill 0
 
 Row 9: "From 5.3 thousand spawners, the random walk forecasts a median of 12 thousand recruits (80% prediction interval 4.4 to 35 thousand)."
 
-Rows 7 and 8 do not clearly agree.
+Rows 7 and 8 agree only in part.
 AIC (row 7) prefers the random walk by 11.8, but the Ricker's forecast errors were slightly smaller (mean absolute error 0.88 against 0.92): a lower AIC did not bring smaller forecast errors.
 In 15 forecasts that difference is a tie, while the Ricker's bias (+0.74) is a clear fault.
 AIC measures how well a model describes the years it was fitted to; the hindcast measures how well it forecast years it had not seen.
