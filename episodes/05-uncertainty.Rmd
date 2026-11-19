@@ -52,7 +52,7 @@ ricker$checks
 
 ## Standard Errors from sdreport()
 
-The fitted Ricker model for Stellako passes all four checks, so we can use it.
+The fitted Ricker model for Stellako passes all [four checks](../learners/reference.md#glossary), so we can use it.
 Fitting gives the best value of each parameter.
 Before you report a number, you also need to know how sure you can be about it.
 
@@ -158,7 +158,7 @@ The interval for S_max is not symmetric: it runs 50 thousand below the estimate 
 That is what happens after `exp()`, and it means the interval can never go below zero.
 
 These intervals assume that the model is right.
-The Quick Start's residuals showed that Stellako's productivity drifts, which the Ricker model ignores, so its intervals are probably too narrow.
+The Quick Start's [residuals](../learners/reference.md#glossary) showed that Stellako's [productivity](../learners/reference.md#glossary), alpha, drifts over time, but the Ricker model holds it constant, so its intervals are probably too narrow.
 [Episode 6](06-random-effects.Rmd) models the drift and gives a wider interval: S_max 200 thousand spawners (95% CI 94 to 422 thousand).
 Check the model before you report its intervals: [Episode 7](07-residuals.Rmd) does this with residuals and [Episode 8](08-simulation.Rmd) with simulated data.
 
@@ -199,7 +199,7 @@ Give the estimate, the interval, its level (95%) and the units, rounded to two o
 `ci_table()` builds the interval for every `log_` quantity, including sigma and other standard deviations, on the log scale.
 That works well for sigma here, because 0.89 is far from zero.
 These intervals can be poor when a standard deviation (SD) is estimated close to zero: its log heads towards minus infinity, its standard error becomes very large, and the interval can run from 0 to `Inf`.
-This happens with random effects; [Episode 6](06-random-effects.Rmd) shows how to recognise it and what to report instead.
+This happens with [random effects](../learners/reference.md#glossary); [Episode 6](06-random-effects.Rmd) shows how to recognise it and what to report instead.
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::
 
@@ -240,9 +240,10 @@ ci_table(ricker_rmax, "report")
 The new lines add no parameters, so the fit is the same as before; only the report gains a row.
 `ci_table(m, "report")` reads the reported quantities instead of the parameters, one row for each:
 
-- `mu_new` (1.97) is the Ricker model's forecast of log(R/S) for `S_new` = 50 thousand spawners: a median of 50 × exp(1.97) = 359 thousand recruits, the Ricker forecast from Challenge 4 of the Quick Start.
+- `mu_new` (1.97) is the Ricker model's forecast of log(R/S) for `S_new` = 50 thousand spawners.
   It is not named `log_...`, so it stays on the log scale.
-  [Episode 11](11-forecasting.Rmd) uses it.
+  In recruits, the forecast is 50 × exp(1.97) = 359 thousand, a [median](../learners/reference.md#glossary): half of the outcomes would fall below it.
+  This is the Ricker forecast from Challenge 4 of the Quick Start; [Episode 11](11-forecasting.Rmd) uses `mu_new` again.
 - `Rmax` is 487 thousand recruits (95% CI 341 to 694 thousand).
 
 **Check it worked:** R_max is about 487 thousand recruits, the top of the curve in the next plot.
