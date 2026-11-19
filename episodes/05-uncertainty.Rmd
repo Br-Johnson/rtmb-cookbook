@@ -318,7 +318,7 @@ Report it with that warning.
 
 **Use it when:** you plot a fitted curve with its uncertainty.
 
-**Ingredients:** the model function and the data list you fitted, a grid of spawner values.
+**Ingredients:** the model function and the [data list](../learners/reference.md#glossary) you fitted, a grid of spawner values.
 
 First, a function that turns the reported `mu_new` values into recruits with an interval.
 If you ran the Starting Point chunk, it is already loaded from `cookbook.R`; type it anyway, so that you know what it does.
@@ -354,7 +354,7 @@ Line by line:
   This `if()` is safe because it runs after fitting, outside the model function.
 - `z` is 1.96 for a 95% interval and 1.28 for an 80% interval.
 - The last lines turn log(R/S) into recruits: spawners × exp(log(R/S)).
-  `exp()` of a log-scale value gives the [median](../learners/reference.md#glossary), not the mean.
+  `exp()` of a log-scale value gives the median, not the mean.
 
 Try it on `ricker`:
 
@@ -368,7 +368,7 @@ To draw the curve, `S_new` can be a whole grid of spawner values instead of one 
 `mu_new` then has one value for each, and `ADREPORT()` gives each one a standard error.
 `ricker` computed `mu_new` only for the `S_new` it was fitted with (50), and `fit_model()` kept its own copy of that data list.
 To get `mu_new` at other spawner counts, copy the data list, put the grid in `S_new`, and fit again.
-The estimates do not change, because `S_new` is not used in the negative log-likelihood; only the reported `mu_new` values do.
+The estimates do not change, because `S_new` is not used in the [negative log-likelihood](../learners/reference.md#glossary); only the reported `mu_new` values do.
 Do not change `dat` itself: later steps use it.
 
 Here the grid has 250 spawner values, and we ask for a 95% confidence band: a 95% confidence interval for the median recruits at each spawner count, drawn as a shaded ribbon.
