@@ -455,7 +455,7 @@ In the copy, change `sdr_walk` to `sdr` and `opt_walk` to `opt`, so that it fore
 Run the copy.
 How different is the forecast?
 Which would you trust, and why?
-Write your answer down: Episode 11 tests it.
+Write your answer down: [Episode 11](11-forecasting.Rmd) tests it.
 
 :::::::::::::::::::::::: solution
 
