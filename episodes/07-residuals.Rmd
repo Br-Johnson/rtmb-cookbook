@@ -310,7 +310,7 @@ The table below is the general rule.
 
 Table: What a failed residual check says the model misses.
 
-| Check that fails | What you see | What the model misses | What to try |
+| Check that fails | What the check shows | What the model misses | What to try |
 |---|---|---|---|
 | Shape | points far from the line at one or both ends | more extreme years than a normal distribution allows | first fix any pattern over time and draw the QQ plot again; if the ends still bend, check those years in the data, keep them and report them; then try a distribution with heavier tails, one that expects an occasional extreme year ([Going Further](../learners/going-further.md)) |
 | Pattern over time | long runs above or below zero | something that changes over time | let a parameter drift ([Episode 6](06-random-effects.Rmd)) or add a covariate ([Episode 9](09-model-selection.Rmd)) |
