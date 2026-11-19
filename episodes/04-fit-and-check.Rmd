@@ -76,10 +76,18 @@ Read it one element at a time:
 - `convergence` is 0, which means the optimiser stopped normally.
   It does not tell you whether it stopped in a good place.
 - `iterations` is the number of steps downhill: 14.
-- `message` says why the hiker stopped: "relative convergence (4)" means the score had stopped getting smaller.
+- `message` says why the hiker stopped: "relative convergence (4)" means further steps would make the score smaller by only a negligible amount.
 
 `sdreport()` then measures how sharply the ground curves at the bottom.
 A narrow, steep bowl means the data pin the parameters down, and gives small [standard errors](../learners/reference.md#glossary); a wide, shallow bowl gives large ones.
+
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: instructor
+
+In a workshop, skip the optional spoilers "How RTMB Gets Exact Slopes" (below) and "Why Restart Once?"; learners can read them later.
+Show the data-copy spoiler from the page without typing it: it answers misconception M11, that changing `dat` after a fit is harmless.
+If your learners rarely write functions, type `fit_model()` in two passes: first the three calls and a list of `obj`, `opt` and `sdr`, which you run; then the safety steps and the recipe items, naming each one as you add it.
+
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 :::::::::::::::::::::::::::::::::::::::: spoiler
 
@@ -120,13 +128,24 @@ These are the three calls from the Quick Start, plus four safety steps:
 - it stops with a clear message if the negative log-likelihood is not a finite number (for example `NA` or `Inf`) at the starting values;
 - it allows the optimiser more steps (10 000 instead of the default 200 evaluations and 150 iterations);
 - it restarts the optimiser once, from where it stopped;
-- it keeps the data and the recipe (the function, starting values and random effects), so that later refits use exactly the same data.
+- it keeps the data and the recipe (the function, starting values and random effects), so that results computed after fitting use the data the model was fitted to, and later refits (Episodes 8 and 11) reuse the same recipe.
 
-Its last line runs `check_fit()` from step 4 of the Quick Start; the next section explains the [four checks](../learners/reference.md#glossary).
+Its last line runs `check_fit()`, which you typed in step 4 of the Quick Start, to get the [four checks](../learners/reference.md#glossary); the next section explains them.
+Here it is again.
+You do not need to type it a second time, but copy it and run it, so that `fit_model()` can find it even if you have restarted R since the Quick Start:
 
-Now fit the Ricker model with it:
+```{r check-fit, purl=TRUE}
+check_fit <- function(opt, sdr) {
+  c(finished  = opt$convergence == 0,                         # the optimiser stopped normally
+    flat      = max(abs(sdr$gradient.fixed)) < 0.001,         # the ground is level
+    curved    = sdr$pdHess,                                   # the bottom is a bowl
+    finite_se = all(is.finite(summary(sdr, "fixed")[, "Std. Error"])))  # every SE is a number
+}
+```
 
-```{r fit-ricker}
+Now fit the Ricker model with `fit_model()`:
+
+```{r fit-ricker, purl=TRUE}
 ricker <- fit_model(nll_ricker, start_ricker(dat), dat)
 ricker$checks
 names(ricker)
@@ -141,15 +160,37 @@ From now on, every model in the lesson is fitted this way.
 
 Ask for sticky notes when `ricker$checks` shows four TRUE.
 If a learner's own `fit_model()` gives an error, rerunning the Starting Point chunk loads the version in `cookbook.R`; fix their copy at the break.
+Then ask for a show of hands on the prediction below before you run `rbind()` (1 minute).
 Across all 19 stocks, a single `nlminb()` call already passes every check for these models, so the restart is insurance for larger models and learners' own data, not a fix for these data.
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+`fit_model()` runs `nlminb()` twice.
+Will its estimates differ from `opt$par`, which the three calls found at the start of this episode?
+Write down your prediction, then run:
+
+```{r compare-restart}
+rbind(three_calls = opt$par, fit_model = ricker$opt$par)
+```
+
+The two rows are identical.
+For these data, one run of `nlminb()` already reached the bottom, so the restart found nothing to improve.
+
+:::::::::::::::::::::::::::::::::::::::: spoiler
+
+### Why Restart Once? (optional)
+
+`nlminb()` sometimes stops a little short of the bottom in larger models.
+Starting it again from where it stopped costs little: a few milliseconds for the models in this lesson.
+For every single-stock fit in this lesson, one run was already enough.
+
+::::::::::::::::::::::::::::::::::::::::::::::::::
 
 :::::::::::::::::::::::::::::::::::::::: spoiler
 
 ### Why `fit_model()` Keeps Its Own Copy of the Data (optional)
 
-RTMB reruns your R function when it computes standard errors, residuals and simulations.
+RTMB reruns your R function after fitting when it computes reported quantities such as `mu_new` (and their standard errors), residuals and simulations.
 A model built with the raw calls reads `dat` from your workspace each time, so editing `dat` after fitting changes those results without any warning.
 This chunk changes `S_new` after a fit made with the raw calls:
 
@@ -168,35 +209,15 @@ The fitted model from `fit_model()` still gives 1.97, the value for 50 thousand 
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::
 
-:::::::::::::::::::::::::::::::::::::::: spoiler
-
-### Why Restart Once? (optional)
-
-`nlminb()` sometimes stops a little short of the bottom in larger models.
-Starting it again from where it stopped costs a few milliseconds.
-For every single-stock fit in this lesson, one run was already enough.
-
-::::::::::::::::::::::::::::::::::::::::::::::::::
-
 ## The Four Checks
 
 A fit can be used only when all four checks are TRUE.
-`fit_model()` gets them from `check_fit()`, which you typed in step 4 of the Quick Start.
-Each line asks one question:
-
-```{r check-fit, purl=TRUE}
-check_fit <- function(opt, sdr) {
-  c(finished  = opt$convergence == 0,                         # the optimiser stopped normally
-    flat      = max(abs(sdr$gradient.fixed)) < 0.001,         # the ground is level
-    curved    = sdr$pdHess,                                   # the bottom is a bowl
-    finite_se = all(is.finite(summary(sdr, "fixed")[, "Std. Error"])))  # every SE is a number
-}
-```
+Each line of `check_fit()` asks one question:
 
 - `finished` reads the optimiser's `convergence` code.
 - `flat` asks whether every slope (`gradient.fixed`) is close to zero where the hiker stopped.
-- `curved` reads `pdHess`, which is TRUE when the curvature at the bottom, called the [Hessian](../learners/reference.md#glossary), forms a bowl.
-- `finite_se` asks whether every standard error is a number, not `NaN` or `Inf`.
+- `curved` reads `pdHess` (short for "positive definite Hessian"), which is TRUE when the curvature at the bottom, called the [Hessian](../learners/reference.md#glossary), forms a bowl.
+- `finite_se` asks whether every standard error is a number, not `NaN` (not a number) or `Inf` (infinity).
 
 Table: The four checks, and what a failure usually means.
 
@@ -208,10 +229,13 @@ Table: The four checks, and what a failure usually means.
 | `finite_se` | Can every standard error be computed? | the width of the bowl can be measured | as for `curved` |
 
 ![
-The four checks in the valley picture.
+Three places the hiker can stop: a bowl, a slope and a flat-bottomed trough.
 ](fig/valley.svg){
 alt="Three sketches of a valley with a hiker. Left: a round bowl with the hiker at the single lowest point, labelled all four checks TRUE. Middle: the hiker stopped on a slope above the bottom, labelled flat FALSE. Right: a valley with a long flat floor where the hiker could stand anywhere, labelled curved or finite_se FALSE: two parameters do one job."
 }
+
+Four TRUE say that the hiker stands at the bottom of a bowl.
+They cannot say whether a lower bowl exists elsewhere in the valley; starting values taken from the data make stopping in the wrong bowl less likely.
 
 ## When a Check Fails
 
@@ -223,7 +247,7 @@ The next challenge shows a fit that looks finished but cannot be used.
 Make the sign error live: type `nll_sign`, fit it, and let learners read the output before you explain anything.
 A mistake made in front of the room is a teaching moment.
 Then ask the question below and let learners vote.
-If most choose (a), re-teach the idea that `convergence == 0` means a usable fit: code 0 only says that the optimiser stopped; show `m_sign$opt$par` and ask what S_max would be.
+If most choose (a), they think that `convergence == 0` means a usable fit (misconception M2): show `m_sign$opt$par`, ask what S_max would be, and repeat that code 0 only says the optimiser stopped.
 If answers are spread out, go back to the valley picture and the four checks.
 The demonstration and the vote take about 5 minutes.
 
@@ -247,6 +271,8 @@ m_sign$opt[c("objective", "convergence", "message")]
 m_sign$checks
 ```
 
+R printed two warnings, `NA/NaN function evaluation`, and then:
+
 ```output
 $objective
 [1] -Inf
@@ -264,7 +290,7 @@ $message
 Is this fit usable?
 
 - (a) Yes: convergence is 0.
-- (b) No: the score ran off to minus infinity and three checks fail, because the function returns the log-likelihood instead of its negative.
+- (b) No: three of the four checks fail.
 - (c) Yes, if the estimates look reasonable.
 - (d) No, because the message is not "relative convergence".
 
@@ -289,7 +315,7 @@ The two warnings, `NA/NaN function evaluation`, come from the two runs of `nlmin
 
 - (a) is the most common mistake: convergence code 0 only says that the optimiser stopped, not that it stopped at a sensible bottom.
 - (b) is right.
-  Without the minus sign the function returns the log-likelihood, and the optimiser makes it as small as possible, so it runs off to minus infinity.
+  The cause is the missing minus sign: the function returns the log-likelihood, and the optimiser makes it as small as possible, so it runs off to minus infinity.
   The ground is not flat there, and there is no bowl.
 - (c) is wrong twice.
   The estimates are absurd: `log_Smax` is about -176, so S_max would be exp(-176) thousand spawners, far less than one fish.
@@ -310,7 +336,9 @@ Use all four checks.
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::
 
-Whether a check fails or `fit_model()` stops with an error, the same five questions find most causes.
+Whether a check fails or `fit_model()` stops with an error, first look up the pattern of checks and messages in the [Troubleshooting](../learners/troubleshooting.md) table.
+It lists the mistakes in the code, such as a missing minus sign, a missing `log = TRUE` or a missing `random =`, and the pattern each one leaves.
+If no row matches, work down these five questions; they find problems in the data, the scales and the starting values.
 
 :::::::::::::::::::::::::::::::::::::::: checklist
 
@@ -328,8 +356,8 @@ Whether a check fails or `fit_model()` stops with an error, the same five questi
 
 ### Challenge 2: Diagnose Three Fits (8 minutes)
 
-Here are the outputs of three failed fits.
-Match each output to its cause.
+Here are the outputs of three failed fits, all to the Stellako data (74 brood years).
+Match each output to its cause, using the table of the four checks above and the [Troubleshooting](../learners/troubleshooting.md) page.
 Two causes are not used.
 
 1. `log = TRUE` missing in `dnorm()`.
@@ -366,25 +394,44 @@ Error in `fit_model()`:
 ! The negative log-likelihood is not a finite number at the starting values.
 ```
 
+:::::::::::::::::::::::: hint
+
+Count the parameters in Output A.
+The Ricker has three.
+The random walk from step 7 of the Quick Start has four fixed parameters; its 75 yearly productivities are kept out of `opt$par` only when they are named in `random =`.
+
+:::::::::::::::::::::::::
+
 :::::::::::::::::::::::: solution
 
 A matches 2, B matches 3 and C matches 4.
 
 **A: `random =` missing.**
 The random-walk model from the Quick Start, fitted without `random = "log_alpha_year"`, estimates all 75 yearly productivities as ordinary [fixed parameters](../learners/reference.md#glossary): 79 parameters in all.
-(`start_walk()` comes from `cookbook.R`; Episode 6 teaches it.)
+(`start_walk()` comes from `cookbook.R`; Episode 6 teaches it.
+Episode 3 did not load `cookbook.R`, so if R cannot find `start_walk()` or `nll_walk`, run `source("files/cookbook.R")` first.)
 
 ```{r ch2-solution-a}
 m_a <- fit_model(nll_walk, start_walk(dat), dat)
 m_a$checks
 m_a$opt$message
 length(m_a$opt$par)
+range(m_a$opt$par[-(1:4)])          # the 75 yearly values: lowest and highest
+exp(m_a$opt$par[["log_sd_walk"]])   # sd_walk, the size of the yearly steps
 m_a$opt$objective
-exp(m_a$opt$par[["log_sd_walk"]])
 ```
 
-The yearly values chase the noise in the data, the size of the yearly steps collapses to about 1e-14, and the score runs down to -2213.
+Without `random =`, the optimiser chooses every yearly value itself.
+It makes all 75 of them the same (2.11 on the log scale), so every yearly step is zero, and then shrinks the size of the steps towards zero: sd_walk collapses to about 1e-14 and the score runs down to -2213.
+The score has no bottom, so all four checks fail.
 The 79 parameters are the clue: the random walk has four fixed parameters, so a correct fit reports four.
+The fix is to name the random effects:
+
+```{r ch2-solution-a-fix}
+m_a_fixed <- fit_model(nll_walk, start_walk(dat), dat, random = "log_alpha_year")
+m_a_fixed$checks
+length(m_a_fixed$opt$par)
+```
 
 **B: two parameters that do the same job.**
 
@@ -403,6 +450,7 @@ summary(m_b$sdr, "fixed")
 `log_alpha` and `log_extra` add up to 2.38, the Ricker's `log_alpha`, but the data can only tell their sum.
 Any split between them fits equally well: the valley has a long flat floor, so the standard errors cannot be computed.
 `curved` is FALSE here, but in fits like this it can come out TRUE: trust `finite_se`.
+The fix is to remove `log_extra`: the model is then the Ricker, which passes all four checks (`ricker$checks` above).
 
 **C: a missing value in the data.**
 
@@ -413,6 +461,7 @@ fit_model(nll_ricker, start_ricker(dat_na), dat_na)
 ```
 
 One `NA` in `logRS` makes the whole score `NA`, so `fit_model()` stops before the optimiser starts.
+The fix is to remove the rows with missing values from the data frame before `make_dat()`, for example with `filter(my_stock, !is.na(spawners), !is.na(recruits))`.
 
 The unused causes: a missing minus sign (5) gives `TRUE FALSE FALSE FALSE` and a score of `-Inf`, as in Challenge 1.
 A missing `log = TRUE` (1) also gives four FALSE, but with a different message and only three parameters; you will meet it in Challenge 3.
@@ -431,9 +480,14 @@ Cause 3 is the hardest to picture; draw the flat-bottomed trough from the figure
 
 ## Reading Error Messages
 
-When R stops with an error, the message names the function where it stopped and then says what went wrong.
+When R stops with an error, read the message from the bottom up.
+The last line says what went wrong: look it up in the table below.
+The first line usually says where R stopped, for example `Error in fit_model(nll_ricker, start_ricker(dat_na), dat_na) :` for Output C of Challenge 2.
+An error inside your model function starts with `Error in nll(p, dat) :`, because `nll` is the name `fit_model()` gives your function.
+(This page, and some editors, show errors in a slightly different layout.)
+
 Most problems with fitting come from a small set of mistakes in the model function.
-The table lists the five most common; the [Troubleshooting](../learners/troubleshooting.md) page lists every message this lesson produces.
+The table lists the five most common (`m` is any fitted model); the [Troubleshooting](../learners/troubleshooting.md) page lists every message this lesson produces.
 
 :::::::::::::::::::::::::::::::::::::::: caution
 
@@ -443,10 +497,10 @@ Table: The five most common problems when fitting a model.
 
 | What you see | Likely cause | Fix |
 |---|---|---|
-| `object 'log_alpha' not found` (or another parameter name) | `getAll(par, dat)` is missing | make it the first line of the function |
+| `object 'logRS' not found` or `object 'log_alpha' not found` (a name from `dat` or `par`) | `getAll(par, dat)` is missing | make it the first line of the function |
 | `object 'log_S_max' not found` | a name differs between the function and `par` or `dat` | compare the names letter by letter |
 | `Comparison is generally unsafe for AD types` | `if()` on a parameter | remove it; write a separate model function for each case |
-| checks `TRUE FALSE FALSE FALSE`, `opt$objective` is `-Inf`, "X-convergence (3)" | the function returns the log-likelihood | put a minus sign in front of `sum()` |
+| checks `TRUE FALSE FALSE FALSE`, `m$opt$objective` is `-Inf`, "X-convergence (3)" | the function returns the log-likelihood | put a minus sign in front of `sum()` |
 | all four checks FALSE, "function evaluation limit reached without convergence (9)" | `log = TRUE` missing in `dnorm()` | add it |
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -482,12 +536,13 @@ R printed `There were 50 or more warnings (use warnings() to see the first 50)`,
 
 Use the table above to find the likely cause.
 Which line is wrong?
-Fix it and refit.
+Copy the code from this page rather than typing it, then fix the function and refit.
 
 :::::::::::::::::::::::: solution
 
 The last line is wrong: `log = TRUE` is missing in `dnorm()`.
 This chunk reruns the broken fit; `suppressWarnings()` hides its 10 000 copies of the warning `NA/NaN function evaluation`.
+We hide the warnings only to keep this page short; in your own work, read them.
 
 ```{r ch3-solution-a}
 nll_nolog <- function(par, dat) {
@@ -503,8 +558,10 @@ m_nolog$checks
 ```
 
 Without `log = TRUE`, `dnorm()` returns densities, and the function adds them up instead of adding log-densities.
-When the curve passes through one point exactly, that point's density grows without limit as sigma shrinks towards zero, so the score has no bottom: `log_sigma` reached -357.
-The optimiser kept walking until it used up its 10 000 evaluations.
+When the curve passes through one point exactly, that point's density grows without limit as sigma shrinks towards zero, so the score has no bottom.
+The first run of `nlminb()` walked downhill until `log_sigma` reached -357, and stopped there.
+The restart then tried 10 000 times to take one more step, but the score could not be computed at any of the new values it tried, so nearly every try printed a warning.
+It stopped at its limit of 10 000 evaluations without moving, so `finished` is FALSE.
 
 Add `log = TRUE` and refit:
 
@@ -531,12 +588,14 @@ All four checks are TRUE, and the estimates are the Ricker's: 2.38, 4.81 and -0.
 ### Challenge 4: Your Turn: Upper Pitt River, Row 2 (8 minutes)
 
 Fit the Ricker model to Upper Pitt River with `fit_model()`.
+Use the names `pitt`, `dat_pitt` and `ricker_pitt`, so that the Stellako objects stay as they are.
 Record its checks in row 2 of your report card (`report-card.R`).
+Put up a green sticky note when `ricker_pitt$checks` shows four TRUE.
 
 :::::::::::::::::::::::: hint
 
-Make the data list as in Episode 3, with `S_new` set to the average spawner count of the last four brood years.
-Then copy the `fit-ricker` chunk and change `dat` to `dat_pitt`.
+If you still have `pitt` and `dat_pitt` from Episode 3 (Challenge 5), use them; otherwise make them as there, with `S_new` set to the average spawner count of the last four brood years.
+Then copy the line that fitted `ricker` above, `ricker <- fit_model(nll_ricker, start_ricker(dat), dat)`, and change `ricker` to `ricker_pitt` and each `dat` to `dat_pitt`.
 
 :::::::::::::::::::::::::
 
@@ -552,10 +611,18 @@ ricker_pitt$checks
 All four checks are TRUE, so the fit can be used.
 
 Row 2: "Ricker: all four checks TRUE." (Other models are added in Episodes 6 and 9.)
+In `report-card.R` it reads `# Row 2 (fits usable): Ricker: all four checks TRUE.`
 
 :::::::::::::::::::::::::
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::
+
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: instructor
+
+Check that learners named the fit `ricker_pitt`.
+Anyone who overwrote `ricker` should run `ricker <- fit_model(nll_ricker, start_ricker(dat), dat)` again before Episode 5, which uses the Stellako fit.
+
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 :::::::::::::::::::::::::::::::::::::::: callout
 
@@ -571,7 +638,7 @@ The finished box is [cookbook.R](files/cookbook.R).
 ### In Your Field
 
 The four checks apply to any model fitted by maximum likelihood.
-glmmTMB and TMB report the same quantities: convergence, the gradient, whether the Hessian is positive definite, and the standard errors.
+glmmTMB and TMB report the same quantities: convergence, the gradient, whether the Hessian is positive definite (the `curved` check), and the standard errors.
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::
 
@@ -580,6 +647,6 @@ glmmTMB and TMB report the same quantities: convergence, the gradient, whether t
 - `fit_model()` builds a model with `MakeADFun()`, fits it with `nlminb()` (restarting once), computes standard errors with `sdreport()`, and keeps the data and recipe it used.
 - A fit can be used only when all four checks are TRUE: finished, flat, curved and finite_se.
 - `convergence == 0` on its own is not evidence of a usable fit.
-- When a check fails, work through the list: a finite start, the data, the scales, the starting values, a simpler model.
+- When a check fails or R stops, look up the symptom in the troubleshooting table; if no row matches, work through the list: a finite start, the data, the log scale for positive parameters, the starting values, a simpler model.
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::
