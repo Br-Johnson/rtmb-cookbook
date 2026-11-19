@@ -475,10 +475,10 @@ The finished box is [cookbook.R](files/cookbook.R).
 
 ### In Your Field
 
-Any series in time works the same way: counts per survey, monthly case numbers, yearly growth.
+Any series in time can be checked the same way: counts per survey, monthly case numbers, yearly growth.
 One-step-ahead residuals work for any RTMB model whose observations are marked with `OBS()`; if more than one set of observations is marked, `oneStepPredict()` returns residuals for the first set only.
 `osa_residuals()` uses `method = "fullGaussian"`, which is exact only when the data are normal and every random effect is normal and added to the expected value of the data, as here.
-For counts, other distributions, or a random effect inside a curve (such as a random S_max), use another `method`: `?TMB::oneStepPredict` explains the choices, and the help page `?RTMB::oneStepPredict` ends with an example for counts.
+For counts, other distributions, or a random effect inside a curve (such as a random [S_max](../learners/reference.md#glossary)), use another `method`: `?TMB::oneStepPredict` explains the choices, and the help page `?RTMB::oneStepPredict` ends with an example for counts.
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::
 
