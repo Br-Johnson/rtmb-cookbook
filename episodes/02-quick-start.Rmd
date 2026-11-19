@@ -128,7 +128,7 @@ par_ricker <- list(log_alpha = mean(dat$logRS),        # starting values from th
 
 Nothing is printed: the chunk only defines the function and its starting values, and step 3 uses them.
 Inside the function, `mu` is the expected log(R/S) in each year, and the last line adds up how surprising each year is, which gives the negative log-likelihood.
-`mu_new` is the expected log(R/S) for `S_new` spawners, and [ADREPORT()](../learners/reference.md#glossary) asks RTMB for its standard error; step 9 uses both for the forecast.
+`mu_new` is the expected log(R/S) for `S_new` spawners, and [ADREPORT()](../learners/reference.md#glossary) asks RTMB for its [standard error](../learners/reference.md#glossary); step 9 uses both for the forecast.
 `par_ricker` holds the [starting values](../learners/reference.md#glossary), where the search for the best values begins: typical values taken from the data.
 Names that start with `log_` are parameters estimated on the log scale, which keeps alpha, S_max and sigma positive ([Episode 3](03-likelihoods.Rmd) explains why).
 
@@ -147,7 +147,7 @@ Step 3 fits the model with three calls.
 `MakeADFun()` builds an object, `obj`, from the function and the starting values.
 `obj$par` holds the starting values, `obj$fn` computes the negative log-likelihood, and `obj$gr` computes its slope.
 `nlminb()`, the [optimiser](../learners/reference.md#glossary), starts from `obj$par` and uses `obj$fn` and `obj$gr` to search for the parameter values with the smallest negative log-likelihood.
-`sdreport()` computes a [standard error](../learners/reference.md#glossary) for each estimate.
+`sdreport()` computes a standard error for each estimate.
 
 ```{r qs3-fit, purl=TRUE}
 obj <- MakeADFun(function(p) nll_ricker(p, dat), par_ricker, silent = TRUE)  # build
@@ -276,7 +276,7 @@ One year, `r my_stock$brood_year[which.min(my_stock$res_ricker)]`, stands out fa
 These lines compute the averages, the lowest residual and its brood year.
 `which.min()` gives the position of the smallest value.
 
-```{r qs6-numbers}
+```{r residual-numbers}
 mean(my_stock$res_ricker[my_stock$brood_year < 1990])   # average before 1990
 mean(my_stock$res_ricker[my_stock$brood_year > 2000])   # average after 2000
 min(my_stock$res_ricker)                                # the lowest residual
@@ -293,7 +293,7 @@ lag1(my_stock$res_ricker)
 The [lag-1 correlation](../learners/reference.md#glossary) is the correlation between each year's residual and the next year's: `head(r, -1)` drops the last value and `tail(r, -1)` the first, so `cor()` pairs each year with the next.
 Near zero means the residuals have no memory from one year to the next.
 With `r nrow(my_stock)` years, chance alone usually keeps it between about -`r round(2 / sqrt(nrow(my_stock)), 2)` and +`r round(2 / sqrt(nrow(my_stock)), 2)` (2/sqrt(`r nrow(my_stock)`); [Episode 7](07-residuals.Rmd) explains this limit).
-Here it is `r round(lag1(my_stock$res_ricker), 2)`, a little above that limit: neighbouring years tend to be alike, so good years tend to follow good years and bad years follow bad years.
+Here it is `r round(lag1(my_stock$res_ricker), 2)`, a little above that limit: neighbouring years tend to be alike, so good years often follow good years and bad years follow bad years.
 
 :::::::::::::::::::::::::::::::::::::::: challenge
 
@@ -451,7 +451,8 @@ Can this forecast be trusted?
 ### Challenge 4: Which Forecast Would You Trust? (3 minutes)
 
 Copy the three lines of QS9 and paste the copy below them.
-In the copy, change `sdr_walk` to `sdr` and `opt_walk` to `opt`, so that it forecasts with the Ricker, and rename `p` to `p_ricker` and `sd_pred` to `sd_ricker`, so that `p` and `sd_pred` keep the random walk's forecast.
+In the copy, change `sdr_walk` to `sdr` and `opt_walk` to `opt`, so that it forecasts with the Ricker.
+Also rename `p` to `p_ricker` and `sd_pred` to `sd_ricker` in the copy, so that `p` and `sd_pred` keep the random walk's forecast.
 Run the copy.
 How different is the forecast?
 Which would you trust, and why?
