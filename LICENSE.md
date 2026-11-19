@@ -2,10 +2,20 @@
 title: "Licenses"
 ---
 
+## Before you share this lesson
+
+This lesson was adapted from the materials of the RTMB workshop taught by the
+Pacific Salmon Commission in November 2026 (slides and examples by Paul van
+Dam-Bates). That repository does not state a license. The licenses below are
+the Carpentries defaults that come with the lesson template. Confirm with the
+authors of the original workshop before you publish or license this lesson.
+
+The sockeye salmon data were supplied with that workshop and are described there
+as "not necessarily official numbers". Do not use them for management advice.
+
 ## Instructional Material
 
-All Carpentries (Software Carpentry, Data Carpentry, and Library Carpentry)
-instructional material is made available under the [Creative Commons
+The instructional material in this lesson is made available under the [Creative Commons
 Attribution license][cc-by-human]. The following is a human-readable summary of
 (and not a substitute for) the [full legal text of the CC BY 4.0
 license][cc-by-legal].
@@ -23,9 +33,8 @@ terms.
 Under the following terms:
 
 - **Attribution**---You must give appropriate credit (mentioning that your work
-  is derived from work that is Copyright (c) The Carpentries and, where
-  practical, linking to <https://carpentries.org/>), provide a [link to the
-  license][cc-by-human], and indicate if changes were made. You may do so in
+  is derived from this lesson and, where practical, linking to it), provide a
+  [link to the license][cc-by-human], and indicate if changes were made. You may do so in
   any reasonable manner, but not in any way that suggests the licensor endorses
   you or your use.
 
@@ -44,8 +53,8 @@ Notices:
 
 ## Software
 
-Except where otherwise noted, the example programs and other software provided
-by The Carpentries are made available under the [OSI][osi]-approved [MIT
+Except where otherwise noted, the example programs and other software in this
+lesson are made available under the [OSI][osi]-approved [MIT
 license][mit-license].
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
