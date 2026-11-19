@@ -18,30 +18,30 @@ carpentry: 'dc'
 # carpentry_description: "Custom Carpentry"
 
 # Overall title for pages.
-title: 'Lesson Title' # FIXME
+title: 'RTMB Cookbook: Fit, Check, Compare and Forecast with Your Own Models'
 
 # Date the lesson was created (YYYY-MM-DD, this is empty by default)
-created: ~ # FIXME: ( ~ means empty, replace with date formatted as above)
+created: '2026-11-19'
 
 # Comma-separated list of keywords for the lesson
-keywords: 'software, data, lesson, The Carpentries' # FIXME
+keywords: 'RTMB, TMB, R, statistical modelling, likelihood, random effects, model selection, forecasting, salmon, lesson'
 
 # Life cycle stage of the lesson
 # refer to <https://docs.carpentries.org/resources/curriculum/lesson-life-cycle.html> for details
 # possible values: pre-alpha, alpha, beta, stable, retired
-life_cycle: 'pre-alpha' # FIXME
+life_cycle: 'pre-alpha'
 
 # License of the lesson
 license: 'CC-BY 4.0'
 
 # Link to the source repository for this lesson
-source: 'https://github.com/carpentries/workbench-template-rmd' # FIXME
+source: 'https://github.com/Br-Johnson/rtmb-cookbook'
 
 # Default branch of your lesson
 branch: 'main'
 
 # Who to contact if there are any issues
-contact: 'team@carpentries.org' # FIXME
+contact: '' # add the maintainer's email address
 
 # Navigation ------------------------------------------------
 #
@@ -66,21 +66,44 @@ contact: 'team@carpentries.org' # FIXME
 # - another-learner.md
 
 # Order of episodes in your lesson
-episodes: 
-- introduction.Rmd
+episodes:
+- 01-introduction.Rmd
+- 02-quick-start.Rmd
+- 03-likelihoods.Rmd
+- 04-fit-and-check.Rmd
+- 05-uncertainty.Rmd
+- 06-random-effects.Rmd
+- 07-residuals.Rmd
+- 08-simulation.Rmd
+- 09-model-selection.Rmd
+- 10-many-stocks.Rmd
+- 11-forecasting.Rmd
+- 12-capstone.Rmd
 
 # Information for Learners
-learners: 
+learners:
+- setup.md
+- recipe-index.md
+- troubleshooting.md
+- reference.md
+- going-further.md
 
 # Information for Instructors
-instructors: 
+instructors:
+- instructor-notes.md
+- lesson-design.md
 
 # Learner Profiles
-profiles: 
+profiles:
+- learner-profiles.md
 
 # Customisation ---------------------------------------------
 #
 # This space below is where custom yaml items (e.g. pinning
 # sandpaper and varnish versions) should live
 
+# Stop the build on any R error that is not in a chunk marked error=TRUE
+fail_on_error: true
 
+# Build files/code-handout.R from the lesson's code chunks
+handout: true
