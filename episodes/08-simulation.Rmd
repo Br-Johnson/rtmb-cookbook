@@ -1,0 +1,496 @@
+---
+title: "Checking a Model with Simulation"
+teaching: 25
+exercises: 25
+---
+
+:::::::::::::::::::::::::::::::::::::::: questions
+
+- Can my model produce data that look like mine?
+- If my model were true, would my recipe recover its parameters?
+
+::::::::::::::::::::::::::::::::::::::::::::::::::
+
+:::::::::::::::::::::::::::::::::::::::: objectives
+
+- Simulate new data sets from a fitted model with `obj$simulate()`.
+- Use a simulated-data check to find a feature of the data that a model cannot reproduce.
+- Run a self-test and report, for each parameter, the median estimate against the truth and the share of refits that pass.
+
+::::::::::::::::::::::::::::::::::::::::::::::::::
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(fig.width = 7, fig.height = 4, dpi = 150)
+```
+
+## Starting Point
+
+This episode extends step 6 of the [Quick Start](02-quick-start.Rmd): a second way to check a model, by simulation.
+
+:::::::::::::::::::::::::::::::::::::::: prereq
+
+### Run This If You Are Starting Here
+
+If you have followed along, you already have these objects.
+If you are starting here or have restarted R, run this chunk first.
+It needs `data/sockeye.csv` and `files/cookbook.R` in your project (see [Setup](../learners/setup.md)).
+
+```{r starting-point, message=FALSE}
+library(RTMB)
+library(dplyr)
+library(ggplot2)
+source("files/cookbook.R")        # the finished recipe box (your my-recipes.R works too)
+sockeye  <- read.csv("data/sockeye.csv")
+my_stock <- filter(sockeye, stock == "Stellako")
+dat      <- make_dat(my_stock, S_new = 50)
+ricker   <- fit_model(nll_ricker, start_ricker(dat), dat)
+walk     <- fit_model(nll_walk, start_walk(dat), dat, random = "log_alpha_year")
+c(ricker = all(ricker$checks), walk = all(walk$checks))
+```
+
+::::::::::::::::::::::::::::::::::::::::::::::::::
+
+## Warm-Up
+
+In a workshop, this episode opens the second day.
+Warm up by putting the random-walk recipe back together, from the data file to the estimates.
+
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: instructor
+
+Open Day 2 by saying what you changed after yesterday's feedback (5 minutes, not counted in this episode's time).
+Then give learners 5 minutes for the warm-up, alone or in pairs.
+The line that does not belong is the missing `random =` mistake from Episode 4.
+If many learners keep it, run the second chunk of the solution live: all four checks fail.
+
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+:::::::::::::::::::::::::::::::::::::::: challenge
+
+### Challenge 1: Warm-Up: Put the Recipe in Order (5 minutes)
+
+Put these lines in order to fit and check the [random walk](../learners/reference.md#glossary) model from scratch.
+One line does not belong: which, and why?
+
+```r
+walk$checks
+walk <- fit_model(nll_walk, start_walk(dat), dat, random = "log_alpha_year")
+my_stock <- filter(sockeye, stock == "Stellako")
+ci_table(walk)
+dat <- make_dat(my_stock, S_new = 50)
+sockeye <- read.csv("data/sockeye.csv")
+walk <- fit_model(nll_walk, start_walk(dat), dat)
+```
+
+:::::::::::::::::::::::: solution
+
+Each line needs the object that the line before it makes: the data, one stock, the data list, the fitted model, then its checks and its estimates.
+
+```{r ch1-solution}
+sockeye  <- read.csv("data/sockeye.csv")
+my_stock <- filter(sockeye, stock == "Stellako")
+dat      <- make_dat(my_stock, S_new = 50)
+walk     <- fit_model(nll_walk, start_walk(dat), dat, random = "log_alpha_year")
+walk$checks
+ci_table(walk)
+```
+
+The line without `random =` does not belong.
+Without it, RTMB estimates the 75 yearly [productivities](../learners/reference.md#glossary) as ordinary [parameters](../learners/reference.md#glossary), one by one, instead of averaging over them, and the fit fails all [four checks](../learners/reference.md#glossary) (Episodes 4 and 6):
+
+```{r ch1-solution-b}
+walk_bug <- fit_model(nll_walk, start_walk(dat), dat)    # random = is missing
+walk_bug$checks
+```
+
+:::::::::::::::::::::::::
+
+::::::::::::::::::::::::::::::::::::::::::::::::::
+
+## Simulating from a Fitted Model
+
+A fitted model is also a recipe for making data.
+Give it parameter values, and it can draw a new set of log(R/S) values: one for each brood year, with the same spawners, new yearly scatter and, for the random walk, a new path of productivity.
+If the model describes the real data well, data simulated from it should look like the real data.
+
+RTMB draws such a data set with `obj$simulate()`.
+It knows which values to replace because `OBS()` marked `logRS` as the observations.
+A fitted model from `fit_model()` keeps its RTMB object in `$obj`, and the best parameter values in `$obj$env$last.par.best`.
+
+```{r simulate-once}
+set.seed(2026)
+sim <- walk$obj$simulate(walk$obj$env$last.par.best)
+names(sim)
+round(head(sim$logRS), 2)
+```
+
+`set.seed()` makes the simulation repeatable: run the chunk again and you get the same numbers.
+The result holds a new `logRS`, one value per brood year.
+For the random walk it also holds a new productivity path, `log_alpha_year`, because the yearly productivities are a [random effect](../learners/reference.md#glossary): the model says how they vary, so it can draw new ones.
+
+:::::::::::::::::::::::::::::::::::::::: callout
+
+### Use set.seed()
+
+Simulations use random numbers.
+Call `set.seed()` first so your results can be repeated.
+This lesson calls `set.seed(2026)` in the same chunk as every simulation, so your numbers match the page.
+
+::::::::::::::::::::::::::::::::::::::::::::::::::
+
+:::::::::::::::::::::::::::::::::::::::: caution
+
+### Always Give simulate() the Best Parameters
+
+Called without an argument, `simulate()` uses whatever parameter values RTMB evaluated last, which are not always the fitted ones.
+RTMB evaluates the model at many values while it fits and while it computes standard errors.
+Always pass `m$obj$env$last.par.best`, as every recipe in this episode does.
+
+::::::::::::::::::::::::::::::::::::::::::::::::::
+
+To compare simulated data with the real data, simulate one data set from each model and plot it under the real series.
+
+```{r plot-sim-series, fig.height=5, fig.alt="Three line plots, stacked, of log recruits per spawner against brood year, 1948 to 2021, labelled Real data (top), Simulated from the random walk (middle) and Simulated from the Ricker (bottom). The real series stays near 2 to 3 until about 1990, falls to about 1 after 2000 and drops to minus 2.2 in 2005. The Ricker simulation moves up and down around 1.5 to 2 throughout, with no long runs. The random-walk simulation wanders for years at a time: about 2.5 until 1990, lower in the 1990s, then rising to about 4 after 2010, a different path from the real one."}
+set.seed(2026)
+series <- bind_rows(
+  data.frame(series = "Real data", brood_year = my_stock$brood_year, logRS = dat$logRS),
+  data.frame(series = "Simulated from the Ricker", brood_year = my_stock$brood_year,
+             logRS = ricker$obj$simulate(ricker$obj$env$last.par.best)$logRS),
+  data.frame(series = "Simulated from the random walk", brood_year = my_stock$brood_year,
+             logRS = walk$obj$simulate(walk$obj$env$last.par.best)$logRS))
+ggplot(series, aes(x = brood_year, y = logRS)) +
+  geom_line() +
+  facet_wrap(~ series, ncol = 1) +
+  labs(x = "Brood year", y = "log(recruits per spawner)")
+```
+
+The real series is high before 1990 and low after 2000.
+The Ricker simulation moves up and down around one level, with no long runs: the [Ricker model](../learners/reference.md#glossary) draws each year's scatter afresh, with no memory of the year before.
+The random-walk simulation stays high or low for several years at a time.
+Its path is not the real one, because every simulation draws a new productivity path.
+What it shares with the real data is the persistence, not the history.
+
+## Recipe: Can the Model Make Data Like Mine?
+
+**Use it when:** you suspect the model misses a feature of the data.
+
+**Ingredients:** a fitted model, and a function that computes the feature from a vector of log(R/S) values (here `lag1()` from the Quick Start).
+
+One simulated data set can differ from the real data by chance.
+A [simulated-data check](../learners/reference.md#glossary) simulates many data sets, computes the same feature in each, and asks how often the model produces a value at least as extreme as the real one.
+The feature here is the [lag-1 correlation](../learners/reference.md#glossary) of log(R/S): how much each year resembles the year before.
+In the Quick Start you computed it for the [residuals](../learners/reference.md#glossary); here it is computed for the data themselves.
+
+:::::::::::::::::::::::::::::::::::::::: challenge
+
+### Challenge 2: Predict Before You Simulate (3 minutes)
+
+The real Stellako log(R/S) has lag-1 correlation 0.40.
+Write down your prediction before you run the recipe below.
+Will data simulated from the fitted Ricker show that much year-to-year persistence?
+And data simulated from the random walk?
+
+:::::::::::::::::::::::: solution
+
+The recipe below gives the answer.
+
+- Ricker simulations centre near 0 (95% of them between -0.23 and 0.24), and none of the 200 reach 0.40: the Ricker has no memory from year to year.
+- Random-walk simulations centre near 0.21, and 12% of them reach 0.40: the drift in productivity creates persistence.
+
+:::::::::::::::::::::::::
+
+::::::::::::::::::::::::::::::::::::::::::::::::::
+
+```{r recipe-simulate-stat, purl=TRUE}
+simulate_stat <- function(m, stat, n_sim = 200) {
+  replicate(n_sim, stat(m$obj$simulate(m$obj$env$last.par.best)$logRS))
+}
+lag1(dat$logRS)
+set.seed(2026)
+sim_ricker <- simulate_stat(ricker, lag1)
+sim_walk   <- simulate_stat(walk, lag1)
+c(ricker = mean(sim_ricker >= lag1(dat$logRS)), walk = mean(sim_walk >= lag1(dat$logRS)))
+```
+
+`simulate_stat()` simulates `n_sim` data sets from the fitted model `m` (200 unless you ask for another number) and returns the feature `stat` of each one.
+The real lag-1 correlation is 0.40.
+The last line gives, for each model, the share of simulations whose lag-1 correlation is at least that large: 0 for the Ricker and 0.12 for the random walk.
+
+```{r plot-sim-lag1, fig.height=5, fig.alt="Two histograms of the lag-1 correlation of log recruits per spawner in 200 data sets simulated from each model, with a dashed line at the observed value of 0.40. Random walk (top): values spread from about minus 0.2 to 0.7 and centre near 0.2; about one in eight lie at or beyond the dashed line. Ricker (bottom): values spread from about minus 0.3 to 0.35, centre near 0, and none reach the dashed line."}
+sims <- bind_rows(data.frame(model = "Ricker", lag1 = sim_ricker),
+                  data.frame(model = "Random walk", lag1 = sim_walk))
+ggplot(sims, aes(x = lag1)) +
+  geom_histogram(bins = 30) +
+  geom_vline(xintercept = lag1(dat$logRS), linetype = "dashed") +
+  facet_wrap(~ model, ncol = 1) +
+  labs(x = "Lag-1 correlation of simulated log(R/S)", y = "Number of simulations")
+```
+
+To describe the range each model produces, take the middle 95% of the simulations and their [median](../learners/reference.md#glossary):
+
+```{r sim-lag1-range}
+rbind(ricker = quantile(sim_ricker, c(0.025, 0.5, 0.975)),
+      walk   = quantile(sim_walk, c(0.025, 0.5, 0.975)))
+```
+
+The middle 95% of the Ricker simulations run from -0.23 to 0.24, so the real 0.40 lies outside what the Ricker produces: it cannot reproduce Stellako's year-to-year persistence.
+The random-walk simulations centre near 0.21, and 0.40 is on the high side but inside their range: the random walk can.
+
+**Check it worked:** none of the 200 Ricker simulations reach the real value of 0.40, and 12% of the random-walk simulations do. Put up a green sticky note when your two shares print.
+
+:::::::::::::::::::::::::::::::::::::::: challenge
+
+### Challenge 3: Can the Models Make a 2005? (5 minutes)
+
+Brood year 2005 was Stellako's worst year, the extreme point in the residual checks of Episode 7.
+Repeat the check with `min`, the worst year, instead of `lag1`, and count the simulations whose worst year is at least as low as the real one.
+Fill in the blanks.
+
+```r
+min(dat$logRS)
+set.seed(2026)
+c(ricker = mean(simulate_stat(ricker, ___) <= min(dat$logRS)),
+  walk   = mean(simulate_stat(___, min) <= ___))
+```
+
+:::::::::::::::::::::::: solution
+
+```{r ch3-solution}
+min(dat$logRS)
+set.seed(2026)
+c(ricker = mean(simulate_stat(ricker, min) <= min(dat$logRS)),
+  walk   = mean(simulate_stat(walk, min) <= min(dat$logRS)))
+```
+
+Neither model expects a year as bad as 2005: no Ricker simulation and 1 of 200 random-walk simulations have a year that low.
+The comparison is `<=` here because the question is about low values.
+Both models give the yearly scatter a normal distribution, which makes such an extreme year very rare; errors with heavier tails are a possible next step ([Going Further](../learners/going-further.md)).
+
+:::::::::::::::::::::::::
+
+::::::::::::::::::::::::::::::::::::::::::::::::::
+
+## Recipe: Can the Recipe Recover Known Values?
+
+**Use it when:** you report a parameter and want to know whether the data can pin it down.
+
+**Ingredients:** a fitted model from `fit_model()` (it carries its own recipe: the model function, the starting values, the data and `random`).
+
+The simulated-data check asks whether the model can make data like yours.
+A [self-test](../learners/reference.md#glossary) asks a different question: if the model were exactly right, would your fitting recipe find its parameters again?
+You know the right answers, because you choose them: they are the fitted values you simulate from, called the truth below.
+The self-test simulates a data set, refits the same model to it with the same recipe, stores the estimates, and repeats.
+
+```{r recipe-self-test, purl=TRUE}
+self_test <- function(m, n_sim = 50) {
+  out <- NULL
+  for (i in 1:n_sim) {
+    dat_sim <- m$dat
+    dat_sim$logRS <- m$obj$simulate(m$obj$env$last.par.best)$logRS  # new data from the fitted model
+    m_sim <- fit_model(m$nll, m$par, dat_sim, m$random)             # same recipe, refitted
+    est <- summary(m_sim$sdr, "fixed")
+    out <- rbind(out, data.frame(sim = i, parameter = rownames(est), truth = m$opt$par,
+                                 estimate = est[, "Estimate"], se = est[, "Std. Error"],
+                                 fit_ok = all(m_sim$checks), row.names = NULL))
+  }
+  out
+}
+```
+
+Each pass of the loop copies the data list, replaces `logRS` with simulated values, and refits with the model's own recipe (`m$nll`, `m$par`, `m$random`).
+It then stores, for each fixed parameter, the truth (`m$opt$par`), the estimate, its [standard error](../learners/reference.md#glossary) and whether all four checks passed.
+Run it on the random walk and summarise the 50 refits for each parameter:
+
+```{r run-self-test, purl=TRUE}
+set.seed(2026)
+st_walk <- self_test(walk, n_sim = 50)
+st_walk %>%
+  group_by(parameter) %>%
+  summarise(truth = first(truth), median_estimate = median(estimate),
+            coverage = mean(abs(estimate - truth) < 1.96 * se, na.rm = TRUE),
+            fits_ok = sum(fit_ok))
+```
+
+The table has one row per parameter, on the [log scale](../learners/reference.md#glossary):
+
+- `truth` is the value the data were simulated from;
+- `median_estimate` is the middle of the 50 estimates;
+- `coverage` is the share of 95% [confidence intervals](../learners/reference.md#glossary) (estimate ± 1.96 standard errors) that caught the true value, and near 0.95 is good;
+- `fits_ok` is the number of refits that passed all four checks.
+
+All 50 refits pass.
+The medians of `log_alpha` (2.50 against 2.52) and `log_sigma` (-0.362 against -0.354) are close to the truth, and the median of `log_Smax` is a little high (5.46 against 5.30).
+Coverage is 0.96 for `log_Smax` and 0.90 for `log_sigma`.
+The 0.78 for `log_alpha` means its intervals are somewhat too narrow: report them, but do not read them as more precise than they are.
+The row for `log_sd_walk` needs a closer look, in the next section.
+
+Plot the 50 estimates of each parameter on the natural scale, with the truth as a dashed line:
+
+```{r plot-self-test, fig.height=5, fig.alt="Four histograms, on logarithmic axes, of estimates from 50 data sets simulated from the Stellako random-walk model, one panel per parameter, each with a dashed line at the true value. Alpha (true 12.5) and sigma (true 0.70) cluster around their true values. S_max (true 200 thousand) centres slightly above the truth, with a long right tail of a few estimates near 600, 1100 and 7700. The sd_walk estimates form two groups: 39 near the true value of 0.13, and 11 at about 0.000002, which is zero in practice."}
+st_walk %>%
+  mutate(estimate = exp(estimate), truth = exp(truth),
+         parameter = sub("^log_", "", parameter)) %>%
+  ggplot(aes(x = estimate)) +
+  geom_histogram(bins = 20) +
+  geom_vline(aes(xintercept = truth), linetype = "dashed") +
+  facet_wrap(~ parameter, scales = "free") +
+  scale_x_log10() +
+  labs(x = "Estimate (logarithmic axis)", y = "Number of simulations")
+```
+
+Alpha and [sigma](../learners/reference.md#glossary) cluster around the truth.
+[S_max](../learners/reference.md#glossary) is the hardest to pin down: most estimates lie between about 100 and 450 thousand spawners, but a few data sets gave values many times the truth.
+The sd_walk estimates split into two groups.
+
+**Check it worked:** all 50 refits pass the checks, and the medians are close to the true values. Put up a green sticky note when your self-test table prints.
+
+:::::::::::::::::::::::::::::::::::::::: callout
+
+### How Many Simulations?
+
+Use `n_sim = 30` in class; 200 or more for a report.
+With few simulations, the shares and medians move a little when you change the seed.
+
+::::::::::::::::::::::::::::::::::::::::::::::::::
+
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: instructor
+
+The 50-simulation self-test takes about 2 seconds.
+If you are behind, demonstrate the self-test instead of having learners type `self_test()`: they can copy it from `files/cookbook.R` later.
+Ask for sticky notes when the self-test table prints.
+
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+## What the Self-Test Says about sd_walk
+
+The histogram of [sd_walk](../learners/reference.md#glossary), the size of the yearly steps, has two groups.
+Count the estimates that collapsed to zero, here below 0.01:
+
+```{r sd-walk-collapse}
+st_walk %>%
+  filter(parameter == "log_sd_walk") %>%
+  summarise(near_zero = sum(exp(estimate) < 0.01))
+```
+
+Data simulated with drift (sd_walk 0.13) gave an estimate near zero in 11 of 50 cases.
+The drift was there, but in those data sets it could not be told apart from the yearly scatter, so the fit chose no drift at all, as it did for Harrison in Episode 6.
+These 11 collapses also pull the median of `log_sd_walk` below the truth.
+
+The coverage of 1.00 for `log_sd_walk` is misleading: near-zero estimates have huge intervals that catch anything.
+For a standard deviation, count the collapses instead.
+
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: instructor
+
+For your information, if learners ask why `log_alpha`'s coverage is low: 6 of its 11 misses come from the 11 data sets where sd_walk collapsed.
+A collapsed random walk is a Ricker model, and its interval for alpha leaves out the drift that was in the data.
+
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+:::::::::::::::::::::::::::::::::::::::: challenge
+
+### Challenge 4: Your Turn: Upper Pitt River, Row 6 (10 minutes)
+
+Run the simulated-data check (lag-1) for both Upper Pitt River models and a self-test of the random walk with `n_sim = 30`.
+Write row 6 of your report card in `report-card.R`:
+
+- for each model, the share of simulations with a lag-1 correlation at least as large as the data's;
+- for the self-test, the median estimates against the truth, the number of refits that pass, and the number of sd_walk estimates that collapse to zero.
+
+:::::::::::::::::::::::: hint
+
+Start from the Upper Pitt River code of Episode 7, Challenge 2: it makes `pitt`, `dat_pitt`, `ricker_pitt` and `walk_pitt`.
+Then use `simulate_stat()` and `self_test()` as in this episode, with `set.seed(2026)` before each.
+
+:::::::::::::::::::::::::
+
+:::::::::::::::::::::::: solution
+
+```{r ch4-solution}
+pitt        <- filter(sockeye, stock == "Upper Pitt River")
+dat_pitt    <- make_dat(pitt, S_new = mean(tail(pitt$spawners, 4)))
+ricker_pitt <- fit_model(nll_ricker, start_ricker(dat_pitt), dat_pitt)
+walk_pitt   <- fit_model(nll_walk, start_walk(dat_pitt), dat_pitt, random = "log_alpha_year")
+lag1(dat_pitt$logRS)
+set.seed(2026)
+c(ricker = mean(simulate_stat(ricker_pitt, lag1) >= lag1(dat_pitt$logRS)),
+  walk   = mean(simulate_stat(walk_pitt, lag1) >= lag1(dat_pitt$logRS)))
+```
+
+The real lag-1 correlation is 0.58.
+No Ricker simulation reaches it; 62.5% of the random-walk simulations do.
+
+```{r ch4-solution-b}
+set.seed(2026)
+st_pitt <- self_test(walk_pitt, n_sim = 30)
+st_pitt %>%
+  group_by(parameter) %>%
+  summarise(truth = first(truth), median_estimate = median(estimate),
+            coverage = mean(abs(estimate - truth) < 1.96 * se, na.rm = TRUE),
+            fits_ok = sum(fit_ok))
+st_pitt %>%
+  filter(parameter == "log_sd_walk") %>%
+  summarise(near_zero = sum(exp(estimate) < 0.01))
+```
+
+All 30 refits pass, every median is close to its true value, and no sd_walk estimate collapses to zero.
+
+Row 6: "The Ricker never reproduces the data's year-to-year persistence (0 of 200 simulations reach the real lag-1 correlation of 0.58); the random walk does in 62.5% of simulations.
+In a self-test of the random walk, all 30 refits pass and every parameter is recovered: the medians are close to the true values, and no sd_walk estimate collapses to zero.
+The yearly steps here are large (sd_walk 0.33), so 74 years are enough to detect them."
+
+:::::::::::::::::::::::::
+
+::::::::::::::::::::::::::::::::::::::::::::::::::
+
+:::::::::::::::::::::::::::::::::::::::: challenge
+
+### Challenge 5: What Does a Zero Tell You? (2 minutes)
+
+In the Stellako self-test, 11 of 50 data sets simulated with drift gave sd_walk near zero.
+What does that say about Harrison's zero estimate in Episode 6?
+Would you change your answer to Episode 6, Challenge 4?
+Discuss in pairs.
+
+:::::::::::::::::::::::: solution
+
+- A zero estimate is weak evidence of no drift.
+- With about 75 years, drift of Stellako's size is missed about one time in five (11 of 50).
+- Harrison's answer stays "no detectable drift", not "no drift": option (b) in Episode 6, Challenge 4. Option (c), "exactly constant", is still too strong.
+- Larger drift is easier to detect: in the Upper Pitt River self-test (sd_walk 0.33), no estimate collapsed.
+
+:::::::::::::::::::::::::
+
+::::::::::::::::::::::::::::::::::::::::::::::::::
+
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: instructor
+
+Challenge 5 revisits Episode 6, Challenge 4: ask who would now change their answer.
+Anyone who chose (c) there should now be able to say why it is too strong.
+If many learners think a zero estimate means the fit failed, go back to Harrison's four TRUE checks and the AIC difference of 2.
+
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+:::::::::::::::::::::::::::::::::::::::: callout
+
+### Add to Your Recipe Box
+
+Copy these functions into your `my-recipes.R`: `simulate_stat()`, `self_test()`.
+The finished box is [cookbook.R](files/cookbook.R).
+
+::::::::::::::::::::::::::::::::::::::::::::::::::
+
+:::::::::::::::::::::::::::::::::::::::: callout
+
+### In Your Field
+
+Simulating from a fitted model is how you check any model you wrote yourself: if the recipe cannot recover the values it simulated from, it cannot be trusted on real data either.
+Choose a feature that matters in your field, such as the largest monthly count or the number of zero counts, and check how often data simulated from your model reach the value in your data.
+
+::::::::::::::::::::::::::::::::::::::::::::::::::
+
+:::::::::::::::::::::::::::::::::::::::: keypoints
+
+- `m$obj$simulate(m$obj$env$last.par.best)` draws a new data set, and new random effects, from the fitted model.
+- A simulated-data check asks whether the model can reproduce a feature of the real data: the Ricker cannot reproduce Stellako's year-to-year persistence; the random walk can.
+- A self-test refits the model to data simulated from it, and shows which parameters the data can pin down. A standard deviation estimated at zero is weak evidence of no variation.
+
+::::::::::::::::::::::::::::::::::::::::::::::::::

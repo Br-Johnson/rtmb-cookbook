@@ -1,0 +1,575 @@
+---
+title: "Comparing Models with AIC"
+teaching: 35
+exercises: 30
+---
+
+:::::::::::::::::::::::::::::::::::::::: questions
+
+- How do I choose between models?
+- How do I add a covariate to a model?
+- When can AIC not decide, and what makes a comparison fair?
+
+::::::::::::::::::::::::::::::::::::::::::::::::::
+
+:::::::::::::::::::::::::::::::::::::::: objectives
+
+- Build an AIC table for candidate models fitted to the same rows with `aic_table()`.
+- Add a covariate to a model.
+- Apply the four rules to choose a model or to declare a tie.
+
+::::::::::::::::::::::::::::::::::::::::::::::::::
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(fig.width = 7, fig.height = 4, dpi = 150)
+```
+
+## Starting Point
+
+This episode opens step 8 of the [Quick Start](02-quick-start.Rmd): comparing models.
+
+:::::::::::::::::::::::::::::::::::::::: prereq
+
+### Run This If You Are Starting Here
+
+If you have followed along, you already have these objects.
+If you are starting here or have restarted R, run this chunk first.
+It needs `data/sockeye.csv`, `data/npgo.csv` and `files/cookbook.R` in your project (see [Setup](../learners/setup.md)).
+
+```{r starting-point, message=FALSE}
+library(RTMB)
+library(dplyr)
+library(ggplot2)
+source("files/cookbook.R")        # the finished recipe box (your my-recipes.R works too)
+sockeye  <- read.csv("data/sockeye.csv")
+my_stock <- filter(sockeye, stock == "Stellako")
+dat      <- make_dat(my_stock, S_new = 50)
+ricker   <- fit_model(nll_ricker, start_ricker(dat), dat)
+walk     <- fit_model(nll_walk, start_walk(dat), dat, random = "log_alpha_year")
+c(ricker = all(ricker$checks), walk = all(walk$checks))
+```
+
+::::::::::::::::::::::::::::::::::::::::::::::::::
+
+## AIC in One Line
+
+So far we have two models for Stellako: the Ricker, with constant productivity, and the random walk, with productivity that drifts from year to year.
+Both pass the four checks, and the residuals of [Episode 7](07-residuals.Rmd) favour the random walk.
+This episode adds two more candidates, a different curve and an ocean index, and compares all four with one number.
+
+That number is the Akaike information criterion ([AIC](../learners/reference.md#glossary)):
+
+**AIC = 2 × negative log-likelihood + 2 × the number of fixed parameters.**
+
+The first part measures how well the model fits: the less surprised the model is by the data, the smaller it is.
+The second part is a penalty for each parameter.
+Smaller is better.
+
+```{r aic-ricker}
+c(nll = ricker$opt$objective, k = length(ricker$opt$par), AIC = aic(ricker$opt))
+```
+
+`aic()` is the one-line function from the Quick Start; `cookbook.R` has it too.
+The Ricker's negative log-likelihood is 96.13 and it has k = 3 parameters, so its AIC is 2 × 96.13 + 2 × 3 = 198.26.
+
+Only [fixed parameters](../learners/reference.md#glossary), the ones the optimiser estimates directly, are counted.
+[Random effects](../learners/reference.md#glossary) are not counted:
+
+```{r aic-walk-k}
+names(walk$opt$par)
+```
+
+The random walk has k = 4: the Ricker's three parameters plus `log_sd_walk`.
+Its 75 yearly productivities are random effects, which RTMB averages over, so they are not in `opt$par` and add nothing to the penalty.
+
+Why a penalty?
+An extra parameter lets a model bend closer to the data, so the negative log-likelihood alone would always favour the bigger model.
+With a penalty of 2 per parameter, an extra parameter lowers AIC only if it lowers the negative log-likelihood by more than 1.
+
+## Recipe: An AIC Table
+
+**Use it when:** you compare two or more models of the same data.
+
+**Ingredients:** a named list of fitted models from `fit_model()`.
+
+```{r recipe-aic-table, purl=TRUE}
+aic_table <- function(models) {
+  same <- sapply(models, function(m) identical(m$dat$logRS, models[[1]]$dat$logRS))
+  if (!all(same)) stop("AIC can only compare models fitted to the same rows. Different data: ",
+                       paste(names(models)[!same], collapse = ", "))
+  tab <- data.frame(model     = names(models),
+                    k         = sapply(models, function(m) length(m$opt$par)),
+                    AIC       = sapply(models, function(m) aic(m$opt)),
+                    checks_ok = sapply(models, function(m) all(m$checks)),
+                    row.names = NULL)
+  tab$dAIC <- tab$AIC - min(tab$AIC)
+  tab[order(tab$AIC), ]
+}
+aic_table(list(ricker = ricker, walk = walk))
+```
+
+Read the function in three parts:
+
+- the first lines compare each model's `dat$logRS` with the first model's, and stop with a message if any differ: AIC can only compare models of the same data;
+- the table has one row per model, named as in the list (`ricker = ricker`): its number of fixed parameters `k`, its AIC, and `checks_ok`, which is TRUE when the fit passes all four checks;
+- `dAIC` is each model's AIC minus the smallest AIC, and the rows are sorted from best to worst.
+
+The random walk comes first, with `dAIC` 0; the Ricker's AIC is 19.95 higher.
+
+**Check it worked:** every row shows `checks_ok` TRUE. The function stops with a message if the models were fitted to different data.
+Put up a green sticky note when your table prints.
+
+## A Different Curve: Beverton-Holt
+
+In [Episode 3](03-likelihoods.Rmd) you wrote a second curve, the [Beverton-Holt model](../learners/reference.md#glossary), as `nll_bh()`.
+In the Ricker model, recruits rise to a peak and then fall as spawners increase.
+In the Beverton-Holt model, recruits rise and then level off instead of turning down:
+
+$$\log(R/S) = \log\alpha - \log(1 + S / S_{half})$$
+
+In words: log recruits per spawner start at log alpha when spawners are few, and fall as spawners increase, more and more slowly.
+[S_half](../learners/reference.md#glossary) is the spawner count that gives half of the maximum recruits.
+Like the Ricker, the Beverton-Holt model has three parameters: alpha, a spawner scale (S_half instead of S_max) and sigma.
+
+:::::::::::::::::::::::::::::::::::::::: challenge
+
+### Challenge 1: Predict the Winner (3 minutes)
+
+Beverton-Holt has a negative log-likelihood of 95.24 and the Ricker 96.13; both have 3 parameters.
+Which has the lower AIC, by how much, and does the difference matter?
+Write down your answer before you open the solution.
+
+:::::::::::::::::::::::: solution
+
+```{r ch1-solution}
+c(bh = 2 * 95.24 + 2 * 3, ricker = 2 * 96.13 + 2 * 3)
+```
+
+Beverton-Holt, lower by 2 × (96.13 - 95.24) = 1.8.
+The penalties are equal, so only the fit differs, and by very little.
+A difference under 2 is a tie (rule 3 of the four rules below): the data cannot tell the two curves apart.
+
+:::::::::::::::::::::::::
+
+::::::::::::::::::::::::::::::::::::::::::::::::::
+
+Fit the Beverton-Holt model with the same recipe as every other model:
+
+```{r fit-bh}
+bh <- fit_model(nll_bh, start_bh(dat), dat)
+bh$checks
+ci_table(bh)
+```
+
+The fit passes all four checks.
+Alpha is 15.8 recruits per spawner (95% confidence interval 8.0 to 31.2), S_half is 35.7 thousand spawners (10.4 to 122) and sigma is 0.88 (0.75 to 1.03).
+
+:::::::::::::::::::::::::::::::::::::::: caution
+
+### S_half Is Not S_max
+
+For Beverton-Holt, S_half (35.7 thousand) is the spawner count that gives half the maximum recruits.
+Do not report it as S_max (122 thousand under the Ricker).
+The two numbers answer different questions, so they cannot be compared.
+
+::::::::::::::::::::::::::::::::::::::::::::::::::
+
+To see where the two curves differ, draw them over the data.
+As in [Episode 5](05-uncertainty.Rmd), give `S_new` a grid of spawner values and refit, so that `predict_recruits()` returns the median recruits for every value on the grid:
+
+```{r plot-two-curves, fig.width=6, fig.height=4, fig.alt="Scatter plot of Stellako recruits against spawners, both in thousands, with two fitted curves. Most points lie below 110 thousand spawners, with recruits from about 12 to 1900 thousand; only six points lie above 150 thousand spawners. The Ricker curve (dashed) peaks at about 490 thousand recruits near 120 thousand spawners and falls to about 350 thousand at 250 thousand spawners. The Beverton-Holt curve (solid) keeps rising, more and more slowly, to about 495 thousand at 250 thousand spawners. The two curves are close below 150 thousand spawners, cross near 150 thousand, and separate above it."}
+dat_grid <- dat
+dat_grid$S_new <- seq(1, 250, by = 1)
+ricker_grid <- fit_model(nll_ricker, start_ricker(dat_grid), dat_grid)
+bh_grid     <- fit_model(nll_bh, start_bh(dat_grid), dat_grid)
+curves <- bind_rows(Ricker          = predict_recruits(ricker_grid, "confidence", 0.95),
+                    `Beverton-Holt` = predict_recruits(bh_grid, "confidence", 0.95),
+                    .id = "model")
+ggplot(curves, aes(x = S_new, y = median, linetype = model)) +
+  geom_line() +
+  geom_point(data = my_stock, aes(x = spawners, y = recruits), inherit.aes = FALSE) +
+  labs(x = "Spawners (thousands)", y = "Recruits (thousands)", linetype = "Model")
+```
+
+`bind_rows()` stacks the two tables of predictions and `.id = "model"` adds a column with each table's name, so that `linetype = model` draws one line per model.
+
+The curves are close below 150 thousand spawners, where all but six of the 74 years lie.
+They separate only above it: the Ricker turns down and the Beverton-Holt does not.
+With six years there, the data cannot separate the two curves, which is why their AIC values differ by only 1.8.
+
+## Recipe: Add a Covariate
+
+A covariate is a measured variable, such as water temperature or an ocean index, that may explain why some years are better than others.
+Adding one to a model takes one more term.
+
+**Use it when:** you want to test whether a measured variable explains good and bad years.
+
+**Ingredients:** the covariate by year, its timing chosen in advance, one more term in the model.
+
+The North Pacific Gyre Oscillation ([NPGO](../learners/reference.md#glossary)) is an index of ocean circulation; higher values usually mean more food near the coast.
+Young sockeye enter the ocean about two years after their brood year, so we match each brood year with the NPGO of the year brood year + 2.
+We decided this before looking at any results.
+
+```{r recipe-join-covariate, purl=TRUE}
+npgo <- read.csv("data/npgo.csv")
+npgo_by_brood <- npgo %>%
+  mutate(brood_year = year - 2) %>%        # fish enter the ocean 2 years after their brood year
+  select(brood_year, npgo)
+my_stock <- left_join(my_stock, npgo_by_brood, by = "brood_year")
+dat$npgo     <- my_stock$npgo
+dat$npgo_new <- npgo$npgo[npgo$year == max(my_stock$brood_year) + 3]  # next brood year + 2
+sum(is.na(dat$npgo))
+dat$npgo_new
+```
+
+Step by step:
+
+- `mutate(brood_year = year - 2)` labels each NPGO value with the brood year whose young fish entered the ocean that year: the NPGO of 1950 goes with brood year 1948;
+- `left_join()` adds the matching value to each row of `my_stock`, by brood year;
+- `dat$npgo` holds one value per row of the data, in the same order as `logRS`;
+- `dat$npgo_new` is the value for the forecast: the next brood year is 2022, and its young fish enter the ocean in 2024, when the NPGO was -1.94;
+- `sum(is.na(dat$npgo))` is 0: every brood year has an NPGO value.
+
+The model is the Ricker with one more term:
+
+```{r recipe-covariate-model, purl=TRUE}
+nll_ricker_npgo <- function(par, dat) {
+  getAll(par, dat)
+  logRS <- OBS(logRS)
+  mu     <- log_alpha - S / exp(log_Smax) + b_npgo * npgo
+  mu_new <- log_alpha - S_new / exp(log_Smax) + b_npgo * npgo_new
+  ADREPORT(mu_new)
+  -sum(dnorm(logRS, mu, exp(log_sigma), log = TRUE))
+}
+```
+
+Compared with `nll_ricker()`, the only changes are `+ b_npgo * npgo` in `mu` and `+ b_npgo * npgo_new` in `mu_new`.
+`b_npgo` is the change in log(R/S) for each unit of NPGO.
+It can be negative, so it is not on the log scale and has no `log_` in its name.
+
+:::::::::::::::::::::::::::::::::::::::: challenge
+
+### Challenge 2: Will NPGO Help? (6 minutes)
+
+Will adding NPGO lower AIC for Stellako?
+Write down your prediction.
+Then run the next chunk: it fits `ricker_npgo` and compares it with the Ricker.
+What does `b_npgo` mean in words?
+
+:::::::::::::::::::::::: solution
+
+No: AIC rises by 0.79 (199.04 against 198.26 for the Ricker).
+The extra parameter lowers the negative log-likelihood by only 0.6, which saves 1.2 in AIC, but it costs 2.
+
+`b_npgo` is 0.12 (95% confidence interval -0.09 to 0.32).
+exp(0.12) = 1.12: a year with NPGO one unit higher has about 12% more recruits per spawner.
+But the interval includes zero, so the data from this one stock cannot tell this effect from no effect.
+
+:::::::::::::::::::::::::
+
+::::::::::::::::::::::::::::::::::::::::::::::::::
+
+```{r fit-ricker-npgo}
+ricker_npgo <- fit_model(nll_ricker_npgo, c(start_ricker(dat), list(b_npgo = 0)), dat)
+ricker_npgo$checks
+ci_table(ricker_npgo)
+aic_table(list(ricker = ricker, ricker_npgo = ricker_npgo))
+```
+
+`c(start_ricker(dat), list(b_npgo = 0))` adds one starting value to the Ricker's.
+Start a covariate's effect at 0, which means no effect.
+`ci_table()` leaves `b_npgo` as it is, because its name does not start with `log_`.
+
+**Check it worked:** `sum(is.na(dat$npgo))` is 0, and the fit passes all four checks.
+Put up a green sticky note when your two-row AIC table prints.
+
+:::::::::::::::::::::::::::::::::::::::: callout
+
+### Standardise Other Covariates
+
+NPGO already has a mean near 0 and a standard deviation (SD) near 1 (-0.18 and 1.05).
+For other covariates use `(x - mean(x)) / sd(x)`, so the effect is per SD.
+A standardised covariate also makes 0 a sensible starting value for its effect.
+
+::::::::::::::::::::::::::::::::::::::::::::::::::
+
+:::::::::::::::::::::::::::::::::::::::: caution
+
+### Missing Covariate Values
+
+If a covariate is missing for some years, drop those rows from every model you compare, not only from the covariate model.
+`aic_table()` then accepts the models, because they all describe the same rows.
+
+::::::::::::::::::::::::::::::::::::::::::::::::::
+
+:::::::::::::::::::::::::::::::::::::::: spoiler
+
+### Switch a Term Off Without a New Function: map (optional)
+
+`MakeADFun()` has a `map` argument that holds a parameter fixed at its starting value.
+With `b_npgo` held at 0, the covariate model becomes the Ricker:
+
+```{r map-demo}
+obj_map <- MakeADFun(function(p) nll_ricker_npgo(p, dat), c(start_ricker(dat), list(b_npgo = 0)),
+                     map = list(b_npgo = factor(NA)), silent = TRUE)
+opt_map <- nlminb(obj_map$par, obj_map$fn, obj_map$gr)
+c(objective = opt_map$objective, k = length(opt_map$par))
+```
+
+The negative log-likelihood is 96.13 with 3 parameters, exactly the Ricker's.
+`map` fixes `b_npgo` at its starting value (0), and `factor(NA)` means "do not estimate".
+This lesson writes one function per model instead, so every model is visible; `map` helps in large models with many terms to switch.
+
+::::::::::::::::::::::::::::::::::::::::::::::::::
+
+## The Four Rules
+
+An AIC table gives numbers.
+These four rules turn the numbers into a choice.
+
+:::::::::::::::::::::::::::::::::::::::: checklist
+
+### Four Rules for Comparing Models with AIC
+
+1. Same rows, same response (`logRS`), and every fit passes all four checks.
+2. Choose the candidate models before you look at results: one question per model.
+3. A difference under 2 is a tie: prefer the simpler model, or report both. Over 10 is decisive. In between, favour the lower AIC and look at residuals and forecasts.
+4. A random effect whose SD collapses to zero adds about 2 to AIC. That means the data cannot detect the variation, not that it is absent.
+
+::::::::::::::::::::::::::::::::::::::::::::::::::
+
+Rule 4 is Harrison in [Episode 6](06-random-effects.Rmd): sd_walk was 0.000005, the random walk became the Ricker, and its AIC was the Ricker's plus 2 (266.36 against 264.36).
+
+:::::::::::::::::::::::::::::::::::::::: spoiler
+
+### Why No p-Values? (optional)
+
+Testing whether an SD is zero puts the tested value at the edge of what is allowed, because an SD cannot be negative.
+The usual likelihood-ratio p-values are wrong there.
+AIC and forecast tests avoid the problem.
+
+::::::::::::::::::::::::::::::::::::::::::::::::::
+
+## The Full Table
+
+Put all four candidates in one list and build the table:
+
+```{r full-aic-table}
+models <- list(ricker = ricker, walk = walk, bh = bh, ricker_npgo = ricker_npgo)
+aic_table(models)
+```
+
+Read it with the rules:
+
+- **Rule 1.** Every model was fitted to the same 74 values of log(R/S), and every row shows `checks_ok` TRUE.
+  `ricker` and `walk` were fitted before we added `npgo` to `dat`, but their `logRS` is identical, so `aic_table()` accepts them.
+- **Rule 2.** Each candidate answers one question: does productivity drift (`walk`), is the curve a different shape (`bh`), and do ocean conditions matter (`ricker_npgo`)?
+- **Rule 3.** The random walk is decisively better: 18.2 below Beverton-Holt, the next best.
+  Beverton-Holt and the Ricker tie (1.8).
+  NPGO adds a parameter that does not help (+0.8 against the Ricker).
+- **Rule 4.** It does not apply here: the random walk's sd_walk is 0.13, well away from zero.
+
+For Stellako, the data support the random walk.
+
+:::::::::::::::::::::::::::::::::::::::: spoiler
+
+### Akaike Weights (optional)
+
+An [Akaike weight](../learners/reference.md#glossary) turns the AIC differences into a share of support for each model:
+
+```{r aic-weights}
+tab <- aic_table(models)
+tab$weight <- round(exp(-tab$dAIC / 2) / sum(exp(-tab$dAIC / 2)), 4)
+tab
+```
+
+The random walk has a weight of 0.9998.
+A weight is the share of support for each model within this candidate set only: add a fifth model, and every weight changes.
+
+::::::::::::::::::::::::::::::::::::::::::::::::::
+
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: instructor
+
+Ask for sticky notes when the full table prints, about 40 minutes into the episode.
+Misconceptions to listen for: "the model with more parameters always wins" (the NPGO model has one more parameter than the Ricker and loses) and "the lowest AIC is the true model" (AIC ranks only the candidates you wrote).
+If you will skip Episode 10, tell the pooled-NPGO story here in two minutes: across all 19 stocks, NPGO lowers AIC by 16 without shared year effects but raises it by 0.6 with them.
+
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+## What AIC Cannot Tell You
+
+AIC scores how well each model explains the years it has seen, with a penalty for each parameter.
+It does not test forecasts: [Episode 11](11-forecasting.Rmd) does.
+A low AIC does not prove that a model is adequate either: the best of four candidates can still miss a pattern, which the checks with residuals ([Episode 7](07-residuals.Rmd)) and simulation ([Episode 8](08-simulation.Rmd)) look for.
+And AIC cannot compare models fitted to different rows or to different responses, as Challenges 3 and 5 show.
+
+:::::::::::::::::::::::::::::::::::::::: challenge
+
+### Challenge 3: A Comparison That Is Not Fair (5 minutes)
+
+A colleague drops the first ten years of Stellako, refits the Ricker, and compares it with your random walk:
+
+```r
+recent        <- filter(my_stock, brood_year >= 1958)
+dat_recent    <- make_dat(recent, S_new = 50)
+ricker_recent <- fit_model(nll_ricker, start_ricker(dat_recent), dat_recent)
+c(ricker_recent = aic(ricker_recent$opt), walk = aic(walk$opt))
+```
+
+```output
+ricker_recent          walk
+     177.1593      178.3082
+```
+
+The colleague writes: "The Ricker wins."
+
+1. What is wrong?
+2. Fix it.
+
+:::::::::::::::::::::::: solution
+
+**1. What is wrong?**
+The two models were fitted to different years: 64 for `ricker_recent` (1958 to 2021), 74 for `walk` (1948 to 2021).
+The negative log-likelihood adds up one score per year, so dropping ten years makes it smaller whichever model you fit, and the two AIC values cannot be compared.
+`aic_table()` refuses:
+
+```{r ch3-solution-a, error=TRUE}
+recent        <- filter(my_stock, brood_year >= 1958)
+dat_recent    <- make_dat(recent, S_new = 50)
+ricker_recent <- fit_model(nll_ricker, start_ricker(dat_recent), dat_recent)
+c(ricker_recent = aic(ricker_recent$opt), walk = aic(walk$opt))
+aic_table(list(ricker = ricker_recent, walk = walk))
+```
+
+:::::::::::::::::::::::::
+
+:::::::::::::::::::::::: solution
+
+**2. Fix it.**
+Fit the random walk to the same 64 years, then compare:
+
+```{r ch3-solution-b}
+walk_recent <- fit_model(nll_walk, start_walk(dat_recent), dat_recent, random = "log_alpha_year")
+aic_table(list(ricker = ricker_recent, walk = walk_recent))
+```
+
+On the same rows the random walk wins by 17.6.
+Always compare models with `aic_table()`: it checks the rows for you.
+
+:::::::::::::::::::::::::
+
+::::::::::::::::::::::::::::::::::::::::::::::::::
+
+:::::::::::::::::::::::::::::::::::::::: challenge
+
+### Challenge 4: Your Turn: Upper Pitt River, Row 7 (12 minutes)
+
+Fit the four candidate models to Upper Pitt River, make the AIC table, and write row 7 of your report card in `report-card.R`, using the four rules.
+Add the new models' checks to row 2.
+
+:::::::::::::::::::::::: hint
+
+Start from the covariate recipe, with `pitt` in place of `my_stock`: `npgo_by_brood` and `npgo` are already in your workspace.
+As in earlier episodes, `S_new` for Upper Pitt River is the average number of spawners in its last four brood years.
+Put the four fitted models in a named list, as in the full table.
+
+:::::::::::::::::::::::::
+
+:::::::::::::::::::::::: solution
+
+```{r ch4-solution}
+pitt <- filter(sockeye, stock == "Upper Pitt River") %>%
+  left_join(npgo_by_brood, by = "brood_year")
+dat_pitt <- make_dat(pitt, S_new = mean(tail(pitt$spawners, 4)))
+dat_pitt$npgo     <- pitt$npgo
+dat_pitt$npgo_new <- npgo$npgo[npgo$year == max(pitt$brood_year) + 3]
+models_pitt <- list(
+  ricker      = fit_model(nll_ricker, start_ricker(dat_pitt), dat_pitt),
+  walk        = fit_model(nll_walk, start_walk(dat_pitt), dat_pitt, random = "log_alpha_year"),
+  bh          = fit_model(nll_bh, start_bh(dat_pitt), dat_pitt),
+  ricker_npgo = fit_model(nll_ricker_npgo, c(start_ricker(dat_pitt), list(b_npgo = 0)), dat_pitt))
+aic_table(models_pitt)
+ci_table(models_pitt$ricker_npgo)
+```
+
+Row 2: all four models pass all four checks (`checks_ok` TRUE in every row).
+
+Row 7: "The random walk is best: its AIC is 6.2 below Ricker + NPGO and 11.8 below the Ricker.
+A difference of 6.2 is between 2 and 10, so we favour the random walk and check it against the residuals (row 5) and the forecasts (row 8).
+Unlike Stellako, NPGO helps here: it lowers AIC by 5.6 against the Ricker, and its effect, 0.28 (95% confidence interval 0.09 to 0.48), excludes zero.
+AIC cannot tell us whether the random walk also forecasts better (row 8)."
+
+:::::::::::::::::::::::::
+
+::::::::::::::::::::::::::::::::::::::::::::::::::
+
+:::::::::::::::::::::::::::::::::::::::: challenge
+
+### Challenge 5: Same Data, Different Response (4 minutes)
+
+Model A describes log(R/S) with a normal distribution; model B describes R itself with a normal distribution.
+Both use the same 74 years.
+Can you compare their AIC?
+
+- (a) Yes, they use the same data.
+- (b) No: they describe different responses, so their likelihoods are on different scales.
+- (c) Yes, if both pass the four checks.
+- (d) Only with Akaike weights.
+
+:::::::::::::::::::::::: solution
+
+**(b).** A likelihood measures how probable the observed values are, so it depends on what the values are and on their units.
+Model A scores values of log(R/S), which have no units; model B scores recruits, in thousands of fish.
+Count recruits in fish instead of thousands of fish, and model B's negative log-likelihood rises by 74 × log(1000), although neither the data nor the fit has changed; model A's does not change at all:
+
+```{r ch5-solution}
+74 * log(1000)    # the change in model B's negative log-likelihood
+```
+
+Their negative log-likelihoods, and so their AIC values, are on different scales.
+
+- (a): "the same years" is not enough; the response must be the same too.
+- (b) is right.
+- (c): passing the checks says each fit can be used, but it does not make the two scales comparable.
+- (d): Akaike weights are computed from AIC differences, so they inherit the problem.
+
+:::::::::::::::::::::::::
+
+::::::::::::::::::::::::::::::::::::::::::::::::::
+
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: instructor
+
+Challenge 3 targets misconception M9: if learners accept the colleague's claim, point at the row counts (64 against 74) and run `aic_table()` live.
+Challenge 5 targets M16: if most choose (a), use the change of units in the solution (fish instead of thousands of fish changes model B's score by 511 and model A's not at all); if answers are spread out, go back to the first of the four rules.
+`aic_table()` cannot catch this mistake when both models keep `logRS` in their data list, so rule 1 matters.
+Check with sticky notes that learners have row 7 of the Upper Pitt River report card before the break.
+
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+:::::::::::::::::::::::::::::::::::::::: callout
+
+### Add to Your Recipe Box
+
+Copy these functions into your `my-recipes.R`: `aic_table()` and `nll_ricker_npgo()`.
+Add `aic()` from the Quick Start too, if it is not there yet: `aic_table()` uses it.
+The finished box is [cookbook.R](files/cookbook.R).
+
+::::::::::::::::::::::::::::::::::::::::::::::::::
+
+:::::::::::::::::::::::::::::::::::::::: callout
+
+### In Your Field
+
+Candidate curves for a dose-response, candidate covariates for a growth model: write the list of candidates, and the question each one answers, before you fit any of them.
+Then fit every candidate to the same rows, check every fit, and read the AIC table with the four rules.
+
+::::::::::::::::::::::::::::::::::::::::::::::::::
+
+:::::::::::::::::::::::::::::::::::::::: keypoints
+
+- AIC = 2 × negative log-likelihood + 2 × number of fixed parameters; smaller is better.
+- Compare only models fitted to the same rows of the same response, and only fits that pass all four checks: `aic_table()` enforces the first and shows the second.
+- Differences under 2 are ties; differences over 10 are decisive.
+- A covariate is one more term in `mu` and `mu_new`, started at 0. Choose it and its timing before you look at results.
+
+::::::::::::::::::::::::::::::::::::::::::::::::::

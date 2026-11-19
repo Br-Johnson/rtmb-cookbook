@@ -1,0 +1,557 @@
+---
+title: "Forecasting and Testing Forecasts"
+teaching: 40
+exercises: 35
+---
+
+:::::::::::::::::::::::::::::::::::::::: questions
+
+- How do I forecast with an honest interval?
+- How do I know whether a model forecasts well?
+
+::::::::::::::::::::::::::::::::::::::::::::::::::
+
+:::::::::::::::::::::::::::::::::::::::: objectives
+
+- Produce a median forecast with an 80% prediction interval, and explain why it is wider than the confidence interval.
+- Run a hindcast for two models and a naive benchmark.
+- Score forecasts by bias, mean absolute error, skill and coverage, and interpret the scores.
+
+::::::::::::::::::::::::::::::::::::::::::::::::::
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(fig.width = 7, fig.height = 4, dpi = 150)
+```
+
+## Starting Point
+
+This episode opens step 9 of the [Quick Start](02-quick-start.Rmd): forecasting, and testing whether the forecasts can be trusted.
+It answers the Quick Start's question: which forecast would you trust?
+
+:::::::::::::::::::::::::::::::::::::::: prereq
+
+### Run This If You Are Starting Here
+
+If you have followed along, you already have these objects.
+If you are starting here or have restarted R, run this chunk first.
+It needs `data/sockeye.csv` and `files/cookbook.R` in your project (see [Setup](../learners/setup.md)).
+
+```{r starting-point, message=FALSE}
+library(RTMB)
+library(dplyr)
+library(ggplot2)
+source("files/cookbook.R")        # the finished recipe box (your my-recipes.R works too)
+sockeye  <- read.csv("data/sockeye.csv")
+my_stock <- filter(sockeye, stock == "Stellako")
+dat      <- make_dat(my_stock, S_new = 50)
+ricker   <- fit_model(nll_ricker, start_ricker(dat), dat)
+walk     <- fit_model(nll_walk, start_walk(dat), dat, random = "log_alpha_year")
+c(ricker = all(ricker$checks), walk = all(walk$checks))
+```
+
+::::::::::::::::::::::::::::::::::::::::::::::::::
+
+## Recipe: A Forecast with a Prediction Interval
+
+**Use it when:** you forecast recruits for a given number of spawners.
+
+**Ingredients:** a fitted model whose data list has `S_new`, and whose model function reports `mu_new` with `ADREPORT()`.
+
+We use `predict_recruits()` from [Episode 5](05-uncertainty.Rmd), now with its default: a [prediction interval](../learners/reference.md#glossary), a range where next year's recruits will probably fall.
+It adds the yearly noise ([sigma](../learners/reference.md#glossary)) to the uncertainty about the curve.
+For the [random walk](../learners/reference.md#glossary), the uncertainty about the curve already includes one more year of drift.
+This is the Quick Start's step 9, as a function.
+
+On the log scale, the forecast's standard deviation (SD) combines the two parts:
+
+$$\text{SD}_\text{forecast} = \sqrt{\text{SE}^2 + \sigma^2}$$
+
+In words: square the [standard error](../learners/reference.md#glossary) (SE) of the curve at `S_new`, add the square of sigma, and take the square root.
+In `predict_recruits()`, the line that starts `if (interval == "prediction")` does this.
+
+```{r recipe-forecast, purl=TRUE}
+predict_recruits(walk)
+predict_recruits(ricker)
+```
+
+Each forecast is a [median](../learners/reference.md#glossary): half of the possible outcomes lie below it.
+From 50 thousand spawners, the random walk forecasts a median of 148 thousand recruits, with an 80% chance of 55 to 397 thousand.
+The Ricker forecasts 359 thousand (114 to 1128 thousand), more than twice as many.
+The Ricker uses productivity averaged over all 74 years; the random walk uses the low productivity of recent years.
+
+For comparison, here is the 95% [confidence interval](../learners/reference.md#glossary) for the median curve at the same spawner count:
+
+```{r ci-vs-pi}
+predict_recruits(walk, interval = "confidence", level = 0.95)
+```
+
+The 95% confidence interval (80 to 274 thousand) is narrower than the 80% prediction interval (55 to 397 thousand), although its percentage is higher.
+It says how sure we are about the median curve, not where a single year will fall.
+
+**Check it worked:** the random walk's median is 148 thousand recruits from 50 thousand spawners, as in the Quick Start. Put up a green sticky note when both forecasts print.
+
+:::::::::::::::::::::::::::::::::::::::: callout
+
+### Three Sources of Uncertainty
+
+A forecast for next year is uncertain for three reasons:
+
+- the estimate of the curve: its parameters have standard errors;
+- the drift in productivity (random walk only): next year's productivity is one more step away from this year's;
+- the yearly noise, sigma: single years scatter around the curve.
+
+The prediction interval includes all three.
+
+::::::::::::::::::::::::::::::::::::::::::::::::::
+
+:::::::::::::::::::::::::::::::::::::::: challenge
+
+### Challenge 1: Which Interval? (3 minutes)
+
+For 50 thousand Stellako spawners, the random walk gives a 95% confidence interval for the median of 80 to 274 thousand recruits, and an 80% prediction interval of 55 to 397 thousand.
+Which range describes where next year's recruits will probably fall?
+
+- (a) The 95% confidence interval, because 95 is more than 80.
+- (b) The 80% prediction interval: it adds the yearly scatter to the uncertainty about the curve.
+- (c) Both equally.
+- (d) Neither: use the median.
+
+:::::::::::::::::::::::: solution
+
+The answer is (b).
+
+- (a) compares the percentages but ignores what the intervals describe: the confidence interval is about the median curve, not about single years.
+- (b) is right: next year's recruits scatter around the curve by sigma, and only the prediction interval includes that scatter.
+- (c): the two describe different things, so they cannot both answer the question.
+- (d): a median without an interval hides the uncertainty.
+
+:::::::::::::::::::::::::
+
+::::::::::::::::::::::::::::::::::::::::::::::::::
+
+:::::::::::::::::::::::::::::::::::::::: challenge
+
+### Challenge 2: Median or Mean? (3 minutes)
+
+`predict_recruits()` reports a median of 148 thousand.
+The mean of the same forecast distribution is 199 thousand.
+Which statement is right?
+
+- (a) `exp()` of the log-scale forecast is the mean.
+- (b) Half of the possible outcomes lie below 148 thousand; a few very good years pull the mean up.
+- (c) 199 is a mistake.
+- (d) The two should be equal.
+
+:::::::::::::::::::::::: solution
+
+The answer is (b).
+This code computes both from the random walk's forecast on the log scale.
+The mean adds half of the squared forecast SD before `exp()`.
+
+```{r ch2-solution}
+p <- summary(walk$sdr, "report")["mu_new", ]
+sd_pred <- sqrt(p[["Std. Error"]]^2 + exp(walk$opt$par[["log_sigma"]])^2)
+c(median = 50 * exp(p[["Estimate"]]), mean = 50 * exp(p[["Estimate"]] + sd_pred^2 / 2))
+```
+
+- (a) is the misunderstanding this challenge targets: `exp()` of a log-scale forecast is the median, not the mean.
+- (b) is right: the forecast is symmetric on the log scale, so on the natural scale it has a long upper tail, and a few very good years pull the mean above the median.
+- (c): 199 is correct; it is the mean of the same distribution.
+- (d): median and mean are equal only for a symmetric distribution, and recruits on the natural scale are not symmetric.
+
+Report the median and the interval, and say "median".
+A manager asking for "the expected return" may mean the mean.
+
+:::::::::::::::::::::::::
+
+::::::::::::::::::::::::::::::::::::::::::::::::::
+
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: instructor
+
+Challenges 1 and 2 take about 3 minutes each.
+Challenge 1 targets the belief that a confidence interval says where single years fall (first met in Episode 5, where the 95% band held 24% of the Stellako points); if most learners choose (a), show that band plot again and say "the band is about the curve; single years scatter around it by sigma".
+Challenge 2 targets "`exp()` of a log forecast is the mean"; if most choose (a), run the solution code live (median 148, mean 199 thousand).
+If answers are spread out, go back to the `ci-vs-pi` output and compare the two intervals line by line.
+
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+## Replaying the Past: A Hindcast
+
+Which forecast would you trust: the random walk's 148 thousand recruits or the Ricker's 359 thousand?
+We cannot wait for next year to find out.
+Instead, we replay the past.
+Pretend it is 2006: fit each model to brood years 1948-2006, forecast 2007, and compare with what happened.
+Then repeat for every year up to 2021: 15 forecasts per model.
+This test is called a [hindcast](../learners/reference.md#glossary).
+
+![
+Each row of a hindcast fits the model to the years before one test year and forecasts that year.
+](fig/hindcast-diagram.svg){
+alt="Timeline of brood years from 1948 to 2021. The first row shows a shaded training block from 1948 to 2006 followed by one forecast year, 2007. The next row trains to 2007 and forecasts 2008, and so on, until the last row trains to 2020 and forecasts 2021. Later years in each row are not used."
+}
+
+Each forecast uses only what we knew then, so it is a fair test: the model never saw the year it forecasts.
+
+## Recipe: Test Forecasts on Past Years
+
+**Use it when:** you need evidence that a model forecasts well.
+
+**Ingredients:** a fitted model (it carries its own recipe: the model function, the starting values and `random`), the stock's data frame, and the first test year.
+
+```{r recipe-hindcast, purl=TRUE}
+hindcast <- function(m, df, first_year) {
+  out <- NULL
+  for (yr in df$brood_year[df$brood_year >= first_year]) {     # observed years only
+    train <- filter(df, brood_year < yr)                         # what we knew then
+    test  <- filter(df, brood_year == yr)                        # what happened next
+    m_yr  <- fit_model(m$nll, m$par, make_dat(train, S_new = test$spawners), m$random)
+    out   <- rbind(out, data.frame(brood_year = yr, observed = test$recruits,
+                                   predict_recruits(m_yr), fit_ok = all(m_yr$checks)))
+  }
+  out
+}
+```
+
+Read it line by line:
+
+- the loop runs over the brood years in the data from `first_year` on: observed years only, so stocks with missing years work;
+- `train` is what we knew then: every brood year before the test year;
+- `test` is what happened next: the test year's spawners and recruits;
+- `fit_model()` refits the same model, with the same starting values (`m$par`) and the same `random`, to the training years only, with `S_new` set to the test year's spawners;
+- `predict_recruits()` gives the forecast, and `fit_ok` records whether the refit passed the four checks.
+
+Reusing `m$par` works for the random walk because its starting list already has a value for every year, plus one.
+In a shorter training period, the years after the last training year have no data and are averaged over.
+
+Try it on the last three years first; it takes a fraction of a second.
+
+```{r recipe-hindcast-try, purl=TRUE}
+hindcast(walk, my_stock, first_year = 2019)
+```
+
+Each row is one test year: what happened (`observed` recruits), the spawners (`S_new`) and the forecast (`median`, `lower` and `upper`), all in thousands of fish.
+
+**Check it worked:** three rows, for 2019 to 2021, each with `fit_ok` TRUE. Put up a green sticky note when you have them.
+
+## Recipe: A Naive Benchmark
+
+**Use it when:** you score any forecasting model.
+
+**Ingredients:** the stock's data frame and the first test year.
+
+A model earns its place only if it forecasts better than a rule with no model at all.
+Our [benchmark](../learners/reference.md#glossary), a naive forecast, is: for each test year, recruits per spawner as in the four previous brood years, times the spawners.
+Its 80% interval comes from how wrong this rule was in earlier years.
+
+You do not need to type it: `naive_forecast()` is in [the finished recipe box (cookbook.R)](files/cookbook.R), which the Starting Point loaded.
+Read it:
+
+```{r show-naive, eval=FALSE}
+naive_forecast <- function(df, first_year) {
+  df <- mutate(df, logRS = log(recruits / spawners))
+  df$recent <- sapply(df$brood_year, function(yr) mean(df$logRS[df$brood_year %in% (yr - 4):(yr - 1)]))
+  out <- NULL
+  for (yr in df$brood_year[df$brood_year >= first_year]) {
+    past   <- filter(df, brood_year < yr, !is.na(recent))
+    sd_err <- sd(past$logRS - past$recent)                     # how wrong the rule was before
+    test   <- filter(df, brood_year == yr)
+    out <- rbind(out, data.frame(brood_year = yr, observed = test$recruits, S_new = test$spawners,
+                                 median = test$spawners * exp(test$recent),
+                                 lower  = test$spawners * exp(test$recent - qnorm(0.9) * sd_err),
+                                 upper  = test$spawners * exp(test$recent + qnorm(0.9) * sd_err),
+                                 fit_ok = TRUE))
+  }
+  out
+}
+```
+
+- `recent` is the average log(R/S) of the four brood years before each year;
+- `sd_err` is the SD of the rule's errors in the years before the test year, on the log scale;
+- the forecast is the test year's spawners times exp(`recent`), and the 80% interval goes `qnorm(0.9)` (1.28) times `sd_err` either side of it on the log scale.
+
+```{r recipe-naive-try, purl=TRUE}
+naive_forecast(my_stock, first_year = 2019)
+```
+
+**Check it worked:** it returns the same columns as `hindcast()`, so the two can be stacked in one table. Put up a green sticky note when the three rows print.
+
+## Recipe: Score the Forecasts
+
+**Use it when:** you have hindcasts for several models and a benchmark.
+
+**Ingredients:** one data frame of hindcasts with a `model` column, in which the benchmark is called `naive`.
+
+`score_forecasts()` turns the hindcast table into four numbers per model.
+Each forecast's error is log(forecast / observed): above 0 means the forecast was too high, and an error of 0.69 means it was twice what happened.
+
+```{r recipe-score, purl=TRUE}
+score_forecasts <- function(hc) {
+  hc %>%
+    mutate(error = log(median / observed)) %>%                 # above 0: forecast too high
+    group_by(model) %>%
+    summarise(n = n(), bias = mean(error), MAE = mean(abs(error)),
+              coverage80 = mean(observed >= lower & observed <= upper), .groups = "drop") %>%
+    mutate(skill = MAE / MAE[model == "naive"])                # below 1: beats the benchmark
+}
+```
+
+Now run the hindcast from 2007 for both models and the benchmark, and score it.
+The 30 refits take about a second.
+
+```{r run-hindcast, purl=TRUE}
+hc <- bind_rows(ricker = hindcast(ricker, my_stock, first_year = 2007),
+                walk   = hindcast(walk,   my_stock, first_year = 2007),
+                naive  = naive_forecast(my_stock, first_year = 2007),
+                .id = "model")
+all(hc$fit_ok)
+score_forecasts(hc)
+```
+
+The four scores, one line each:
+
+- `bias`: the [bias](../learners/reference.md#glossary), the average of log(forecast / observed); above 0 means the forecasts were too high;
+- `MAE`, the [mean absolute error](../learners/reference.md#glossary): the typical size of an error, on the log scale;
+- `coverage80`: the [coverage](../learners/reference.md#glossary), the share of observations inside the 80% prediction interval; we want 0.80;
+- `skill`: the [forecast skill](../learners/reference.md#glossary), the MAE divided by the benchmark's MAE; below 1 beats the benchmark.
+
+Plot the two models' forecasts against what happened:
+
+```{r plot-hindcast, fig.height=5, fig.cap="Stellako hindcast, brood years 2007 to 2021: median forecasts with 80% prediction intervals, and what happened.", fig.alt="Two panels, Ricker (top) and random walk (bottom), of forecast recruits for brood years 2007 to 2021, in thousands on a logarithmic axis, shown as a line with a shaded 80% interval, with the observed recruits as open circles. The Ricker forecasts sit above most observations. The random-walk forecasts run through the middle of them. In both panels several observations fall outside the interval, including 2010 (about 1600 thousand) and 2011 and 2012 (about 50 thousand)."}
+hc %>%
+  filter(model != "naive") %>%
+  ggplot(aes(x = brood_year, y = median)) +
+  geom_ribbon(aes(ymin = lower, ymax = upper), fill = "grey80") +
+  geom_line() +
+  geom_point(aes(y = observed), shape = 1) +
+  facet_wrap(~ model, ncol = 1) +
+  scale_y_log10() +
+  labs(x = "Brood year", y = "Recruits (thousands, logarithmic axis)")
+```
+
+**Check it worked:** every refit passed (`all(hc$fit_ok)` is TRUE), and the random walk's skill is about 0.79. Put up a green sticky note when your score table prints.
+
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: instructor
+
+The hindcast takes under 1 second per stock, so it is safe to run live.
+Ask for sticky notes when the score table prints, and read the four columns aloud with the class before moving on.
+If learners write their own loops, remind them never to use `T` as a variable name, because it means `TRUE`.
+
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+## Reading the Scores
+
+The random walk:
+
+- beats the benchmark (skill 0.79);
+- is unbiased (bias -0.01).
+
+The Ricker:
+
+- is worse than the benchmark (skill 1.22);
+- was too high by a factor of exp(0.83) = 2.3 on average.
+
+Count how often each method forecast too high:
+
+```{r count-too-high}
+hc %>%
+  group_by(model) %>%
+  summarise(too_high = sum(median > observed), n = n())
+```
+
+The Ricker was too high in 12 of 15 years: it still expects the productivity of the past.
+The random walk and the benchmark were too high in 7 of 15: about as often too high as too low.
+
+Both models' intervals were too narrow: they caught 73% (random walk) and 60% (Ricker) of what happened, where 80% was promised.
+The benchmark's intervals also caught 73%.
+
+Here forecast skill agrees with the Akaike information criterion ([AIC](../learners/reference.md#glossary)) from [Comparing Models with AIC](09-model-selection.Rmd): both prefer the random walk.
+In Upper Pitt River (Challenge 4) they do not.
+
+:::::::::::::::::::::::::::::::::::::::: caution
+
+### How Honest Is This Hindcast?
+
+When a brood year is forecast in practice, the recruits of the brood year before it are not all counted yet: the oldest of them return in the same calendar year as the fish being forecast.
+Real pre-season forecasts are also made by return year and age.
+This hindcast is therefore slightly optimistic for every method, the benchmark included.
+
+::::::::::::::::::::::::::::::::::::::::::::::::::
+
+:::::::::::::::::::::::::::::::::::::::: callout
+
+### Intervals That Are Too Narrow
+
+Coverage of 0.60 or 0.73 where 0.80 was promised means the intervals are too narrow on new years.
+Report it next to the forecast.
+
+::::::::::::::::::::::::::::::::::::::::::::::::::
+
+:::::::::::::::::::::::::::::::::::::::: spoiler
+
+### Going Further: A Log Score (optional)
+
+Bias, MAE and coverage each judge one thing.
+A log score judges the median and the interval together.
+For each test year, it asks how probable the observed recruits were under the forecast's distribution on the log scale, and takes the log.
+It is the surprise score turned around: a forecast that was close, and honest about its uncertainty, was not surprised.
+The first line recovers each forecast's SD on the log scale from the width of its 80% interval.
+
+```{r log-score}
+hc %>%
+  mutate(sd = (log(upper) - log(lower)) / (2 * qnorm(0.9)),
+         log_score = dnorm(log(observed), log(median), sd, log = TRUE)) %>%
+  group_by(model) %>%
+  summarise(log_score = mean(log_score))
+```
+
+Higher is better: the random walk scores best (-1.22), then the benchmark (-1.44), then the Ricker (-1.67).
+The log score rewards forecasts that are close and honest about their uncertainty at the same time.
+
+::::::::::::::::::::::::::::::::::::::::::::::::::
+
+:::::::::::::::::::::::::::::::::::::::: challenge
+
+### Challenge 3: A Second Benchmark (10 minutes)
+
+Another benchmark: "recruits per spawner as last year".
+Copy `naive_forecast()` from [the finished recipe box (cookbook.R)](files/cookbook.R), call the copy `last_year_forecast()`, and change `(yr - 4):(yr - 1)` to `(yr - 1)`.
+Add it to the hindcast as `last_year`, and score all four.
+Does the random walk beat it?
+
+:::::::::::::::::::::::: hint
+
+Keep the brackets around `yr - 1`.
+R works out `%in%` before `-`, so `df$brood_year %in% yr - 1` means `(df$brood_year %in% yr) - 1`: it gives no error, but it averages the wrong years.
+
+:::::::::::::::::::::::::
+
+:::::::::::::::::::::::: solution
+
+```{r ch3-solution}
+last_year_forecast <- function(df, first_year) {
+  df <- mutate(df, logRS = log(recruits / spawners))
+  df$recent <- sapply(df$brood_year, function(yr) mean(df$logRS[df$brood_year %in% (yr - 1)]))
+  out <- NULL
+  for (yr in df$brood_year[df$brood_year >= first_year]) {
+    past   <- filter(df, brood_year < yr, !is.na(recent))
+    sd_err <- sd(past$logRS - past$recent)                     # how wrong the rule was before
+    test   <- filter(df, brood_year == yr)
+    out <- rbind(out, data.frame(brood_year = yr, observed = test$recruits, S_new = test$spawners,
+                                 median = test$spawners * exp(test$recent),
+                                 lower  = test$spawners * exp(test$recent - qnorm(0.9) * sd_err),
+                                 upper  = test$spawners * exp(test$recent + qnorm(0.9) * sd_err),
+                                 fit_ok = TRUE))
+  }
+  out
+}
+hc_4 <- bind_rows(ricker    = hindcast(ricker, my_stock, first_year = 2007),
+                  walk      = hindcast(walk,   my_stock, first_year = 2007),
+                  naive     = naive_forecast(my_stock, first_year = 2007),
+                  last_year = last_year_forecast(my_stock, first_year = 2007),
+                  .id = "model")
+score_forecasts(hc_4)
+```
+
+The other three rows are as before; skill is still measured against `naive`.
+The random walk (skill 0.794) beats "same as last year" (0.805) by very little.
+The last-year rule is nearly unbiased (0.06), and its intervals caught 93% of what happened, more than the 80% promised.
+Forecast skill is modest, and a rule with no model can be a strong benchmark: always include one.
+
+:::::::::::::::::::::::::
+
+::::::::::::::::::::::::::::::::::::::::::::::::::
+
+:::::::::::::::::::::::::::::::::::::::: challenge
+
+### Challenge 4: Your Turn: Upper Pitt River, Rows 8 and 9 (14 minutes)
+
+For Upper Pitt River, run the hindcast from 2007 for the Ricker, the random walk and the benchmark, and score it.
+Then forecast from the random walk, with `S_new` set to the average spawners of the last four brood years.
+Write rows 8 and 9 of your report card in `report-card.R`.
+Compare row 8 with row 7 (AIC): do they agree?
+
+:::::::::::::::::::::::: solution
+
+```{r ch4-solution}
+pitt        <- filter(sockeye, stock == "Upper Pitt River")
+dat_pitt    <- make_dat(pitt, S_new = mean(tail(pitt$spawners, 4)))
+ricker_pitt <- fit_model(nll_ricker, start_ricker(dat_pitt), dat_pitt)
+walk_pitt   <- fit_model(nll_walk, start_walk(dat_pitt), dat_pitt, random = "log_alpha_year")
+hc_pitt <- bind_rows(ricker = hindcast(ricker_pitt, pitt, first_year = 2007),
+                     walk   = hindcast(walk_pitt,   pitt, first_year = 2007),
+                     naive  = naive_forecast(pitt, first_year = 2007),
+                     .id = "model")
+all(hc_pitt$fit_ok)
+score_forecasts(hc_pitt)
+predict_recruits(walk_pitt)
+aic_table(list(ricker = ricker_pitt, walk = walk_pitt))    # row 7, for the comparison
+```
+
+Row 8: "Both models beat the recent-average benchmark (skill 0.78 and 0.82). The Ricker's errors are slightly smaller, but it was too high by a factor of exp(0.74) = 2.1 on average; the random walk is unbiased. All intervals were too narrow (coverage 0.40 to 0.67)."
+
+Row 9: "From 5.3 thousand spawners, the random walk forecasts a median of 12 thousand recruits (80% prediction interval 4.4 to 35 thousand)."
+
+They do not agree.
+AIC (row 7) prefers the random walk by 11.8, but the hindcast's mean absolute error slightly prefers the Ricker (0.88 against 0.92).
+AIC measures how well a model describes the years it was fitted to; the hindcast measures how well it forecast years it had not seen.
+A defensible choice is the random walk, because it is unbiased and passes the residual checks, with both results reported.
+
+:::::::::::::::::::::::::
+
+::::::::::::::::::::::::::::::::::::::::::::::::::
+
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: instructor
+
+Challenge 4 is the longest coding task of the day (14 minutes), so have helpers circulate.
+The hindcast and scoring code is in the handout; learners change the stock and the object names.
+Watch for the belief that a lower AIC means better forecasts: Upper Pitt River is the counter-example, and the capstone share-out returns to it.
+
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+:::::::::::::::::::::::::::::::::::::::: challenge
+
+### Challenge 5: What Do You Tell a Manager? (5 minutes)
+
+Stellako's random walk caught 73% of past outcomes in its 80% intervals; the Ricker caught 60%.
+What should a manager be told along with the forecast?
+Discuss in pairs.
+
+:::::::::::::::::::::::: solution
+
+Points the instructor should hear:
+
+- the intervals are too narrow: the real uncertainty is larger than they suggest;
+- report the coverage next to the forecast;
+- consider wider intervals, or a heavier-tailed model ([Going Further](../learners/going-further.md));
+- do not drop the interval because it is inconvenient.
+
+:::::::::::::::::::::::::
+
+::::::::::::::::::::::::::::::::::::::::::::::::::
+
+:::::::::::::::::::::::::::::::::::::::: callout
+
+### Add to Your Recipe Box
+
+Copy these functions into your `my-recipes.R`: `hindcast()`, `naive_forecast()` (copy it from `cookbook.R`) and `score_forecasts()`.
+The finished box is [cookbook.R](files/cookbook.R).
+
+::::::::::::::::::::::::::::::::::::::::::::::::::
+
+:::::::::::::::::::::::::::::::::::::::: callout
+
+### In Your Field
+
+Replay the past before you trust the future.
+Any time-series model can be refitted to earlier years and scored on the next one, against a benchmark such as the recent average.
+
+::::::::::::::::::::::::::::::::::::::::::::::::::
+
+:::::::::::::::::::::::::::::::::::::::: keypoints
+
+- `predict_recruits()` gives a median with an 80% prediction interval that includes uncertainty about the curve, drift (for the random walk) and the yearly noise.
+- A hindcast refits the model to past years only and forecasts the next year, again and again.
+- Score forecasts against a naive benchmark: skill below 1 beats it. Also report bias and interval coverage.
+- AIC and forecast skill answer different questions and can disagree; report both.
+
+::::::::::::::::::::::::::::::::::::::::::::::::::

@@ -1,6 +1,6 @@
-# LESSON_TITLE
+# RTMB Cookbook: Fit, Check, Compare and Forecast with Your Own Models
 
-LESSON_PITCH
+In two hands-on days you will write your own statistical model as a short R function, fit it with RTMB, check that the fit worked, compare it with other models and test its forecasts on years it never saw, using one tested recipe for each step and no proofs.
 
 This is a lesson in the style of [Data Carpentry](https://datacarpentry.org/),
 built with [The Carpentries Workbench][workbench].
@@ -10,17 +10,26 @@ It was developed from the materials of the RTMB workshop taught by the Pacific S
 November 2026, but it is a new lesson: a cookbook that shows one recommended way to do each task,
 starts with a quick start that runs the whole workflow, and adds model selection and model evaluation.
 
+It is for people who analyse data in R and fit regressions with `lm()` or `glm()`, and who now need a model
+that a formula interface cannot write for them, or who must read and question such models.
+The worked example is Fraser River sockeye salmon, explained from scratch; no fisheries background is needed.
+`profiles/learner-profiles.md` describes the learners it was designed for.
+
 ## What is in this repository
 
 | Path | What it is |
 |---|---|
 | `episodes/` | The lesson, one R Markdown file per episode |
 | `episodes/data/` | The data learners use: `sockeye.csv` and `npgo.csv` |
-| `learners/` | Setup instructions, glossary and other pages for learners |
-| `instructors/` | Notes for instructors |
+| `episodes/files/` | The scripts learners download: `quick-start.R`, `cookbook.R` (the finished recipe box) and `capstone-template.R` |
+| `episodes/fig/` | Static figures (SVG) used in the episodes |
+| `learners/` | Setup instructions, the Recipe Index, troubleshooting, the glossary and further reading |
+| `instructors/` | Instructor notes and the lesson design record |
 | `profiles/` | Learner profiles: who the lesson is for |
 | `scripts/prepare-data.R` | How the data files were made from the original workshop data (in `scripts/raw/`) |
 | `config.yaml` | Lesson settings and episode order |
+| `links.md` | Links shared by every page of the lesson |
+| `CITATION.cff` | How to cite the lesson |
 
 ## Build the lesson locally
 
@@ -35,11 +44,16 @@ install.packages(c("RTMB", "dplyr", "ggplot2"))
 Then, from the root of this repository:
 
 ```r
-sandpaper::build_lesson()   # builds the site and opens a preview in your browser
-sandpaper::check_lesson()   # checks the lesson structure
+sandpaper::build_lesson()                     # builds the site and opens a preview in your browser
+sandpaper::check_lesson()                     # checks the lesson structure
+sandpaper::validate_lesson(headings = TRUE)   # checks divs, links, images and headings
 ```
 
 The built site is in `site/docs/`.
+The build knits every episode in a fresh R session and stops at any R error that is not in a chunk
+marked `error=TRUE` (`fail_on_error: true` in `config.yaml`).
+`episodes/files/cookbook.R` must stay identical to the code taught in the episodes: if you change a recipe,
+change both.
 
 ## Publishing the website
 
@@ -59,11 +73,14 @@ The workshop described the salmon data as "not necessarily official numbers": th
 
 ## License and credit
 
-See `LICENSE.md`. The license there is the Carpentries default that comes with the template.
-The original workshop materials do not state a license, so confirm with their authors before you publish this lesson.
+The license is in `LICENSE.md`: it is the Carpentries default that comes with the template.
+The original workshop materials (slides and examples by Paul van Dam-Bates) do not state a license,
+so confirm with their authors before you publish this lesson.
+
+To cite the lesson, use `CITATION.cff`; the built site shows the citation on its "Cite" page.
 
 ## Maintainer
 
-LESSON_MAINTAINER
+Br-Johnson (GitHub)
 
 [workbench]: https://carpentries.github.io/sandpaper-docs/

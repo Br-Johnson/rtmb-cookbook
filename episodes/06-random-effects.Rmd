@@ -1,0 +1,498 @@
+---
+title: "Random Effects: Productivity That Changes over Time"
+teaching: 35
+exercises: 25
+---
+
+:::::::::::::::::::::::::::::::::::::::: questions
+
+- How can a model let productivity change from year to year?
+- What does `random =` do?
+- How do I read the estimated standard deviation of a random effect?
+
+::::::::::::::::::::::::::::::::::::::::::::::::::
+
+:::::::::::::::::::::::::::::::::::::::: objectives
+
+- Extend a model with a random walk in productivity and fit it with `random =`.
+- Plot estimated productivity over time with a 95% band.
+- Interpret the estimated `sd_walk` in words, including an estimate of zero.
+
+::::::::::::::::::::::::::::::::::::::::::::::::::
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(fig.width = 7, fig.height = 4, dpi = 150)
+```
+
+## Starting Point
+
+This episode opens step 7 of the [Quick Start](02-quick-start.Rmd): a random effect.
+
+:::::::::::::::::::::::::::::::::::::::: prereq
+
+### Run This If You Are Starting Here
+
+If you have followed along, you already have these objects.
+If you are starting here or have restarted R, run this chunk first.
+It needs `data/sockeye.csv` and `files/cookbook.R` in your project (see [Setup](../learners/setup.md)).
+
+```{r starting-point, message=FALSE}
+library(RTMB)
+library(dplyr)
+library(ggplot2)
+source("files/cookbook.R")        # the finished recipe box (your my-recipes.R works too)
+sockeye  <- read.csv("data/sockeye.csv")
+my_stock <- filter(sockeye, stock == "Stellako")
+dat      <- make_dat(my_stock, S_new = 50)
+ricker   <- fit_model(nll_ricker, start_ricker(dat), dat)
+ricker$checks
+```
+
+::::::::::::::::::::::::::::::::::::::::::::::::::
+
+## Why Let Productivity Vary?
+
+The Ricker model passes all [four checks](../learners/reference.md#glossary) for Stellako, so the fit can be used.
+The model itself, though, misses something.
+In step 6 of the Quick Start, its [one-step-ahead residuals](../learners/reference.md#glossary) were mostly above zero before 1990 (average +0.43) and mostly below zero after 2000 (average -0.95).
+Their [lag-1 correlation](../learners/reference.md#glossary) was 0.25: neighbouring years were alike.
+
+The Ricker model has one [productivity](../learners/reference.md#glossary), alpha, for all 74 brood years.
+A model with one productivity for 74 years cannot describe a stock whose productivity has fallen.
+In this episode we let productivity change from year to year.
+
+## A Random Walk in Words
+
+This year's log productivity is last year's plus a small random step.
+The steps have a standard deviation (SD), [sd_walk](../learners/reference.md#glossary), which the model estimates.
+A sequence built like this is called a [random walk](../learners/reference.md#glossary).
+
+$$\log\alpha_t = \log\alpha_{t-1} + \delta_t, \quad \delta_t \sim \mathrm{Normal}(0, \mathrm{sd}_{walk})$$
+
+In words: log productivity in year $t$ equals log productivity in the year before, plus a step $\delta_t$ drawn from a normal distribution with mean 0 and standard deviation sd_walk.
+A small sd_walk means productivity changes slowly; a large one means it can jump from one year to the next.
+
+Why not estimate a separate productivity for every year?
+With one observation per year, 74 separate values would chase the noise: each year's value would follow that year's data point.
+The walk ties each year to the one before, so each year's productivity also uses the information in its neighbours.
+
+The yearly productivities are a [random effect](../learners/reference.md#glossary): a set of related unknown values that come from a distribution.
+Here the distribution is the random walk, and its spread is sd_walk.
+
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: instructor
+
+Stress that a random effect is an estimated distribution, not random numbers: nothing is drawn at random when the model is fitted.
+Learners who know `lme4` think of random effects as grouping factors (one value per site or per person).
+Say early that a random effect can also be indexed by time, one value per year, and that Episode 10 shows random effects for groups.
+
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+:::::::::::::::::::::::::::::::::::::::: spoiler
+
+### Other Ways a Quantity Can Vary (optional)
+
+A random walk is one way to let a quantity change over time.
+Two others are independent year effects, where each year is its own draw around an average with no memory of the year before ([Episode 10](10-many-stocks.Rmd) uses them for good and bad years shared by all stocks), and year effects that are correlated from one year to the next (`dautoreg()` in RTMB, described on the [Going Further](../learners/going-further.md) page).
+
+::::::::::::::::::::::::::::::::::::::::::::::::::
+
+## Recipe: Add a Random Walk
+
+**Use it when:** a parameter may drift over time.
+
+**Ingredients:** the model function, a year index in `dat`, starting values with one value per year plus one.
+
+The model function is `nll_walk` from step 7 of the Quick Start.
+Type it again and read it line by line.
+
+```{r recipe-nll-walk, purl=TRUE}
+nll_walk <- function(par, dat) {
+  getAll(par, dat)
+  logRS <- OBS(logRS)
+  sd_walk <- exp(log_sd_walk)
+  nll <- -dnorm(log_alpha_year[1], log_alpha, sd_walk, log = TRUE)       # first year
+  nll <- nll - sum(dnorm(diff(log_alpha_year), 0, sd_walk, log = TRUE))  # yearly steps
+  mu     <- log_alpha_year[year] - S / exp(log_Smax)
+  mu_new <- log_alpha_year[max(year) + 1] - S_new / exp(log_Smax)        # next year
+  ADREPORT(mu_new)
+  nll - sum(dnorm(logRS, mu, exp(log_sigma), log = TRUE))
+}
+```
+
+Compared with `nll_ricker`, these are the new parts:
+
+- the first year's log productivity, `log_alpha_year[1]`, starts near `log_alpha`, one step of size sd_walk away;
+- `diff(log_alpha_year)` gives the 74 yearly steps (75 values have 74 differences), and each step is scored against a normal distribution with mean 0 and SD `sd_walk`;
+- `log_alpha_year[year]` picks each row's own year, so a stock with missing years skips them;
+- `log_alpha_year[max(year) + 1]` is next year, the year after the data, for the forecast.
+
+The function adds the score of the steps and the score of the data into one [negative log-likelihood](../learners/reference.md#glossary).
+
+The starting values need one more parameter, `log_sd_walk`, and one value of `log_alpha_year` for every year plus next year.
+The rule: start the SD at 0.1 (small steps) and every yearly value at the average log(R/S).
+
+```{r recipe-start-walk, purl=TRUE}
+start_walk <- function(dat) {
+  c(start_ricker(dat),
+    list(log_sd_walk = log(0.1),                                   # small yearly steps
+         log_alpha_year = rep(mean(dat$logRS), max(dat$year) + 1)))  # every year + next year
+}
+length(start_walk(dat)$log_alpha_year)
+```
+
+Stellako has 74 brood years, so there are 75 yearly values.
+Now fit the model.
+`random = "log_alpha_year"` names the random effect:
+
+```{r fit-walk, purl=TRUE}
+walk <- fit_model(nll_walk, start_walk(dat), dat, random = "log_alpha_year")
+walk$checks
+ci_table(walk)
+```
+
+All four checks are TRUE.
+The table gives each [fixed parameter](../learners/reference.md#glossary) with a 95% [confidence interval](../learners/reference.md#glossary) (CI) on the natural scale:
+
+- alpha is 12.5 recruits per spawner (95% CI 6.7 to 23), but it now has a different meaning, which the caution below explains;
+- S_max is 200 thousand spawners (95% CI 94 to 422 thousand);
+- [sigma](../learners/reference.md#glossary), the yearly scatter around the curve, is 0.70 (95% CI 0.59 to 0.83), smaller than the Ricker's 0.89: the drift in productivity now explains part of the scatter;
+- sd_walk is 0.13 (95% CI 0.065 to 0.25).
+
+**Check it worked:** `walk$checks` shows four TRUE, and `sd_walk` is about 0.13.
+Put up a green sticky note when your table shows these numbers.
+
+## What random = Does
+
+`random = "log_alpha_year"` tells RTMB to average over every possible path of productivity, and to estimate only the four fixed parameters: `log_alpha`, `log_Smax`, `log_sigma` and `log_sd_walk`.
+Statisticians call this averaging the [Laplace approximation](../learners/reference.md#glossary).
+After fitting, RTMB also gives the most likely value of each year's productivity, with a [standard error](../learners/reference.md#glossary).
+
+```{r count-parameters}
+length(walk$opt$par)
+length(walk$par$log_alpha_year)
+```
+
+The optimiser estimated four parameters, not 79.
+The 75 yearly values are random effects: they are averaged over while fitting, and only their SD, sd_walk, is a fixed parameter.
+Without `random =`, RTMB treats all 79 as fixed parameters, and the fit fails all four checks ([Episode 4](04-fit-and-check.Rmd), Challenge 2).
+
+:::::::::::::::::::::::::::::::::::::::: callout
+
+### The Four Checks Still Apply
+
+`$checks` tests the fixed parameters; the random effects are averaged over.
+Use the four checks for a model with random effects exactly as for any other model.
+
+::::::::::::::::::::::::::::::::::::::::::::::::::
+
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: instructor
+
+Challenge 1 targets misconception M7 ("`random =` means draw random numbers").
+If most learners choose (b), say that fitting the same model twice gives the same answer to the last digit: nothing is drawn.
+If many choose (a), point at `ci_table(walk, "random")` in the next recipe, which gives every yearly value with an interval.
+If answers are spread out, go back to the definition: a random effect is a set of related unknown values that come from a distribution.
+
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+:::::::::::::::::::::::::::::::::::::::: challenge
+
+### Challenge 1: What Does `random =` Mean? (3 minutes)
+
+What does `random = "log_alpha_year"` tell RTMB?
+
+- (a) Fix these values at zero.
+- (b) Draw new random numbers for them every time the model runs.
+- (c) Treat them as unknown values that come from a distribution: average over them, and estimate the distribution's standard deviation.
+- (d) The data in those years are random.
+
+:::::::::::::::::::::::: solution
+
+**(c).** RTMB averages over every possible path of the yearly values and estimates the SD of their distribution, sd_walk, as a fixed parameter.
+
+- (a): the values are estimated, not fixed; the next recipe plots them.
+- (b) is a common misunderstanding: nothing is drawn at random during fitting, and refitting gives the same answer.
+- (c) is right.
+- (d): the data are what they are; it is the yearly productivities that the model treats as coming from a distribution.
+
+:::::::::::::::::::::::::
+
+::::::::::::::::::::::::::::::::::::::::::::::::::
+
+## Recipe: Plot Productivity over Time
+
+**Use it when:** you want to show how a random effect changed over time.
+
+**Ingredients:** a fitted random-walk model, the first brood year.
+
+`ci_table(walk, "random")` gives the random effects instead of the fixed parameters: one row per year, with a 95% CI.
+The values are named `log_alpha_year`, so `ci_table()` back-transforms them to recruits per spawner and calls them `alpha_year`.
+The second line adds the brood year: row 1 is the first brood year, and the last row is the year after the data.
+
+```{r recipe-plot-productivity, purl=TRUE, fig.width=7, fig.height=3.5, fig.cap="Estimated productivity of Stellako sockeye salmon with a 95% confidence band. The dashed line is the Ricker model's constant productivity.", fig.alt="Line plot of estimated Stellako productivity, in recruits per spawner when spawners are few, against brood year, 1948 to 2022, with a shaded 95% band and a dashed horizontal line at 10.8, the constant Ricker estimate. Productivity is about 12 to 16 from 1948 to the mid-1980s, falls steeply from about 1985 to 2005, and stays near 4 from 2005 to 2022. The band is widest around 1980, about 10 to 25."}
+prod <- ci_table(walk, "random")
+prod$brood_year <- min(my_stock$brood_year) + seq_len(nrow(prod)) - 1
+ggplot(prod, aes(x = brood_year, y = estimate)) +
+  geom_ribbon(aes(ymin = lower, ymax = upper), fill = "grey80") +
+  geom_line() +
+  geom_hline(yintercept = exp(ricker$opt$par[["log_alpha"]]), linetype = "dashed") +
+  labs(x = "Brood year", y = "Productivity (recruits per spawner)")
+```
+
+The dashed line is the Ricker's single value, 10.8.
+Productivity stayed between about 12 and 16 recruits per spawner until the mid-1980s, fell steeply over the next 20 years, and has been near 4 since about 2005.
+Print a few years:
+
+```{r productivity-years}
+prod[prod$brood_year %in% c(1948, 1980, 2000, 2021, 2022), ]
+```
+
+Productivity was 12.5 recruits per spawner in 1948 (95% CI 7.0 to 22), 15.6 in 1980 (9.8 to 25), 5.9 in 2000 (3.5 to 10) and 3.8 in 2021 (2.1 to 7.0).
+The last row, 2022, is the forecast year: same estimate, wider band (2.0 to 7.3), because one more year of drift is uncertain.
+[Episode 11](11-forecasting.Rmd) uses this extra year to forecast.
+
+**Check it worked:** about 15.6 recruits per spawner in 1980 and 3.8 in 2021.
+Put up a green sticky note when your plot shows the line, the grey band and the dashed line.
+
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: instructor
+
+Ask for sticky notes when the productivity plot appears (about 20 minutes into the episode).
+Point at the dashed line: the Ricker's 10.8 is too low for the 1970s and far too high for the 2010s, which is the residual pattern from step 6 of the Quick Start.
+
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+## Reading sd_walk
+
+sd_walk is 0.13 on the [log scale](../learners/reference.md#glossary).
+This means productivity typically changes by about 13% from one year to the next (95% CI about 7% to 25%).
+Over many years these small steps add up, which is how Stellako fell from about 15 to about 4 recruits per spawner.
+
+:::::::::::::::::::::::::::::::::::::::: caution
+
+### log_alpha Changes Meaning
+
+In the random walk, alpha is productivity in the first brood year (12.5 recruits per spawner in 1948), not an average.
+Do not compare it with the Ricker's alpha (10.8), which is one value for all years.
+To describe productivity under the random walk, report it for named years, as in the plot recipe.
+
+::::::::::::::::::::::::::::::::::::::::::::::::::
+
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: instructor
+
+Make the mistake in Challenge 2 live: type the three lines with `max(dat$year)` and let learners read the error before you explain it.
+The error message does not name the cause, which is why the [Troubleshooting](../learners/troubleshooting.md) page lists it.
+
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+:::::::::::::::::::::::::::::::::::::::: challenge
+
+### Challenge 2: Find the Bug (5 minutes)
+
+Someone made their own starting values for the random walk and fitted it:
+
+```r
+par_short <- start_walk(dat)
+par_short$log_alpha_year <- rep(mean(dat$logRS), max(dat$year))
+fit_model(nll_walk, par_short, dat, random = "log_alpha_year")
+```
+
+R stopped with this error:
+
+```error
+Error:
+! '*this' is not a valid 'advector' (constructed using illegal operation?)
+```
+
+What is wrong?
+
+:::::::::::::::::::::::: solution
+
+`log_alpha_year` has one value too few.
+`nll_walk` uses `log_alpha_year[max(year) + 1]` for the forecast year, so the vector needs one value for each year plus one for next year.
+
+```{r ch2-solution, error=TRUE}
+par_short <- start_walk(dat)
+par_short$log_alpha_year <- rep(mean(dat$logRS), max(dat$year))
+fit_model(nll_walk, par_short, dat, random = "log_alpha_year")
+```
+
+```{r ch2-solution-b}
+length(par_short$log_alpha_year)    # one value for each brood year
+max(dat$year) + 1                   # what nll_walk needs: every year plus next year
+```
+
+Value 75 of a vector with 74 values does not exist, and RTMB stops with this message, which does not name the cause.
+The fix is to use `start_walk(dat)`, which already makes `max(dat$year) + 1` values; the fit in the `fit-walk` chunk passed all four checks.
+
+:::::::::::::::::::::::::
+
+::::::::::::::::::::::::::::::::::::::::::::::::::
+
+:::::::::::::::::::::::::::::::::::::::: challenge
+
+### Challenge 3: Your Turn: Upper Pitt River, Row 4 (10 minutes)
+
+Fit the random walk to Upper Pitt River.
+Record its checks in row 2 of your report card (`report-card.R`).
+In row 4, write sd_walk in words, and productivity in 1948, 1965, 1980, 2000 and 2021.
+
+:::::::::::::::::::::::: hint
+
+Make `pitt` and `dat_pitt` as in Episode 4, with `S_new` set to the average spawner count of the last four brood years.
+Then copy the `fit-walk` chunk and the plot recipe, and change `dat` to `dat_pitt`, `walk` to `walk_pitt`, `prod` to `prod_pitt` and `my_stock` to `pitt`.
+Leave out the dashed line.
+
+:::::::::::::::::::::::::
+
+:::::::::::::::::::::::: solution
+
+```{r ch3-solution, fig.width=7, fig.height=3.5, fig.alt="Line plot of estimated Upper Pitt River productivity, in recruits per spawner, against brood year, 1948 to 2022, with a shaded 95% band. Productivity is about 8 to 10 until 1960, peaks near 19 in the mid-1960s and early 1970s, falls to about 5 around 1980, rises to about 13 in the late 1990s, and is about 2 to 4 after 2012. The band reaches up to about 40 at the peaks."}
+pitt      <- filter(sockeye, stock == "Upper Pitt River")
+dat_pitt  <- make_dat(pitt, S_new = mean(tail(pitt$spawners, 4)))
+walk_pitt <- fit_model(nll_walk, start_walk(dat_pitt), dat_pitt, random = "log_alpha_year")
+walk_pitt$checks
+ci_table(walk_pitt)
+prod_pitt <- ci_table(walk_pitt, "random")
+prod_pitt$brood_year <- min(pitt$brood_year) + seq_len(nrow(prod_pitt)) - 1
+prod_pitt[prod_pitt$brood_year %in% c(1948, 1965, 1980, 2000, 2021), ]
+ggplot(prod_pitt, aes(x = brood_year, y = estimate)) +
+  geom_ribbon(aes(ymin = lower, ymax = upper), fill = "grey80") +
+  geom_line() +
+  labs(x = "Brood year", y = "Productivity (recruits per spawner)")
+```
+
+All four checks are TRUE.
+sd_walk is 0.33 (95% CI 0.14 to 0.78), more than twice Stellako's 0.13.
+Productivity was 10.4 recruits per spawner in 1948, 16.3 in 1965, 4.7 in 1980, 10.9 in 2000 and 2.9 in 2021 (95% CI 1.3 to 6.6).
+
+Row 2: "Random walk: all four checks TRUE."
+
+Row 4: "sd_walk is 0.33 (95% CI 0.14 to 0.78): productivity typically changes by about a third from year to year.
+In recruits per spawner, it was 10.4 in 1948, rose to 16.3 in 1965, fell to 4.7 in 1980, rose again to 10.9 in 2000, and has been at its lowest since about 2012: 2.9 in 2021 (95% CI 1.3 to 6.6)."
+
+:::::::::::::::::::::::::
+
+::::::::::::::::::::::::::::::::::::::::::::::::::
+
+## Recipe: Check an SD Near Zero
+
+**Use it when:** an estimated SD is below about 0.05, or its interval from `ci_table()` runs from 0 to `Inf`.
+
+**Ingredients:** the fitted model, its starting values, the simpler model.
+
+Not every stock drifts.
+Harrison is another Fraser River sockeye salmon stock, with data from 1948 to 2022.
+Fit the random walk to it in the same way:
+
+```{r harrison-walk, purl=TRUE}
+harrison <- filter(sockeye, stock == "Harrison")
+dat_h    <- make_dat(harrison, S_new = mean(tail(harrison$spawners, 4)))
+walk_h   <- fit_model(nll_walk, start_walk(dat_h), dat_h, random = "log_alpha_year")
+walk_h$checks
+ci_table(walk_h) %>% filter(parameter == "sd_walk")
+```
+
+All four checks are TRUE, but sd_walk is 0.000005, and its interval runs from 0 to `Inf`.
+Those are the two signs from "Use it when".
+Is zero really the best value, or did the optimiser stop on a ledge on the way down?
+Fit again from a start near zero, and fit the simpler model, the Ricker:
+
+```{r recipe-sd-near-zero, purl=TRUE}
+par_tiny <- start_walk(dat_h)
+par_tiny$log_sd_walk <- log(0.001)                  # start the SD near zero
+walk_h_tiny <- fit_model(nll_walk, par_tiny, dat_h, random = "log_alpha_year")
+ricker_h    <- fit_model(nll_ricker, start_ricker(dat_h), dat_h)
+c(start_0.1 = walk_h$opt$objective, start_0.001 = walk_h_tiny$opt$objective)
+c(ricker = aic(ricker_h$opt), walk = aic(walk_h$opt))
+```
+
+Both fits reach the same negative log-likelihood, 129.18.
+From both starts the hiker ends at the same lowest point, so the bottom of the valley really is at sd_walk = 0.
+With sd_walk at zero, productivity cannot change, and the random walk becomes the Ricker model: it fits the data exactly as well.
+Its Akaike information criterion ([AIC](../learners/reference.md#glossary)) is 266.36, against 264.36 for the Ricker: the extra parameter adds 2 to AIC and does not improve the fit.
+
+**Check it worked:**
+
+- both starts reach the same negative log-likelihood, so zero really is the lowest point;
+- the walk's AIC is the Ricker's plus 2;
+- write "no detectable drift", and do not report the interval for `sd_walk` (here it runs from 0 to `Inf`).
+
+Put up a green sticky note when your two AIC values differ by 2.
+
+:::::::::::::::::::::::::::::::::::::::: spoiler
+
+### Going Further: A Profile Interval for an SD (optional)
+
+A profile interval refits the model with `log_sd_walk` held at many values in turn, and keeps the values whose negative log-likelihood is close to the best one.
+It does not assume a bell-shaped uncertainty, so it can work better for an SD than `ci_table()`.
+For Stellako it takes about half a second:
+
+```{r profile-sd-walk}
+prof <- TMB::tmbprofile(walk$obj, "log_sd_walk", trace = FALSE)
+exp(confint(prof))
+```
+
+The profile interval, 0.065 to 0.252, is close to `ci_table()`'s 0.065 to 0.246, because Stellako's SD is well away from zero.
+For an SD at zero, such as Harrison's, the profile is flat and this interval is unreliable too: report the estimate and the AIC comparison.
+
+::::::::::::::::::::::::::::::::::::::::::::::::::
+
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: instructor
+
+Challenge 4 targets misconceptions M7 ("an SD at zero means the fit failed") and M13 ("an SD at zero proves there is no variation").
+If most learners choose (a) or (d), go back to the four checks for `walk_h` and the two equal negative log-likelihoods: the fit worked, and zero is the answer.
+If many choose (c), say that Episode 8 simulates data with Stellako's drift, and that 11 of 50 such data sets also give an SD of about zero.
+If answers are spread out, go back to the recipe's three checks.
+
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+:::::::::::::::::::::::::::::::::::::::: challenge
+
+### Challenge 4: A Stock That Did Not Drift (5 minutes)
+
+For Harrison, all four checks are TRUE, sd_walk is 0.000005, both starting values reach the same negative log-likelihood, and AIC is 266.36 for the random walk against 264.36 for the Ricker.
+Which statement is best?
+
+- (a) The fit failed.
+- (b) The data show no detectable drift: the random walk has collapsed to the Ricker and pays 2 AIC units for its extra parameter.
+- (c) Harrison's productivity has been exactly constant since 1948.
+- (d) The optimiser needs more iterations.
+
+:::::::::::::::::::::::: solution
+
+**(b).** The model works, and its answer is that these data show no drift that the model can detect.
+
+- (a): all four checks pass. An SD at zero is an answer, not a failure.
+- (b) is right.
+- (c): "no detectable drift" is weaker than "no drift". Small changes in productivity can hide in the yearly scatter. [Episode 8](08-simulation.Rmd) shows how often drift of Stellako's size is missed.
+- (d): both starting points reach the same negative log-likelihood, so more iterations would not change it.
+
+:::::::::::::::::::::::::
+
+::::::::::::::::::::::::::::::::::::::::::::::::::
+
+:::::::::::::::::::::::::::::::::::::::: callout
+
+### Add to Your Recipe Box
+
+Copy these functions into your `my-recipes.R`: `nll_walk()`, `start_walk()`.
+The finished box is [cookbook.R](files/cookbook.R).
+
+::::::::::::::::::::::::::::::::::::::::::::::::::
+
+:::::::::::::::::::::::::::::::::::::::: callout
+
+### In Your Field
+
+A growth rate that drifts across seasons, detection probability by survey year, a clinic's baseline rate by month: write the first value, the `diff()` steps and `[time]` in the prediction, and name the values in `random =`.
+
+::::::::::::::::::::::::::::::::::::::::::::::::::
+
+:::::::::::::::::::::::::::::::::::::::: keypoints
+
+- A random walk lets a parameter change a little each year; `diff()` gives the yearly steps, and one extra value carries the forecast year.
+- `random =` names the values RTMB averages over; only their standard deviation is estimated as a fixed parameter.
+- `ci_table(m, "random")` gives the yearly values with 95% intervals, ready to plot.
+- An SD estimated at zero means the data show no detectable variation. Check it from a tiny start and compare AIC with the simpler model (about + 2); do not report its interval.
+
+::::::::::::::::::::::::::::::::::::::::::::::::::
+

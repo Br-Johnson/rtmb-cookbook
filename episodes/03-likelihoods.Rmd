@@ -1,0 +1,560 @@
+---
+title: "Writing a Model as a Likelihood"
+teaching: 30
+exercises: 25
+---
+
+:::::::::::::::::::::::::::::::::::::::: questions
+
+- What is a likelihood, and why do we make its negative as small as possible?
+- How do I turn a model written in words into an R function?
+- How do I choose starting values?
+
+::::::::::::::::::::::::::::::::::::::::::::::::::
+
+:::::::::::::::::::::::::::::::::::::::: objectives
+
+- Write a negative log-likelihood function for a model given in words and one equation.
+- Make a data list and starting values for any stock with `make_dat()` and `start_ricker()`.
+- Compare guesses of the parameters by their negative log-likelihood.
+
+::::::::::::::::::::::::::::::::::::::::::::::::::
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(fig.width = 7, fig.height = 4, dpi = 150)
+```
+
+## Starting Point
+
+This episode opens steps 1 and 2 of the [Quick Start](02-quick-start.Rmd): the data list and the model.
+
+:::::::::::::::::::::::::::::::::::::::: prereq
+
+### Run This If You Are Starting Here
+
+If you have followed along, you already have these objects.
+If you are starting here or have restarted R, run this chunk first.
+It needs `data/sockeye.csv` in your project (see [Setup](../learners/setup.md)).
+This episode writes the first recipes of your recipe box, so it does not load `files/cookbook.R`.
+
+```{r starting-point, message=FALSE}
+library(RTMB)
+library(dplyr)
+library(ggplot2)
+sockeye  <- read.csv("data/sockeye.csv")
+my_stock <- filter(sockeye, stock == "Stellako")
+```
+
+::::::::::::::::::::::::::::::::::::::::::::::::::
+
+## A Model Has Three Parts
+
+Every model in this lesson describes one number per [brood year](../learners/reference.md#glossary): log(R/S), the log of [recruits per spawner](../learners/reference.md#glossary).
+A model of that number has three parts:
+
+- an **expected value**, `mu`: the value of log(R/S) that the model expects in a year with S spawners;
+- a **spread**, `sigma`: how far single years typically scatter around the expected value, as a standard deviation (SD);
+- a **distribution**: the shape of that scatter, here the normal (bell-shaped) distribution.
+
+![
+The three parts of a model: an expected value, a spread and a distribution.
+](fig/three-parts.svg){
+alt="A falling straight line of expected log recruits per spawner against spawners, with grey points, one per year, scattered around it. Three identical bell-shaped curves are drawn sideways on the line at low, middle and high spawner values. Labels point to the line (expected value, mu), the width of a bell (spread, sigma) and the bell shape (normal distribution)."
+}
+
+The [Ricker model](../learners/reference.md#glossary) from the Quick Start, written as one equation, is:
+
+$$\log(R/S) = \log\alpha - S/S_{max} + \varepsilon, \qquad \varepsilon \sim \mathrm{Normal}(0, \sigma)$$
+
+Read aloud: each spawner produces alpha recruits when spawners are few; recruits per spawner fall as spawners increase; the most recruits come from [S_max](../learners/reference.md#glossary) spawners; single years scatter around the curve with standard deviation [sigma](../learners/reference.md#glossary).
+The first two terms are the expected value, `mu`, and $\varepsilon$ is the scatter of single years.
+
+The model has three [parameters](../learners/reference.md#glossary), the unknown numbers it estimates from the data.
+
+Table: Parameters of the Ricker model.
+
+| Parameter | Meaning | Units | Estimated as |
+|---|---|---|---|
+| alpha | recruits per spawner when spawners are few ([productivity](../learners/reference.md#glossary)) | recruits per spawner | `log_alpha` |
+| S_max | spawners that produce the most recruits | thousands of fish | `log_Smax` |
+| sigma | spread of single years around the curve | log units | `log_sigma` |
+
+All three must be positive, so the model estimates their logs, the names in the last column.
+Challenge 4 asks why.
+
+:::::::::::::::::::::::::::::::::::::::: spoiler
+
+### Why a Normal Distribution for log(R/S)? (optional)
+
+Survival from egg to adult is the product of many chances.
+The log of a product is a sum of many small pieces, and sums of many small pieces tend to follow a normal distribution.
+[Episode 7](07-residuals.Rmd) checks whether this holds.
+
+::::::::::::::::::::::::::::::::::::::::::::::::::
+
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: instructor
+
+Draw the three parts on the board before any code: a falling line, a bell on its side at three places along it, and the labels mu, sigma and normal.
+The surprise-score picture later in this episode is all the theory learners need: do not derive the likelihood.
+This section takes about 5 minutes.
+
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+## Recipe: Make a Data List for Any Stock
+
+**Use it when:** you start a model for one stock.
+
+**Ingredients:** one stock's data frame (`my_stock`) and the spawner count to forecast for (`S_new`).
+
+A [data list](../learners/reference.md#glossary) is a named list that holds everything the model function uses apart from the parameters.
+`make_dat()` packages the Quick Start's `dat` list as a function, so it works for any stock.
+
+```{r recipe-make-dat, purl=TRUE}
+make_dat <- function(df, S_new) {
+  list(S     = df$spawners,                                    # spawners
+       logRS = log(df$recruits / df$spawners),                 # log(recruits per spawner)
+       year  = df$brood_year - min(df$brood_year) + 1,         # 1, 2, 3, ... (gaps allowed)
+       S_new = S_new)                                          # spawners for a forecast
+}
+dat <- make_dat(my_stock, S_new = 50)
+str(dat)
+```
+
+The list has four elements, and each has a different job:
+
+- `S` holds the inputs: spawners in each brood year, in thousands of fish;
+- `logRS` holds the observations, the values the model describes;
+- `year` is an index: 1 for the first brood year, 2 for the next, and so on.
+  When a brood year is missing from the data, its number is skipped, so the index still matches the calendar;
+- `S_new` is the forecast input: the spawner count, in thousands, to forecast for.
+
+**Check it worked:** `S`, `logRS` and `year` have one value per row of `my_stock` (`r nrow(my_stock)` for Stellako). Put up a green sticky note when `str(dat)` shows them.
+
+:::::::::::::::::::::::::::::::::::::::: callout
+
+### Which S_new?
+
+We forecast for the average spawner count of the last four brood years, `mean(tail(my_stock$spawners, 4))`.
+For Stellako this is `r round(mean(tail(my_stock$spawners, 4)), 1)` thousand spawners, and the lesson rounds it to 50.
+`tail()` takes the last four rows, so the rows must be in brood-year order, as they are in `sockeye.csv`.
+
+::::::::::::::::::::::::::::::::::::::::::::::::::
+
+## Recipe: Write a Negative Log-Likelihood
+
+**Use it when:** you write any model.
+
+**Ingredients:** the parameter names (the table above), the data list and the equation.
+
+A model function takes the parameters (`par`) and the data list (`dat`), and returns the [negative log-likelihood](../learners/reference.md#glossary): a score of how surprising the data are for those parameter values.
+
+```{r recipe-nll-ricker, purl=TRUE}
+nll_ricker <- function(par, dat) {
+  getAll(par, dat)
+  logRS <- OBS(logRS)                                  # these are the observations
+  mu     <- log_alpha - S / exp(log_Smax)              # expected log(R/S)
+  mu_new <- log_alpha - S_new / exp(log_Smax)          # ... for the forecast
+  ADREPORT(mu_new)
+  -sum(dnorm(logRS, mu, exp(log_sigma), log = TRUE))   # negative log-likelihood
+}
+```
+
+Nothing is printed: the chunk only defines the function.
+Every model function in this lesson has the same five parts, in this order:
+
+1. **Unpack.**
+   `getAll(par, dat)` makes every parameter and every element of the data list available by name, so you can write `log_alpha` instead of `par$log_alpha`.
+2. **Mark the observations.**
+   `logRS <- OBS(logRS)` tells RTMB which values are the observations.
+   [OBS()](../learners/reference.md#glossary) is needed later for residuals ([Episode 7](07-residuals.Rmd)) and simulations ([Episode 8](08-simulation.Rmd)).
+3. **Predict.**
+   `mu` is the expected log(R/S) for every year at once: `S` holds one value per year, so `mu` does too.
+   `mu_new` is the expected value for `S_new` spawners, for the forecast, and [ADREPORT()](../learners/reference.md#glossary) asks RTMB for its [standard error](../learners/reference.md#glossary) ([Episode 5](05-uncertainty.Rmd)).
+4. **Score.**
+   `dnorm(logRS, mu, exp(log_sigma), log = TRUE)` gives, for each year, the log of how probable its observation is under a normal distribution with mean `mu` and SD sigma.
+5. **Return the negative of the sum.**
+   The minus sign turns "more probable" into "less surprising", so that smaller is better.
+
+To make step 4 concrete, take Stellako's first brood year, 1948.
+How probable is its log(R/S) if the model expects 2, with an SD of 1?
+And if the model expects 0?
+
+```{r dnorm-one-year}
+dat$logRS[1]
+dnorm(dat$logRS[1], mean = 2, sd = 1)
+dnorm(dat$logRS[1], mean = 0, sd = 1)
+```
+
+The observed value, `r round(dat$logRS[1], 2)`, is about `r round(dnorm(dat$logRS[1], 2, 1) / dnorm(dat$logRS[1], 0, 1))` times more probable when the model expects 2 than when it expects 0.
+The [likelihood](../learners/reference.md#glossary) of a set of parameter values is how probable all the observations are together: the product of one such number per year.
+Multiplying 74 small numbers gives a tiny number, so we add their logs instead (`log = TRUE`): the log of a product is the sum of the logs.
+The [optimiser](../learners/reference.md#glossary), the function that fits the model, always looks for the smallest value, so the function returns minus that sum: the negative log-likelihood.
+
+**Check it worked:** the chunk runs with no error (the next recipe tests the function). Put up a green sticky note when it runs.
+
+:::::::::::::::::::::::::::::::::::::::: caution
+
+### Return the Negative
+
+End with `-sum(...)`.
+Without the minus sign the optimiser makes the score as large as possible instead of as small as possible.
+[Episode 4](04-fit-and-check.Rmd) shows what happens then.
+
+::::::::::::::::::::::::::::::::::::::::::::::::::
+
+## Recipe: Starting Values from the Data
+
+**Use it when:** you fit any model.
+
+**Ingredients:** the data list, and the model function to test the values with.
+
+The optimiser needs [starting values](../learners/reference.md#glossary): the parameter values where its search begins.
+The rule: start every parameter at a typical value from the data.
+That is log_alpha at the average log(R/S), S_max at the average spawner count, and sigma at the spread of log(R/S).
+
+```{r recipe-start-ricker, purl=TRUE}
+start_ricker <- function(dat) {
+  list(log_alpha = mean(dat$logRS), log_Smax = log(mean(dat$S)), log_sigma = log(sd(dat$logRS)))
+}
+start_ricker(dat)
+obj <- MakeADFun(function(p) nll_ricker(p, dat), start_ricker(dat), silent = TRUE)
+obj$fn(obj$par)
+obj$gr(obj$par)
+```
+
+The starting values are on the [log scale](../learners/reference.md#glossary).
+On the natural scale they are `r round(exp(start_ricker(dat)$log_alpha), 1)` recruits per spawner for alpha, `r round(exp(start_ricker(dat)$log_Smax))` thousand spawners for S_max, and `r round(exp(start_ricker(dat)$log_sigma), 2)` for sigma.
+
+`MakeADFun()` turns your function into an object, `obj`.
+`obj$fn()` returns the negative log-likelihood for any parameter values: here `r round(obj$fn(obj$par), 1)` at the starting values.
+A finite number means the starting values work; `NaN` or `Inf` means they do not.
+`obj$gr()` returns the slope of the score for each parameter, which statisticians call the [gradient](../learners/reference.md#glossary).
+The three slopes (`r paste(round(obj$gr(obj$par)), collapse = ", ")`) are far from zero, so these are not the best values: fitting walks downhill from here until every slope is zero ([Episode 4](04-fit-and-check.Rmd)).
+
+**Check it worked:** `obj$fn(obj$par)` is a finite number (`r round(obj$fn(obj$par), 1)` for Stellako). Put up a green sticky note when it prints.
+
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: instructor
+
+Ask for sticky notes when `obj$fn(obj$par)` prints 144.8.
+The usual problems are a name typed differently in `nll_ricker` and in `start_ricker` (R says `object '...' not found`, with the name it could not find), and a missing `getAll()` line (the spoiler below shows this error).
+The three recipes so far take about 15 minutes together.
+
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+:::::::::::::::::::::::::::::::::::::::: spoiler
+
+### What getAll() Does (optional)
+
+`getAll()` copies every element of `par` and `dat` into the function, so you can write `log_alpha` instead of `par$log_alpha`.
+Without it, R cannot find the parameters:
+
+```{r getall-missing, error=TRUE}
+nll_broken <- function(par, dat) {
+  logRS <- OBS(dat$logRS)
+  mu <- log_alpha - dat$S / exp(log_Smax)
+  -sum(dnorm(logRS, mu, exp(log_sigma), log = TRUE))
+}
+MakeADFun(function(p) nll_broken(p, dat), start_ricker(dat), silent = TRUE)
+```
+
+The error names the first parameter R could not find.
+The same message appears when a name in the function differs from the name in the starting values; the [Troubleshooting](../learners/troubleshooting.md) page lists both causes.
+
+::::::::::::::::::::::::::::::::::::::::::::::::::
+
+## Score Any Guess
+
+`obj$fn()` scores any parameter values, not only the starting values.
+Here are three guesses at the Ricker curve for Stellako, drawn over the data.
+All three use the same spread (sigma = 0.9), so only the curves differ.
+
+```{r plot-guesses, fig.width=6, fig.height=4, fig.alt="Scatter plot of Stellako recruits against spawners, both in thousands of fish, with three guessed curves. Most points have 10 to 100 thousand spawners and 10 to 1900 thousand recruits. Guess A (solid) rises to about 490 thousand recruits near 120 thousand spawners and then declines slowly, to about 340 thousand at 250 thousand spawners. Guess B (dotted) keeps rising, to about 1300 thousand at 250 thousand spawners. Guess C (dashed) peaks near 300 thousand at 50 thousand spawners and then falls to about 30 thousand."}
+# Three guesses at the curve (plotting code: you do not need to type this)
+S_grid  <- seq(1, 250, by = 1)
+guesses <- bind_rows(
+  data.frame(guess = "A", S = S_grid, R = S_grid * exp(2.4 - S_grid / 120)),
+  data.frame(guess = "B", S = S_grid, R = S_grid * exp(1.9 - S_grid / 1000)),
+  data.frame(guess = "C", S = S_grid, R = S_grid * exp(2.8 - S_grid / 50)))
+ggplot(my_stock, aes(x = spawners, y = recruits)) +
+  geom_point(colour = "grey40") +
+  geom_line(data = guesses, aes(x = S, y = R, linetype = guess)) +
+  scale_linetype_manual(values = c(A = "solid", B = "dotted", C = "dashed")) +
+  labs(x = "Spawners (thousands)", y = "Recruits (thousands)", linetype = "Guess")
+```
+
+:::::::::::::::::::::::::::::::::::::::: challenge
+
+### Challenge 1: Which Guess Fits Best? (3 minutes)
+
+The plot shows three guesses at the curve.
+Which will have the smallest negative log-likelihood?
+Write down your answer, then run the next chunk.
+
+:::::::::::::::::::::::: solution
+
+Guess A has the smallest negative log-likelihood (96.15), so it describes the data best of the three.
+
+- A (96.15) runs through the middle of the points.
+- B (101.74) keeps rising, so it runs above most of the years with many spawners, where recruits were often low.
+- C (112.70) falls far too fast, so the years with many spawners and many recruits are very surprising.
+
+:::::::::::::::::::::::::
+
+::::::::::::::::::::::::::::::::::::::::::::::::::
+
+```{r score-guesses}
+guess_A <- c(log_alpha = 2.4, log_Smax = log(120),  log_sigma = log(0.9))
+guess_B <- c(log_alpha = 1.9, log_Smax = log(1000), log_sigma = log(0.9))
+guess_C <- c(log_alpha = 2.8, log_Smax = log(50),   log_sigma = log(0.9))
+c(A = obj$fn(guess_A), B = obj$fn(guess_B), C = obj$fn(guess_C))
+```
+
+The negative log-likelihood is a surprise score: how surprised the model is by the data, given the parameter values.
+Smaller is better.
+Guess A scores `r round(obj$fn(guess_A), 2)`, close to 96.13, the best score that fitting found in step 3 of the Quick Start.
+Fitting ([Episode 4](04-fit-and-check.Rmd)) searches for the least surprising values automatically, beginning at the starting values.
+
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: instructor
+
+Misconception to listen for: "the likelihood is the probability that the parameters are right".
+Answer: "it scores the data, given the parameters".
+If most learners chose B or C in Challenge 1, point at the plot: the score adds up one surprise per point, and a curve far from many points is very surprised by them.
+
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+:::::::::::::::::::::::::::::::::::::::: callout
+
+### If You Know lm()
+
+`lm(logRS ~ spawners)` fits the Ricker model too.
+The RTMB numbers below are the fitted values for Stellako from the Quick Start.
+
+Table: The output of lm() for Stellako and the same quantities from the Ricker model fitted with RTMB.
+
+| `lm(logRS ~ spawners)` reports | RTMB equivalent |
+|---|---|
+| intercept 2.3797 | `log_alpha` 2.3797 |
+| slope -0.008163 | -1 / S_max, so S_max = 122.5 |
+| `logLik()` -96.128 | minus the negative log-likelihood, 96.128 |
+| residual standard error 0.899 | sigma 0.887 (`lm()` divides by n - 2) |
+
+`lm()` fits the same model by maximum likelihood: you have been using likelihoods all along.
+RTMB lets you write models that `lm()` cannot.
+
+::::::::::::::::::::::::::::::::::::::::::::::::::
+
+Now that you know what the score means, put the model function back together from its lines.
+
+:::::::::::::::::::::::::::::::::::::::: challenge
+
+### Challenge 2: Put the Model in Order (5 minutes)
+
+Put these lines in order to make `nll_ricker`.
+Two lines do not belong: which, and why?
+
+```r
+-sum(dnorm(logRS, mu, exp(log_sigma), log = TRUE))
+ADREPORT(mu_new)
+nll_ricker <- function(par, dat) {
+sum(dnorm(logRS, mu, exp(log_sigma), log = TRUE))
+mu     <- log_alpha - S / exp(log_Smax)
+}
+getAll(par, dat)
+-sum(dnorm(logRS, mu, log_sigma, log = TRUE))
+logRS <- OBS(logRS)
+mu_new <- log_alpha - S_new / exp(log_Smax)
+```
+
+:::::::::::::::::::::::: solution
+
+Between the first line and the closing brace, the order is: unpack, mark the observations, predict, score.
+
+```{r ch2-solution}
+nll_ricker <- function(par, dat) {
+  getAll(par, dat)
+  logRS <- OBS(logRS)                                  # these are the observations
+  mu     <- log_alpha - S / exp(log_Smax)              # expected log(R/S)
+  mu_new <- log_alpha - S_new / exp(log_Smax)          # ... for the forecast
+  ADREPORT(mu_new)
+  -sum(dnorm(logRS, mu, exp(log_sigma), log = TRUE))   # negative log-likelihood
+}
+```
+
+The `mu` and `mu_new` lines may swap, but `ADREPORT(mu_new)` must come after `mu_new`.
+
+The two lines that do not belong:
+
+- `sum(dnorm(logRS, mu, exp(log_sigma), log = TRUE))` has no minus sign, so it returns the log-likelihood.
+  The optimiser would then make the data as surprising as possible, and the value it returns runs off to minus infinity ([Episode 4](04-fit-and-check.Rmd) shows this).
+- `-sum(dnorm(logRS, mu, log_sigma, log = TRUE))` uses `log_sigma` as a standard deviation.
+  It can be negative: Stellako's starting value is `r round(start_ricker(dat)$log_sigma, 3)`, and a negative SD makes `dnorm()` return `NaN`.
+
+:::::::::::::::::::::::::
+
+::::::::::::::::::::::::::::::::::::::::::::::::::
+
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: instructor
+
+This challenge targets misconception M1 (returning the log-likelihood instead of its negative).
+If many learners keep the line without the minus sign, go back to the surprise score: the optimiser always looks for the smallest value, and we want the smallest surprise.
+If you are behind, cut this challenge (third on the list of cuts in the instructor notes) and tell learners that its solution is on the page.
+
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+## A New Curve: Beverton-Holt
+
+In the [Beverton-Holt model](../learners/reference.md#glossary), recruits per spawner fall smoothly as spawners increase, and the total number of recruits levels off instead of turning down:
+
+$$\log(R/S) = \log\alpha - \log(1 + S/S_{half}) + \varepsilon$$
+
+Read aloud: when spawners are few, each spawner produces alpha recruits; as spawners increase, recruits per spawner fall, so that total recruits approach a ceiling.
+[S_half](../learners/reference.md#glossary) is the spawner count that gives half of the maximum recruits.
+Compared with the Ricker model, only the lines that compute `mu` and `mu_new` change: the data list, the score line and the rule for starting values stay the same.
+
+:::::::::::::::::::::::::::::::::::::::: challenge
+
+### Challenge 3: Write the Beverton-Holt Model (10 minutes)
+
+Fill in the blanks, then check that the function returns a finite number at the starting values.
+
+```r
+nll_bh <- function(par, dat) {
+  getAll(par, dat)
+  logRS <- OBS(logRS)
+  mu     <- log_alpha - log(1 + ___ / exp(log_Shalf))
+  mu_new <- log_alpha - log(1 + ___ / exp(log_Shalf))
+  ADREPORT(mu_new)
+  -sum(dnorm(___, ___, exp(log_sigma), log = TRUE))
+}
+start_bh <- function(dat) {
+  list(log_alpha = mean(dat$logRS), log_Shalf = ___, log_sigma = log(sd(dat$logRS)))
+}
+obj_bh <- MakeADFun(function(p) nll_bh(p, dat), start_bh(dat), silent = TRUE)
+obj_bh$fn(obj_bh$par)
+```
+
+:::::::::::::::::::::::: hint
+
+S_half has the same units as spawners, so start it like S_max.
+
+:::::::::::::::::::::::::
+
+:::::::::::::::::::::::: solution
+
+```{r ch3-solution}
+nll_bh <- function(par, dat) {
+  getAll(par, dat)
+  logRS <- OBS(logRS)
+  mu     <- log_alpha - log(1 + S / exp(log_Shalf))
+  mu_new <- log_alpha - log(1 + S_new / exp(log_Shalf))
+  ADREPORT(mu_new)
+  -sum(dnorm(logRS, mu, exp(log_sigma), log = TRUE))
+}
+start_bh <- function(dat) {
+  list(log_alpha = mean(dat$logRS), log_Shalf = log(mean(dat$S)), log_sigma = log(sd(dat$logRS)))
+}
+obj_bh <- MakeADFun(function(p) nll_bh(p, dat), start_bh(dat), silent = TRUE)
+obj_bh$fn(obj_bh$par)
+```
+
+The negative log-likelihood at the starting values is a finite number, `r round(obj_bh$fn(obj_bh$par), 1)`, so the function and its starting values work.
+`mu` uses the spawners in each year (`S`) and `mu_new` the spawners for the forecast (`S_new`); the score compares the observations (`logRS`) with their expected values (`mu`).
+Keep `nll_bh` and `start_bh`: [Episode 9](09-model-selection.Rmd) compares the Beverton-Holt model with the Ricker.
+
+:::::::::::::::::::::::::
+
+::::::::::::::::::::::::::::::::::::::::::::::::::
+
+Both models estimate every positive quantity on the log scale and use `exp()` inside the function.
+
+:::::::::::::::::::::::::::::::::::::::: challenge
+
+### Challenge 4: Why the Log Scale? (3 minutes)
+
+Why do we estimate `log_sigma` and use `exp(log_sigma)` in the model?
+
+- (a) Sigma must be positive; on the log scale the optimiser can try any number, and `exp()` keeps sigma positive.
+- (b) It makes fitting faster.
+- (c) Because the data are on the log scale.
+- (d) Because `dnorm()` needs a logged standard deviation.
+
+:::::::::::::::::::::::: solution
+
+(a).
+
+- (a) Right: a standard deviation must be positive, and `exp()` of any number is positive.
+  Whatever value the optimiser tries for `log_sigma`, sigma stays positive.
+  The same holds for alpha, S_max and S_half.
+- (b) Speed is not the reason: the log scale keeps the parameter in its allowed range.
+- (c) `log_Smax` is on the log scale too, and S is not logged.
+  The reason is that the parameter must be positive, not the scale of the data.
+- (d) `dnorm()` takes the standard deviation itself, which is why the model passes it `exp(log_sigma)`.
+
+:::::::::::::::::::::::::
+
+::::::::::::::::::::::::::::::::::::::::::::::::::
+
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: instructor
+
+If many learners choose (c), point to `log_Smax`: S_max is on the log scale although spawners are not.
+If many choose (d), point to the score line, where `dnorm()` receives `exp(log_sigma)`, the standard deviation itself.
+If answers are spread out, go back to the starting values: `log_sigma` is -0.027 for Stellako, a number that would be impossible as a standard deviation.
+
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+:::::::::::::::::::::::::::::::::::::::: challenge
+
+### Challenge 5: Your Turn: Upper Pitt River, Row 1 (4 minutes)
+
+Make the data list for Upper Pitt River with `S_new` set to the average spawner count of its last four brood years.
+Check that the Ricker model returns a finite number at the starting values.
+Then add `S_new` to row 1 of your report card.
+Use the names `pitt`, `dat_pitt` and `obj_pitt`, so that the Stellako objects stay as they are.
+
+:::::::::::::::::::::::: solution
+
+```{r ch5-solution}
+pitt     <- filter(sockeye, stock == "Upper Pitt River")
+dat_pitt <- make_dat(pitt, S_new = mean(tail(pitt$spawners, 4)))
+dat_pitt$S_new
+obj_pitt <- MakeADFun(function(p) nll_ricker(p, dat_pitt), start_ricker(dat_pitt), silent = TRUE)
+obj_pitt$fn(obj_pitt$par)
+```
+
+The negative log-likelihood at the starting values is a finite number, `r round(obj_pitt$fn(obj_pitt$par), 1)`, so the Ricker model and its starting values work for this stock too.
+The average spawner count of the last four brood years (2018 to 2021) is `r round(dat_pitt$S_new, 1)` thousand, much lower than the 50 thousand used for Stellako.
+
+Row 1: "Upper Pitt River, brood years 1948-2021, 74 years, spawners 2.1 to 74.6 thousand; S_new = 5.3 thousand spawners (the average of brood years 2018-2021)."
+In `report-card.R` it reads `# Row 1 (data): Upper Pitt River, brood years 1948-2021, 74 years, spawners 2.1 to 74.6 thousand; S_new = 5.3 thousand spawners.`
+
+:::::::::::::::::::::::::
+
+::::::::::::::::::::::::::::::::::::::::::::::::::
+
+:::::::::::::::::::::::::::::::::::::::: callout
+
+### Add to Your Recipe Box
+
+Copy these functions into your `my-recipes.R`: `make_dat()`, `nll_ricker()`, `start_ricker()`, `nll_bh()`, `start_bh()`.
+The finished box is [cookbook.R](files/cookbook.R).
+From the next episode on, the Starting Point loads it.
+
+::::::::::::::::::::::::::::::::::::::::::::::::::
+
+:::::::::::::::::::::::::::::::::::::::: callout
+
+### In Your Field
+
+RTMB has the same density functions as R: counts per plot use `dpois(count, exp(mu), log = TRUE)`, yes-or-no outcomes use `dbinom()`, positive skewed measurements use `dlnorm()` or `dgamma()`.
+Only the score line changes.
+
+::::::::::::::::::::::::::::::::::::::::::::::::::
+
+:::::::::::::::::::::::::::::::::::::::: keypoints
+
+- A model has an expected value, a spread and a distribution. The negative log-likelihood scores how surprising the data are for given parameter values: smaller is better.
+- Write it as a function of `par` and `dat` that starts with `getAll()` and `OBS()` and ends with `-sum(dnorm(..., log = TRUE))`.
+- Estimate positive quantities on the log scale, and start each parameter at a typical value from the data.
+- Check that `obj$fn(obj$par)` is a finite number before you fit.
+
+::::::::::::::::::::::::::::::::::::::::::::::::::
