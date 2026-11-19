@@ -71,7 +71,8 @@ These are on the scale the model uses: the [log scale](../learners/reference.md#
 A reader cannot do much with "`log_Smax` is 4.81 with standard error 0.27".
 They need a [confidence interval](../learners/reference.md#glossary) (CI) on the natural scale, that is, in the original units, such as thousands of spawners.
 A confidence interval is a range of values for a parameter that is consistent with the data; this lesson uses 95%.
-In step 5 of the Quick Start you made one by hand for S_max.
+Going back from the log scale to the natural scale with `exp()` is called a [back-transform](../learners/reference.md#glossary).
+In step 5 of the Quick Start you made a 95% confidence interval for S_max by hand in this way.
 Try it for alpha in Challenge 1, before the next recipe does it for every parameter.
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: instructor
@@ -121,7 +122,6 @@ exp(est["log_alpha", "Estimate"] + c(-1.96, 1.96) * est["log_alpha", "Std. Error
 **Ingredients:** a fitted model.
 
 For a parameter estimated on the log scale, there is one rule: add and subtract 1.96 standard errors on the log scale, then `exp()` all three numbers (the lower end, the estimate and the upper end).
-Going back to the natural scale with `exp()` is called a [back-transform](../learners/reference.md#glossary).
 `ci_table()` does this for every parameter at once.
 If you ran the Starting Point chunk, it is already loaded from `cookbook.R`; type it anyway, so that you know what it does.
 

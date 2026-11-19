@@ -52,17 +52,17 @@ c(ricker = all(ricker$checks), walk = all(walk$checks))
 
 ## What a Good Residual Looks Like
 
-Both Stellako models pass all four checks of [Episode 4](04-fit-and-check.Rmd), so both fits can be used.
-The four checks ask whether the optimiser found the best values.
+Both Stellako models pass the [four checks](../learners/reference.md#glossary) from [Episode 4](04-fit-and-check.Rmd), so both fits can be used.
+The four checks ask whether the [optimiser](../learners/reference.md#glossary) found the best values.
 They do not ask whether the model describes the data.
-A model can be fitted perfectly and still miss something important: the Ricker model, for example, assumes that productivity never changes.
+A model can be fitted perfectly and still miss something important: the Ricker model, for example, assumes that [productivity](../learners/reference.md#glossary) never changes.
 This episode checks each model against the data with residuals.
 
 A [residual](../learners/reference.md#glossary) is how far an observation is from what the model expected, on a standard scale.
 If the model describes the data, its residuals behave like independent draws from a standard normal distribution, the bell curve with mean 0 and standard deviation (SD) 1.
 That gives three things to check:
 
-- **no shape:** the residuals are bell-shaped, with no more extreme values than a normal distribution gives;
+- **the right shape:** the residuals are bell-shaped, with no more extreme values than a normal distribution gives;
 - **no pattern:** they do not rise or fall with brood year or with spawners;
 - **no memory:** one year's residual says nothing about the next year's.
 
@@ -73,15 +73,17 @@ A residual of -2 means that the year was two SDs below what the earlier years le
 
 - For the Ricker, earlier years do not change the prediction, because productivity is the same in every year.
   Its residual is the observed minus the expected log(R/S), divided by [sigma](../learners/reference.md#glossary), the yearly scatter.
-- For the random walk, earlier years tell the model where productivity has drifted to.
-  The prediction for 2005 uses only the years up to 2004.
+- For the [random walk](../learners/reference.md#glossary), earlier years tell the model where productivity has drifted to.
+  The prediction for 2005 uses the observations up to 2004; the [fixed parameters](../learners/reference.md#glossary), such as sigma, were estimated from all years.
+  [Episode 11](11-forecasting.Rmd) goes further and refits the model to the earlier years only.
 
-This is why one-step-ahead residuals work for models with and without [random effects](../learners/reference.md#glossary).
+The productivity used to predict 2005 comes from the years before 2005, not from 2005 itself, so the [random effects](../learners/reference.md#glossary) cannot absorb the 2005 surprise.
+This is why one-step-ahead residuals work for models with and without random effects.
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: instructor
 
 Open with the contrast: the four checks test the fit, residuals test the model.
-Learners who know `lm()` expect residuals to be "observed minus fitted"; say that for random-effect models these look too good (misconception M8, in the optional spoiler below) and that the lesson uses one kind of residual for every model.
+Learners who know `lm()` expect residuals to be "observed minus fitted"; say that for random-effect models these are too small and not independent (misconception M8, in the optional spoiler below), and that the lesson uses one kind of residual for every model.
 This section takes about 3 minutes; do not explain how `oneStepPredict()` computes the prediction beyond the two bullet points.
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -106,9 +108,10 @@ round(c(mean = mean(my_stock$res_walk), sd = sd(my_stock$res_walk)), 2)
 
 Read the function from the inside out:
 
-- `oneStepPredict()` finds the observations through `OBS()` in the model function, and returns one residual per row of the data, in the same order as the rows;
-- `method = "fullGaussian"` is exact when the data and the random effects are normal, as in every model in this lesson;
-- `trace = FALSE` stops it printing its progress.
+- `oneStepPredict()` finds the observations through `OBS()` in the model function, and returns a table with one row per row of the data, in the same order;
+- `method = "fullGaussian"` is exact when the data are normal and the random effects are normal and added to the expected log(R/S), as in every model in this lesson;
+- `trace = FALSE` keeps it quiet (other methods print their progress);
+- `$residual` keeps the residual column of that table.
 
 The Ricker residuals have mean 0.00 and SD 1.01; the random walk's have mean -0.13 and SD 1.00.
 Both are close to the 0 and 1 of a standard normal distribution.
@@ -123,9 +126,11 @@ Put up a green sticky note when both lines print.
 
 ### Rows Must Be in Time Order
 
-One-step-ahead residuals condition on the rows before each row.
-`sockeye.csv` is sorted by stock and brood year; sort your own data with `arrange()` before you build the model.
-If the rows are shuffled, the fit is the same but the residuals are wrong, and R gives no warning.
+Each one-step-ahead prediction uses the rows above it in the data.
+`sockeye.csv` is sorted by stock and brood year.
+Sort your own data by year before you build the model, for example with `my_stock <- arrange(my_stock, brood_year)`.
+If the rows are not in time order, the fit is the same, but a random-walk model's residuals no longer use the years before each year, and `lag1()` pairs rows that are not neighbouring years.
+R gives no warning.
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::
 
@@ -133,8 +138,8 @@ If the rows are shuffled, the fit is the same but the residuals are wrong, and R
 
 ### Why Not Observed Minus Fitted? (optional)
 
-For a model with random effects, the fitted yearly values have already "seen" each data point, so ordinary residuals look too good.
-For the Stellako random walk, observed-minus-fitted residuals have standard deviation 0.96 and lag-1 correlation -0.17; one-step-ahead residuals have 1.00 and -0.10.
+For a model with random effects, the fitted yearly values have already used each year's observation, so ordinary residuals are too small and are not independent from year to year, even when the model is right.
+For the Stellako random walk, observed-minus-fitted residuals have standard deviation 0.96 (instead of about 1) and lag-1 correlation -0.17, against 1.00 and -0.10 for one-step-ahead residuals.
 The lesson does not teach the observed-minus-fitted calculation: use `osa_residuals()` for every model.
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -148,7 +153,7 @@ The lesson does not teach the observed-minus-fitted calculation: use `osa_residu
 Each check answers one question: shape, pattern or independence.
 
 **Shape: are the residuals bell-shaped?**
-A quantile-quantile (QQ) plot sorts the residuals from smallest to largest and plots each one against the value that a standard normal distribution would put in the same place.
+A [quantile-quantile (QQ) plot](../learners/reference.md#glossary) sorts the residuals from smallest to largest and plots each one against the value that a standard normal distribution would put in the same place (the expected quantile, on the x axis).
 Points on the line mean the normal distribution fits.
 
 ```{r recipe-check-shape, purl=TRUE, fig.width=6, fig.height=4, fig.alt="Normal quantile-quantile plot of the Stellako Ricker one-step-ahead residuals. The points follow the straight line closely in the middle, for expected quantiles between about minus 1.3 and plus 1.3. The lowest point, at about minus 4.2 (brood year 2005), lies far below the line; the next few lowest points and the few highest points lie a little below it."}
@@ -162,14 +167,29 @@ The points follow the line closely in the middle, but not at the ends.
 The few highest points lie a little below the line: the best years were not quite as good as a normal distribution would give.
 The lowest points also lie below the line: the worst years were worse than a normal distribution would give.
 The lowest of all, at -4.2, lies far below it.
-`filter()` finds the year behind it:
+
+The random walk lets productivity drift from year to year.
+Predict before you run it: will the random walk's QQ plot still have a point far below the line?
+Write down yes or no.
+Then change `res_ricker` to `res_walk` in `aes()` and `(Ricker)` to `(random walk)` in the label, and run the chunk again.
+
+It does: the random walk's lowest point is at -4.4, still far below the line, although its other low points lie closer to the line than the Ricker's.
+`filter()` finds the year behind the lowest point:
 
 ```{r extreme-year}
 filter(my_stock, res_ricker < -3)
 ```
 
-It is brood year 2005, when 102 thousand spawners produced only 11.6 thousand recruits.
-Change `res_ricker` to `res_walk` in the plot and run it again: the random walk's QQ plot is much the same, with 2005 at -4.4.
+It is brood year 2005 in both models: 102 thousand spawners produced only 11.6 thousand recruits.
+A slow drift in productivity cannot predict one sudden poor year.
+
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: instructor
+
+Give learners a minute to write down their prediction before you run the random walk's QQ plot.
+Many expect the random walk to remove 2005; it cannot, because productivity drifts slowly and 2005 was one sudden poor year.
+For scale: the lowest of 74 draws from a standard normal distribution is usually about -2.4, and a value as low as -4.2 turns up in about 1 series in 1000.
+
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 **Pattern: does anything change with brood year or spawners?**
 Plot the residuals against brood year, and against spawners.
@@ -186,23 +206,23 @@ ggplot(res_long, aes(x = brood_year, y = residual)) +
   labs(x = "Brood year", y = "One-step-ahead residual")
 ```
 
-The bottom panel is the plot from the Quick Start.
-The Ricker residuals are mostly above zero before 1990 (they average +`r round(mean(my_stock$res_ricker[my_stock$brood_year < 1990]), 2)`) and mostly below zero after 2000 (average `r round(mean(my_stock$res_ricker[my_stock$brood_year > 2000]), 2)`).
+The bottom panel is the plot from the Quick Start: the Ricker residuals are mostly above zero before 1990 and mostly below zero after 2000.
 The random walk's residuals in the top panel cross zero often, with no long runs above or below it.
 
-```{r check-pattern-spawners, purl=TRUE, fig.width=6, fig.height=4, fig.alt="Scatter plot of Stellako Ricker one-step-ahead residuals against spawners in thousands, with a dashed line at zero. Most points are below 100 thousand spawners and scatter evenly around zero, with no curved pattern. The lowest point, near minus 4.2, is at about 100 thousand spawners."}
+```{r check-pattern-spawners, purl=TRUE, fig.width=6, fig.height=4, fig.alt="Scatter plot of Stellako Ricker one-step-ahead residuals against spawners in thousands, with a dashed line at zero. Most points are below 80 thousand spawners and scatter around zero, between about minus 2.2 and plus 1.7, with no clear curve. Six of the seven points above 105 thousand spawners lie above zero. The lowest point, near minus 4.2, is at about 100 thousand spawners."}
 ggplot(my_stock, aes(x = spawners, y = res_ricker)) +
   geom_hline(yintercept = 0, linetype = "dashed") +
   geom_point() +
   labs(x = "Spawners (thousands)", y = "One-step-ahead residual (Ricker)")
 ```
 
-Against spawners, the points scatter evenly around zero, with no curve: the shape of the Ricker curve fits these data.
-Change `res_ricker` to `res_walk` to check the random walk: it gives the same picture.
+Against spawners there is no clear curve: the points scatter around zero.
+Six of the seven years with more than 105 thousand spawners are above zero, but they are too few to judge; [Episode 9](09-model-selection.Rmd) compares the Ricker curve with the Beverton-Holt curve.
+Change `res_ricker` to `res_walk` in `aes()` and `(Ricker)` to `(random walk)` in the label to check the random walk: its points also scatter around zero, with no clear curve.
 
 **Independence: are neighbouring years alike?**
 The [lag-1 correlation](../learners/reference.md#glossary) from the Quick Start is the correlation between each year's residual and the next year's.
-In `lag1()`, `head(r, -1)` is every residual except the last and `tail(r, -1)` is every residual except the first, so `cor()` pairs each year with the year after it.
+In `lag1()`, `head(r, -1)` is every residual except the last and `tail(r, -1)` is every residual except the first, so `cor()` pairs each row with the next row (with missing years, the next row is not always the next year).
 Residuals with no memory still give a lag-1 correlation a little different from zero, by chance.
 With n years, it usually stays between -2/sqrt(n) and +2/sqrt(n), so that is the limit.
 
@@ -215,15 +235,17 @@ c(ricker = lag1(my_stock$res_ricker), walk = lag1(my_stock$res_walk),
 The rule: a lag-1 correlation between -limit and +limit is consistent with no memory.
 With 74 years the limit is 0.23.
 The Ricker's 0.25 is above it, so the Ricker fails this check; the random walk's -0.10 is inside it, so the random walk passes.
+The Ricker's value is only slightly above the limit, so on its own it would be weak evidence; the long runs in the pattern plot point the same way.
 
 **Check it worked:** you can say for each check whether each model passes.
-Put up a green sticky note when you have the three plots and the three numbers 0.25, -0.10 and 0.23.
+Put up a green sticky note when you have the plots and the three numbers 0.25, -0.10 and 0.23.
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: instructor
 
 Ask for sticky notes after the lag-1 numbers print; this recipe takes about 12 minutes.
 Type the three checks as three separate chunks and name each check aloud as you go: shape, pattern, independence.
-Learners can try the one-word changes from `res_ricker` to `res_walk` on their own; do one live if time allows.
+Learners can make the change to `res_walk` in the spawner plot on their own.
+If learners notice that the random walk's recent residuals are more spread out (for your information: without 2005, their SD is 0.78 before 1990 and 1.11 after 2000), say that a change in spread is also a pattern; every model in this lesson keeps sigma constant, so note it as a caveat in row 5 or row 10.
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
@@ -236,7 +258,7 @@ What does this suggest?
 
 - (a) Good years tend to follow good years: the model misses something that persists.
 - (b) The residuals are not normal.
-- (c) The model has too many parameters.
+- (c) The fit failed: refit from other starting values.
 - (d) The data contain an error.
 
 :::::::::::::::::::::::: solution
@@ -247,7 +269,8 @@ Something that lasts from one year to the next, such as productivity, is not in 
 - (a) is right.
 - (b) confuses independence with shape.
   Residuals can be perfectly normal and still have memory; the QQ plot checks shape.
-- (c): extra parameters do not create memory between years.
+- (c) confuses the model with the fit.
+  All four checks passed, so the optimiser found the best values; the residuals show what the model leaves out.
 - (d): one wrong value would not make neighbouring years alike across the whole series.
 
 :::::::::::::::::::::::::
@@ -257,6 +280,7 @@ Something that lasts from one year to the next, such as productivity, is not in 
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: instructor
 
 If many learners choose (b), point at the QQ plot (shape) and the lag-1 number (independence) side by side, and say that each check answers a different question.
+If many choose (c), point back to the TRUE values in the Starting Point output: the fit worked, and residuals test the model, not the fit.
 If answers are spread out, go back to the pattern plot: the long runs above and below zero are what the lag-1 number measures.
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -269,27 +293,29 @@ Table: The three residual checks for the two Stellako models.
 
 | Check | Ricker | Random walk |
 |---|---|---|
-| Shape | close to the line, except 2005 (-4.2) | close to the line, except 2005 (-4.4) |
+| Shape | close to the line in the middle, both ends a little below; 2005 far below (-4.2) | close to the line, the highest few a little below; 2005 far below (-4.4) |
 | Pattern over time | mostly above zero before 1990, below after 2000 | no long runs |
-| Pattern against spawners | no curve | no curve |
-| Independence (limit 0.23) | 0.25, above the limit: fails | -0.10: passes |
+| Pattern against spawners | no clear curve | no clear curve |
+| Independence (limit 0.23) | 0.25, slightly above the limit: fails | -0.10: passes |
 
-The verdict: the Ricker misses the change in productivity; the random walk does not.
+In short: the Ricker misses the change in productivity; the random walk does not.
 Both have one extreme year.
 
 A failed check names what the model misses.
 The Ricker fails two checks, the pattern over time and independence, and both point to the same thing: productivity that changes over time.
-[Episode 6](06-random-effects.Rmd) let productivity drift, and the checks confirm that the drift is what was missing.
+[Episode 6](06-random-effects.Rmd) let productivity drift, and the checks show that letting productivity drift removes both problems.
+
+When more than one check fails, deal with the pattern over time first: a pattern that the model misses can also bend the QQ plot.
 The table below is the general rule.
 
 Table: What a failed residual check says the model misses.
 
 | Check that fails | What you see | What the model misses | What to try |
 |---|---|---|---|
-| Shape | points far from the line at one or both ends | more extreme years than a normal distribution allows | check those years in the data, keep them, and report them; then a distribution with heavier tails ([Going Further](../learners/going-further.md)) |
+| Shape | points far from the line at one or both ends | more extreme years than a normal distribution allows | first fix any pattern over time and draw the QQ plot again; if the ends still bend, check those years in the data, keep them and report them; then try a distribution with heavier tails, one that expects an occasional extreme year ([Going Further](../learners/going-further.md)) |
 | Pattern over time | long runs above or below zero | something that changes over time | let a parameter drift ([Episode 6](06-random-effects.Rmd)) or add a covariate ([Episode 9](09-model-selection.Rmd)) |
 | Pattern against spawners | a curve or a slope | the shape of the curve is wrong | another curve, such as the Beverton-Holt ([Episode 9](09-model-selection.Rmd)) |
-| Independence | lag-1 correlation outside the limit | something that persists from year to year | as for a pattern over time |
+| Independence | lag-1 correlation above the limit | something that persists from year to year | as for a pattern over time |
 
 :::::::::::::::::::::::::::::::::::::::: callout
 
@@ -303,30 +329,31 @@ Note an extreme year and report it; do not remove it.
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: instructor
 
 For your information only, not for the learners: Shapiro-Wilk p-values for the Stellako residuals are 0.0009 (Ricker) and 0.003 (random walk).
-Both are driven by 2005: without that year they are 0.26 and 0.98.
+Both are driven by 2005: with the 2005 residual left out they are 0.26 and 0.98.
 If a learner asks for a test, say that the QQ plot shows the same thing and also shows which year causes it.
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 :::::::::::::::::::::::::::::::::::::::: challenge
 
-### Challenge 2: Your Turn: Upper Pitt River, Row 5 (12 minutes)
+### Challenge 2: Your Turn: Upper Pitt River, Row 5 (14 minutes)
 
 Run the three checks (shape, pattern over time and independence) for the Upper Pitt River Ricker and random-walk models.
 Which checks does each model pass?
 Write row 5 of your report card in `report-card.R`.
+Row 5 records these three checks; the plot against spawners is optional.
 
 :::::::::::::::::::::::: hint
 
-Copy the recipe chunks and change the names: `pitt` for `my_stock`, `ricker_pitt` and `walk_pitt` for `ricker` and `walk`.
+Copy the recipe chunks in order and change the names: `my_stock` to `pitt`, `ricker` and `walk` to `ricker_pitt` and `walk_pitt`, and `res_long` to `res_long_pitt`.
 If `ricker_pitt` and `walk_pitt` are not in your workspace, fit them first, as in Episodes 5 and 6.
-For the QQ plots of both models, give `res_long_pitt` to `ggplot()` and add `facet_wrap(~ model)`.
+For the random walk's QQ plot, change `res_ricker` to `res_walk` and `(Ricker)` to `(random walk)`, as you did for Stellako.
 
 :::::::::::::::::::::::::
 
 :::::::::::::::::::::::: solution
 
-Fit both models, check the fits, compute the residuals and the lag-1 correlations:
+Fit both models, check the fits, and compute the residuals and the lag-1 correlations:
 
 ```{r ch2-solution}
 pitt        <- filter(sockeye, stock == "Upper Pitt River")
@@ -339,22 +366,28 @@ pitt$res_walk   <- osa_residuals(walk_pitt)
 c(ricker = lag1(pitt$res_ricker), walk = lag1(pitt$res_walk), limit = 2 / sqrt(nrow(pitt)))
 ```
 
-Stack the residuals of both models, as in the pattern recipe, and draw the QQ plots side by side:
+Draw the QQ plot of each model, as in the shape recipe:
 
-```{r ch2-solution-qq, fig.width=7, fig.height=4, fig.alt="Two normal quantile-quantile plots of Upper Pitt River one-step-ahead residuals, side by side. Left, random walk: the points follow the line closely from about minus 2.4 to plus 2.5. Right, Ricker: the middle points follow the line, but the lowest points, near minus 2.7, fall below it, and the highest points, near 1.8, also fall below it."}
+```{r ch2-solution-qq, fig.width=6, fig.height=4, fig.alt="Normal quantile-quantile plot of the Upper Pitt River Ricker one-step-ahead residuals. The middle points follow the line, but both ends bend below it: the five lowest points, between about minus 2.7 and minus 2.1, lie well below the line, and the highest points, between about 1.4 and 1.8, also lie below it."}
+ggplot(pitt, aes(sample = res_ricker)) +
+  stat_qq() +
+  stat_qq_line() +
+  labs(x = "Expected quantile (normal)", y = "One-step-ahead residual (Ricker)")
+```
+
+```{r ch2-solution-qq-walk, fig.width=6, fig.height=4, fig.alt="Normal quantile-quantile plot of the Upper Pitt River random-walk one-step-ahead residuals. The points follow the straight line closely from the lowest, near minus 2.4, to the highest, near plus 2.5, with no bend at either end."}
+ggplot(pitt, aes(sample = res_walk)) +
+  stat_qq() +
+  stat_qq_line() +
+  labs(x = "Expected quantile (normal)", y = "One-step-ahead residual (random walk)")
+```
+
+Then stack the residuals of both models and plot them against brood year, as in the pattern recipe:
+
+```{r ch2-solution-time, fig.width=7, fig.height=5, fig.alt="Two panels of Upper Pitt River one-step-ahead residuals against brood year, 1948 to 2021, each with a dashed line at zero. Top, random walk: residuals cross zero often, with only short runs above or below it. Bottom, Ricker: the residuals run in long waves, mostly above zero in the 1960s and early 1970s, below zero around 1980, above zero in the 1990s, and mostly below zero after 2010, with the lowest values near minus 2.7 in 2014 and 2015."}
 res_long_pitt <- bind_rows(
   data.frame(model = "Ricker",      brood_year = pitt$brood_year, residual = pitt$res_ricker),
   data.frame(model = "Random walk", brood_year = pitt$brood_year, residual = pitt$res_walk))
-ggplot(res_long_pitt, aes(sample = residual)) +
-  stat_qq() +
-  stat_qq_line() +
-  facet_wrap(~ model) +
-  labs(x = "Expected quantile (normal)", y = "One-step-ahead residual")
-```
-
-Then plot them against brood year:
-
-```{r ch2-solution-time, fig.width=7, fig.height=5, fig.alt="Two panels of Upper Pitt River one-step-ahead residuals against brood year, 1948 to 2021, each with a dashed line at zero. Top, random walk: residuals cross zero often, with only short runs above or below it. Bottom, Ricker: the residuals run in long waves, mostly above zero in the 1960s and early 1970s, below zero around 1980, above zero in the 1990s, and mostly below zero after 2010, with the lowest values near minus 2.7 in 2014 and 2015."}
 ggplot(res_long_pitt, aes(x = brood_year, y = residual)) +
   geom_hline(yintercept = 0, linetype = "dashed") +
   geom_point() +
@@ -362,24 +395,42 @@ ggplot(res_long_pitt, aes(x = brood_year, y = residual)) +
   labs(x = "Brood year", y = "One-step-ahead residual")
 ```
 
-Row 5:
+Table: The three residual checks for the two Upper Pitt River models.
 
-- **Ricker:** fails independence (lag-1 correlation 0.47, limit 0.23).
-  Its residuals run in long waves over time: above zero in the 1960s and the 1990s, below zero around 1980 and after 2010 (they average +`r round(mean(pitt$res_ricker[pitt$brood_year < 1990]), 2)` before 1990 and `r round(mean(pitt$res_ricker[pitt$brood_year > 2000]), 2)` after 2000).
-  Its QQ plot bends below the line at both ends.
-- **Random walk:** passes independence (0.13).
-  Its residuals cross zero often, with no long waves (they average `r round(mean(pitt$res_walk[pitt$brood_year < 1990]), 2)` before 1990 and `r round(mean(pitt$res_walk[pitt$brood_year > 2000]), 2)` after 2000), and its QQ plot follows the line.
+| Check | Ricker | Random walk |
+|---|---|---|
+| Shape | both ends bend below the line: fails | close to the line: passes |
+| Pattern over time | long waves above and below zero: fails | no long runs: passes |
+| Independence (limit 0.23) | 0.47, above the limit: fails | 0.13: passes |
+
+The Ricker fails all three checks.
+Its residuals run in long waves: above zero in the 1960s and the 1990s, below zero around 1980 and after 2010.
+The random walk passes all three.
+
+Row 5: "Ricker: fails all three residual checks: lag-1 correlation 0.47 (limit 0.23), long waves over time (above zero in the 1960s and 1990s, below zero around 1980 and after 2010), and a QQ plot that bends below the line at both ends.
+Random walk: passes all three: lag-1 correlation 0.13, no long runs, QQ plot close to the line."
+In `report-card.R` it reads `# Row 5 (residuals): Ricker fails all three checks (lag-1 0.47, limit 0.23; long waves over time; QQ plot bends at both ends); random walk passes all three (lag-1 0.13).`
 
 As for Stellako, the Ricker misses productivity that changes over time, and the random walk captures it.
-The bend in the Ricker's QQ plot is gone in the random walk's, so it has the same cause: the Ricker's lowest residuals are recent years, when productivity was lowest.
+The random walk also straightens the QQ plot, so the bend most likely came from the same missing drift as the long waves: the Ricker's five lowest residuals all come from 2005 or later, when productivity was falling to its lowest.
 
 :::::::::::::::::::::::::
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::
 
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: instructor
+
+Challenge 2 takes about 14 minutes.
+Learners who restarted R need `pitt`, `dat_pitt`, `ricker_pitt` and `walk_pitt`: paste the first four lines of the solution into the shared notes document for them.
+Watch for `object 'res_long_pitt' not found`: the renamed `bind_rows()` lines must run before the plot.
+Ask for a green sticky note when the three lag-1 numbers print and row 5 is written.
+If the class is behind, do the lag-1 numbers and the brood-year plot only, and come back to the QQ plots at the start of Day 2.
+
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
 :::::::::::::::::::::::::::::::::::::::: challenge
 
-### Challenge 3: One Extreme Year (5 minutes)
+### Challenge 3: One Extreme Year (3 minutes)
 
 The Stellako QQ plot has one point at -4.2: brood year 2005, when 102 thousand spawners produced 11.6 thousand recruits.
 What should you do next?
@@ -393,10 +444,10 @@ What should you do next?
 
 **(b).** The 2005 brood year returned mainly in 2009, one of the poorest Fraser River sockeye returns on record, so it is a real event.
 
-- (a) hides a real event and makes the model look better than it is.
+- (a) hides a real event and makes the model seem better than it is.
 - (b) is right: check the data first, then keep the year and say in the report that the model does not expect a year this poor.
 - (c) may be a good next step, but only after checking the data.
-  The [Going Further](../learners/going-further.md) page points to a model with heavier tails.
+  The [Going Further](../learners/going-further.md) page points to a distribution with heavier tails, one that expects an occasional extreme year.
 - (d): one year can change a QQ plot, and a forecast.
 
 :::::::::::::::::::::::::
@@ -405,7 +456,7 @@ What should you do next?
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: instructor
 
-Challenge 3: if many learners choose (a), say that deleting a year because the model does not like it makes every later check and forecast look better than it is.
+Challenge 3: if many learners choose (a), say that deleting a year because the model does not like it makes the model seem better than it is in every later check and forecast.
 This is the end of Day 1.
 Check with sticky notes that learners have rows 1 to 5 of the Upper Pitt River report card, and collect one-up/one-down feedback.
 Close with: "Tomorrow: can the model make data like ours, which model do the data support, and do its forecasts work?"
@@ -427,8 +478,9 @@ The finished box is [cookbook.R](files/cookbook.R).
 ### In Your Field
 
 Any series in time works the same way: counts per survey, monthly case numbers, yearly growth.
-One-step-ahead residuals work for any RTMB model whose observations are marked with `OBS()`.
-`osa_residuals()` uses `method = "fullGaussian"`, which is exact for normal data such as log(R/S); for counts, the help page `?TMB::oneStepPredict` explains which `method` to use.
+One-step-ahead residuals work for any RTMB model whose observations are marked with `OBS()`; if more than one set of observations is marked, `oneStepPredict()` returns residuals for the first set only.
+`osa_residuals()` uses `method = "fullGaussian"`, which is exact only when the data are normal and every random effect is normal and added to the expected value, as here.
+For counts, other distributions, or a random effect inside a curve (such as a random S_max), use another `method`: `?TMB::oneStepPredict` explains the choices, and the help page `?RTMB::oneStepPredict` ends with an example for counts.
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::
 
