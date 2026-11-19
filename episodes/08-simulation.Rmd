@@ -277,7 +277,7 @@ c(ricker = mean(simulate_stat(ricker, min) <= min(dat$logRS)),
 Neither model reproduces a year as bad as 2005: no Ricker simulation and 1 of 200 random-walk simulations have a year that low, and both shares are below 0.025.
 The comparison is `<=` here because the question is about low values.
 Both models give the yearly scatter a normal distribution, which makes such an extreme year very rare.
-Error distributions that allow more extreme years (said to have heavier tails) are a possible next step ([Going Further](../learners/going-further.md)).
+A possible next step is a distribution for the yearly scatter that allows more extreme years, said to have heavier tails ([Going Further](../learners/going-further.md)).
 
 :::::::::::::::::::::::::
 
