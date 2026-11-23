@@ -256,22 +256,22 @@ If learners notice that the random walk's recent residuals are more spread out (
 The Ricker residuals have lag-1 correlation 0.25 with 74 years (limit 0.23).
 What does this suggest?
 
-- (a) Good years tend to follow good years: the model misses something that persists.
-- (b) The residuals are not normal.
-- (c) The fit failed: refit from other starting values.
-- (d) The data contain an error.
+- **(a)** Good years tend to follow good years: the model misses something that persists.
+- **(b)** The residuals are not normal.
+- **(c)** The fit failed: refit from other starting values.
+- **(d)** The data contain an error.
 
 :::::::::::::::::::::::: solution
 
 **(a).** A positive lag-1 correlation means that a year above zero tends to be followed by another year above zero, and a year below by another below.
 Something that lasts from one year to the next, such as productivity, is not in the model.
 
-- (a) is right.
-- (b) confuses independence with shape.
+- **(a)** is right.
+- **(b)** confuses independence with shape.
   Residuals can be perfectly normal and still have memory; the QQ plot checks shape.
-- (c) confuses the model with the fit.
+- **(c)** confuses the model with the fit.
   All four checks passed, so the optimiser found the best values; the residuals show what the model leaves out.
-- (d): one wrong value would not make neighbouring years alike across the whole series.
+- **(d)**: one wrong value would not make neighbouring years alike across the whole series.
 
 :::::::::::::::::::::::::
 
@@ -433,20 +433,20 @@ If the class is behind, do the lag-1 numbers and the brood-year plot only, and c
 The Stellako QQ plot has one point at -4.2: brood year 2005, when 102 thousand spawners produced 11.6 thousand recruits.
 What should you do next?
 
-- (a) Delete 2005 and refit.
-- (b) Check the 2005 record, keep it unless it is an error, and report it.
-- (c) Switch to another distribution at once.
-- (d) Ignore it: one year cannot matter.
+- **(a)** Delete 2005 and refit.
+- **(b)** Check the 2005 record, keep it unless it is an error, and report it.
+- **(c)** Switch to another distribution at once.
+- **(d)** Ignore it: one year cannot matter.
 
 :::::::::::::::::::::::: solution
 
 **(b).** The 2005 brood year returned mainly in 2009, one of the poorest Fraser River sockeye returns on record, so it is a real event.
 
-- (a) hides a real event and makes the model seem better than it is.
-- (b) is right: check the data first, then keep the year and say in the report that the model does not expect a year this poor.
-- (c) may be a good next step, but only after checking the data.
+- **(a)** hides a real event and makes the model seem better than it is.
+- **(b)** is right: check the data first, then keep the year and say in the report that the model does not expect a year this poor.
+- **(c)** may be a good next step, but only after checking the data.
   The [Going Further](../learners/going-further.md) page points to a distribution with heavier tails, one that expects an occasional extreme year.
-- (d): one year can change a QQ plot, and a forecast.
+- **(d)**: one year can change a QQ plot, and a forecast.
 
 :::::::::::::::::::::::::
 

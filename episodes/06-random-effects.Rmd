@@ -200,19 +200,19 @@ If answers are spread out, go back to the definition: a random effect is a set o
 
 What does `random = "log_alpha_year"` tell RTMB?
 
-- (a) Fix these values at zero.
-- (b) Draw new random numbers for them every time the model runs.
-- (c) Treat them as unknown values that come from a distribution: average over them, and estimate the distribution's standard deviation.
-- (d) The data in those years are random.
+- **(a)** Fix these values at zero.
+- **(b)** Draw new random numbers for them every time the model runs.
+- **(c)** Treat them as unknown values that come from a distribution: average over them, and estimate the distribution's standard deviation.
+- **(d)** The data in those years are random.
 
 :::::::::::::::::::::::: solution
 
 **(c).** RTMB averages over every possible path of the yearly values and estimates the SD of their distribution, sd_walk, as a fixed parameter.
 
-- (a): the values are estimated, not fixed; the next recipe plots them.
-- (b) is a common misunderstanding: nothing is drawn at random during fitting, and refitting gives the same answer.
-- (c) is right.
-- (d): the data are what they are; it is the yearly productivities that the model treats as coming from a distribution.
+- **(a)**: the values are estimated, not fixed; the next recipe plots them.
+- **(b)** is a common misunderstanding: nothing is drawn at random during fitting, and refitting gives the same answer.
+- **(c)** is right.
+- **(d)**: the data are what they are; it is the yearly productivities that the model treats as coming from a distribution.
 
 :::::::::::::::::::::::::
 
@@ -321,7 +321,7 @@ max(dat$year) + 1                   # what nll_walk needs: every year plus next 
 ```
 
 Value 75 of a vector with 74 values does not exist, and RTMB stops with this message, which does not name the cause.
-The fix is to use `start_walk(dat)`, which already makes `max(dat$year) + 1` values; the fit in the `fit-walk` chunk passed all four checks.
+The fix is to use `start_walk(dat)`, which already makes `max(dat$year) + 1` values; the fit of `walk` in the recipe above passed all four checks.
 
 :::::::::::::::::::::::::
 
@@ -338,7 +338,7 @@ In row 4, write sd_walk in words, and productivity in 1948, 1965, 1980, 2000 and
 :::::::::::::::::::::::: hint
 
 Make `pitt` and `dat_pitt` as in Episode 4, with `S_new` set to the average spawner count of the last four brood years.
-Then copy the `fit-walk` chunk and the plot recipe, and change `dat` to `dat_pitt`, `walk` to `walk_pitt`, `prod` to `prod_pitt` and `my_stock` to `pitt`.
+Then copy the three lines that fitted `walk` and the plot recipe, and change `dat` to `dat_pitt`, `walk` to `walk_pitt`, `prod` to `prod_pitt` and `my_stock` to `pitt`.
 Leave out the dashed line.
 
 :::::::::::::::::::::::::
@@ -452,19 +452,19 @@ If answers are spread out, go back to the recipe's three checks.
 For Harrison, all four checks are TRUE, sd_walk is 0.000005, both starting values reach the same negative log-likelihood, and AIC is 266.36 for the random walk against 264.36 for the Ricker.
 Which statement is best?
 
-- (a) The fit failed.
-- (b) The data show no detectable drift: the random walk has collapsed to the Ricker and pays 2 AIC units for its extra parameter.
-- (c) Harrison's productivity has been exactly constant since 1948.
-- (d) The optimiser needs more iterations.
+- **(a)** The fit failed.
+- **(b)** The data show no detectable drift: the random walk has collapsed to the Ricker and pays 2 AIC units for its extra parameter.
+- **(c)** Harrison's productivity has been exactly constant since 1948.
+- **(d)** The optimiser needs more iterations.
 
 :::::::::::::::::::::::: solution
 
 **(b).** The model works, and its answer is that these data show no drift that the model can detect.
 
-- (a): all four checks pass. An SD at zero is an answer, not a failure.
-- (b) is right.
-- (c): "no detectable drift" is weaker than "no drift". Small changes in productivity can hide in the yearly scatter. [Episode 8](08-simulation.Rmd) shows how often drift of Stellako's size is missed.
-- (d): both starting points reach the same negative log-likelihood, so more iterations would not change it.
+- **(a)**: all four checks pass. An SD at zero is an answer, not a failure.
+- **(b)** is right.
+- **(c)**: "no detectable drift" is weaker than "no drift". Small changes in productivity can hide in the yearly scatter. [Episode 8](08-simulation.Rmd) shows how often drift of Stellako's size is missed.
+- **(d)**: both starting points reach the same negative log-likelihood, so more iterations would not change it.
 
 :::::::::::::::::::::::::
 

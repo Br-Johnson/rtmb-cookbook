@@ -177,7 +177,7 @@ The two numbers answer different questions, so they cannot be compared.
 To see where the two curves differ, draw them over the data.
 As in [Episode 5](05-uncertainty.Rmd), give `S_new` a grid of spawner values and refit, so that `predict_recruits()` returns the median recruits for every value on the grid:
 
-```{r plot-two-curves, fig.width=6, fig.height=4, fig.alt="Scatter plot of Stellako recruits against spawners, both in thousands, with two fitted curves. Most points lie below 110 thousand spawners, with recruits from about 12 to 1900 thousand; only six points lie above 150 thousand spawners. The Ricker curve (dashed) peaks at about 490 thousand recruits near 120 thousand spawners and falls to about 350 thousand at 250 thousand spawners. The Beverton-Holt curve (solid) keeps rising, more and more slowly, to about 495 thousand at 250 thousand spawners. The two curves are close below 150 thousand spawners, cross near 150 thousand, and separate above it."}
+```{r plot-two-curves, fig.width=6, fig.height=4, fig.alt="Scatter plot of Stellako recruits against spawners, both in thousands, with two fitted curves. Most points lie below 110 thousand spawners, with recruits from about 12 to 1900 thousand; only six points lie above 150 thousand spawners. The Ricker curve (dashed) peaks at about 490 thousand recruits near 120 thousand spawners and falls to about 350 thousand at 250 thousand spawners. The Beverton-Holt curve (solid) keeps rising, more and more slowly, to about 495 thousand at 250 thousand spawners. The two curves are close below 150 thousand spawners, cross near 165 thousand, and separate above it."}
 dat_grid <- dat
 dat_grid$S_new <- seq(1, 250, by = 1)
 ricker_grid <- fit_model(nll_ricker, start_ricker(dat_grid), dat_grid)
@@ -262,7 +262,7 @@ No: AIC rises by 0.79 (199.04 against 198.26 for the Ricker).
 The extra parameter lowers the negative log-likelihood by only 0.6, which saves 1.2 in AIC, but it costs 2.
 
 `b_npgo` is 0.12 (95% confidence interval -0.09 to 0.32).
-exp(0.12) = 1.12: a year with NPGO one unit higher has about 12% more recruits per spawner.
+exp(0.116) = 1.12: a year with NPGO one unit higher has about 12% more recruits per spawner.
 But the interval includes zero, so the data from this one stock cannot tell this effect from no effect.
 
 :::::::::::::::::::::::::
@@ -287,7 +287,7 @@ Put up a green sticky note when your two-row AIC table prints.
 
 ### Standardise Other Covariates
 
-NPGO already has a mean near 0 and a standard deviation (SD) near 1 (-0.18 and 1.05).
+NPGO already has a mean near 0 and a standard deviation (SD) near 1 (-0.11 and 1.00 for the 74 values in `dat$npgo`).
 For other covariates use `(x - mean(x)) / sd(x)`, so the effect is per SD.
 A standardised covariate also makes 0 a sensible starting value for its effect.
 
@@ -511,10 +511,10 @@ Model A describes log(R/S) with a normal distribution; model B describes R itsel
 Both use the same 74 years.
 Can you compare their AIC?
 
-- (a) Yes, they use the same data.
-- (b) No: they describe different responses, so their likelihoods are on different scales.
-- (c) Yes, if both pass the four checks.
-- (d) Only with Akaike weights.
+- **(a)** Yes, they use the same data.
+- **(b)** No: they describe different responses, so their likelihoods are on different scales.
+- **(c)** Yes, if both pass the four checks.
+- **(d)** Only with Akaike weights.
 
 :::::::::::::::::::::::: solution
 
@@ -528,10 +528,10 @@ Count recruits in fish instead of thousands of fish, and model B's negative log-
 
 Their negative log-likelihoods, and so their AIC values, are on different scales.
 
-- (a): "the same years" is not enough; the response must be the same too.
-- (b) is right.
-- (c): passing the checks says each fit can be used, but it does not make the two scales comparable.
-- (d): Akaike weights are computed from AIC differences, so they inherit the problem.
+- **(a)**: "the same years" is not enough; the response must be the same too.
+- **(b)** is right.
+- **(c)**: passing the checks says each fit can be used, but it does not make the two scales comparable.
+- **(d)**: Akaike weights are computed from AIC differences, so they inherit the problem.
 
 :::::::::::::::::::::::::
 

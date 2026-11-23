@@ -114,19 +114,19 @@ For 50 thousand Stellako spawners, the random walk gives a 95% confidence interv
 Which range describes where next year's recruits will probably fall?
 Then say in one sentence why the 80% interval is wider than the 95% one.
 
-- (a) The 95% confidence interval, because 95 is more than 80.
-- (b) The 80% prediction interval.
-- (c) Both equally.
-- (d) Neither: use the median.
+- **(a)** The 95% confidence interval, because 95 is more than 80.
+- **(b)** The 80% prediction interval.
+- **(c)** Both equally.
+- **(d)** Neither: use the median.
 
 :::::::::::::::::::::::: solution
 
 The answer is (b).
 
-- (a) compares the percentages but ignores what the intervals describe: the confidence interval is about the median curve, not about single years.
-- (b) is right: next year's recruits scatter around the curve by sigma, and only the prediction interval includes that scatter.
-- (c): the two describe different things, so they cannot both answer the question.
-- (d): a median without an interval hides the uncertainty.
+- **(a)** compares the percentages but ignores what the intervals describe: the confidence interval is about the median curve, not about single years.
+- **(b)** is right: next year's recruits scatter around the curve by sigma, and only the prediction interval includes that scatter.
+- **(c)**: the two describe different things, so they cannot both answer the question.
+- **(d)**: a median without an interval hides the uncertainty.
 
 Why it is wider: the prediction interval adds the yearly scatter, sigma, to the uncertainty about the median curve; the confidence interval holds only the uncertainty about the curve.
 
@@ -142,10 +142,10 @@ Why it is wider: the prediction interval adds the yearly scatter, sigma, to the 
 The mean of the same forecast distribution is 199 thousand.
 Which statement is right?
 
-- (a) `exp()` of the log-scale forecast is the mean.
-- (b) 148 thousand is the middle of the possible outcomes; a few very large possible outcomes pull the mean up.
-- (c) 199 is a mistake.
-- (d) The two should be equal.
+- **(a)** `exp()` of the log-scale forecast is the mean.
+- **(b)** 148 thousand is the middle of the possible outcomes; a few very large possible outcomes pull the mean up.
+- **(c)** 199 is a mistake.
+- **(d)** The two should be equal.
 
 :::::::::::::::::::::::: solution
 
@@ -159,10 +159,10 @@ sd_pred <- sqrt(p[["Std. Error"]]^2 + exp(walk$opt$par[["log_sigma"]])^2)
 c(median = 50 * exp(p[["Estimate"]]), mean = 50 * exp(p[["Estimate"]] + sd_pred^2 / 2))
 ```
 
-- (a) is the misunderstanding this challenge targets: `exp()` of a log-scale forecast is the median, not the mean.
-- (b) is right: the forecast is symmetric on the log scale, so on the natural scale it has a long upper tail, and a few very large possible outcomes pull the mean above the median.
-- (c): 199 is correct; it is the mean of the same distribution.
-- (d): median and mean are equal for a symmetric distribution, like the forecast on the log scale; recruits on the natural scale have a long upper tail, so the mean is higher.
+- **(a)** is the misunderstanding this challenge targets: `exp()` of a log-scale forecast is the median, not the mean.
+- **(b)** is right: the forecast is symmetric on the log scale, so on the natural scale it has a long upper tail, and a few very large possible outcomes pull the mean above the median.
+- **(c)**: 199 is correct; it is the mean of the same distribution.
+- **(d)**: median and mean are equal for a symmetric distribution, like the forecast on the log scale; recruits on the natural scale have a long upper tail, so the mean is higher.
 
 Report the median and the interval, and say "median".
 A manager asking for "the expected return" may mean the mean.
@@ -177,7 +177,7 @@ Challenge 1 takes about 4 minutes and Challenge 2 about 3.
 Challenge 1 targets the belief that a confidence interval says where single years fall (first met in Episode 5, where the 95% band held 24% of the Stellako points); if most learners choose (a), show that band plot again and say "the band is about the curve; single years scatter around it by sigma".
 Ask two or three learners to read out their sentence on why the prediction interval is wider.
 Challenge 2 targets "`exp()` of a log forecast is the mean"; if most choose (a), run the solution code live (median 148, mean 199 thousand).
-If answers are spread out, go back to the `ci-vs-pi` output and compare the two intervals line by line.
+If answers are spread out, go back to the two printed intervals, the 95% confidence interval and the 80% prediction interval, and compare them line by line.
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
@@ -355,7 +355,7 @@ Table: Problems when testing forecasts on past years, with their likely causes a
 
 The hindcast takes under 1 second per stock, so it is safe to run live.
 Ask for sticky notes when the score table prints, and read the four columns aloud with the class before moving on.
-If `score_forecasts()` stops with "`skill` must be size 2 or 1, not 0", the table has no rows called `naive`: check the names in `bind_rows()`.
+If `score_forecasts()` stops with "`skill` must be size 3 or 1, not 0", the table has no rows called `naive`: check the names in `bind_rows()`.
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
@@ -366,19 +366,19 @@ If `score_forecasts()` stops with "`skill` must be size 2 or 1, not 0", the tabl
 Another model's hindcast row reads: bias 0.40, MAE 0.70, coverage80 0.93, skill 0.86.
 Which reading is right?
 
-- (a) It beat the benchmark, but its forecasts were too high by a factor of about exp(0.40) = 1.5 on average.
-- (b) It did worse than the benchmark, because its skill is above 0.
-- (c) Its intervals were too narrow, because 0.93 is far from 0.80.
-- (d) It shows no sign of bias, because its MAE is larger than its bias.
+- **(a)** It beat the benchmark, but its forecasts were too high by a factor of about exp(0.40) = 1.5 on average.
+- **(b)** It did worse than the benchmark, because its skill is above 0.
+- **(c)** Its intervals were too narrow, because 0.93 is far from 0.80.
+- **(d)** It shows no sign of bias, because its MAE is larger than its bias.
 
 :::::::::::::::::::::::: solution
 
 The answer is (a).
 
-- (a) is right: a skill below 1 means its errors were smaller than the benchmark's in the test years, and a bias above 0 means its forecasts were too high on average.
-- (b) compares skill with 0, but this skill is a ratio: compare it with 1, the benchmark's own skill.
-- (c) reads coverage the wrong way round: 0.93 means its intervals caught more outcomes than the 80% promised, so if anything they were too wide.
-- (d) mixes up the two scores: the MAE averages the size of the errors, so it is never smaller than the bias, and comparing them says nothing; a bias of 0.40 means the forecasts were too high on average.
+- **(a)** is right: a skill below 1 means its errors were smaller than the benchmark's in the test years, and a bias above 0 means its forecasts were too high on average.
+- **(b)** compares skill with 0, but this skill is a ratio: compare it with 1, the benchmark's own skill.
+- **(c)** reads coverage the wrong way round: 0.93 means its intervals caught more outcomes than the 80% promised, so if anything they were too wide.
+- **(d)** mixes up the two scores: the MAE averages the size of the errors, so it is never smaller than the bias, and comparing them says nothing; a bias of 0.40 means the forecasts were too high on average.
 
 :::::::::::::::::::::::::
 
@@ -502,7 +502,7 @@ Compare row 8 with row 7 (AIC): do they agree?
 :::::::::::::::::::::::: hint
 
 Start from the Upper Pitt River code of [Checking a Model with Residuals](07-residuals.Rmd), Challenge 2: it makes `pitt`, `dat_pitt`, `ricker_pitt` and `walk_pitt`.
-Then copy the `run-hindcast` chunk and change the names: `pitt` for `my_stock`, `ricker_pitt` and `walk_pitt` for `ricker` and `walk`, and `hc_pitt` for `hc`.
+Then copy the `hc <- bind_rows(...)` chunk that ran the hindcast from 2007 and change the names: `pitt` for `my_stock`, `ricker_pitt` and `walk_pitt` for `ricker` and `walk`, and `hc_pitt` for `hc`.
 If row 7 is not in your report card, run `aic_table(list(ricker = ricker_pitt, walk = walk_pitt))`.
 Row 9 can follow this frame: "From ___ thousand spawners, the random walk forecasts a median of ___ thousand recruits (80% prediction interval ___ to ___ thousand)."
 
@@ -585,7 +585,7 @@ Report the coverage, and the number of forecasts behind it, next to the forecast
 
 Another benchmark: "recruits per spawner as last year".
 Copy `naive_forecast()` from [the finished recipe box (cookbook.R)](files/cookbook.R), call the copy `last_year_forecast()`, and change `(yr - 4):(yr - 1)` to `(yr - 1)`.
-Then copy the `run-hindcast` chunk, call the result `hc_4`, and add the line `last_year = last_year_forecast(my_stock, first_year = 2007),` before `.id = "model"`.
+Then copy the `hc <- bind_rows(...)` chunk that ran the hindcast from 2007, call the result `hc_4`, and add the line `last_year = last_year_forecast(my_stock, first_year = 2007),` before `.id = "model"`.
 Score all four.
 Does the random walk beat the new benchmark?
 

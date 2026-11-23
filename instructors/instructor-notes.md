@@ -86,16 +86,16 @@ Table: Time budget per episode (minutes) and number of challenges.
 | [06 Random Effects: Productivity That Changes over Time](../episodes/06-random-effects.Rmd) | 35 | 25 | 60 | 4 |
 | [07 Checking a Model with Residuals](../episodes/07-residuals.Rmd) | 25 | 20 | 45 | 3 |
 | **Day 1** | **205** | **145** | **350** | |
-| [08 Checking a Model with Simulation](../episodes/08-simulation.Rmd) | 25 | 25 | 50 | 5 |
+| [08 Checking a Model with Simulation](../episodes/08-simulation.Rmd) | 25 | 25 | 50 | 6 |
 | [09 Comparing Models with AIC](../episodes/09-model-selection.Rmd) | 35 | 30 | 65 | 5 |
 | [10 Many Stocks: Random Effects for Groups](../episodes/10-many-stocks.Rmd) (optional) | 25 | 20 | 45 | 4 |
-| [11 Forecasting and Testing Forecasts](../episodes/11-forecasting.Rmd) | 40 | 35 | 75 | 5 |
+| [11 Forecasting and Testing Forecasts](../episodes/11-forecasting.Rmd) | 40 | 35 | 75 | 5 (+1 optional) |
 | [12 Capstone: A Model Report for a New Stock](../episodes/12-capstone.Rmd) | 10 | 80 | 90 | 2 (+1 optional) |
 | **Day 2** | **135** | **190** | **325** | |
-| **Total** | **340** | **335** | **675** | **49 (+2 optional)** |
+| **Total** | **340** | **335** | **675** | **50 (+3 optional)** |
 
 - Exercises take half of the time.
-  Episodes 1 to 11 have 48 challenges (one of them optional) in 330 minutes of teaching: one every 7 minutes on average.
+  Episodes 1 to 11 have 50 challenges (two of them optional) in 330 minutes of teaching: one every 7 minutes on average.
 - All times are first estimates.
   After you teach, replace `teaching:` and `exercises:` at the top of each episode with the times you measured.
 
@@ -208,7 +208,7 @@ Table: Misconceptions, the evidence to re-teach with, and where the lesson targe
 | M10 | Lower AIC means better forecasts | Upper Pitt River: AIC prefers the random walk by 11.8, but the Ricker's hindcast errors are slightly smaller (skill 0.78 against 0.82); Chilko and Birkenhead in the capstone (AIC and the hindcast choose different models), and Late Stuart (the lowest-AIC model forecasts no better than the recent-average benchmark) | E11.C4, capstone share-out |
 | M11 | Changing `dat` after a fit is harmless | with the raw RTMB calls, `dat$S_new <- 150` after fitting silently changed `sdreport()`'s `mu_new` from 1.97 to 1.16 | Episode 4 spoiler (demonstration) |
 | M12 | A covariate that lowers AIC is robust | pooled NPGO: AIC changes by -16.0 without year effects and +0.57 with them | E10.C4 |
-| M13 | An SD estimated at zero proves there is no variation | self-test: 11 of 50 data sets simulated with sd_walk 0.13 gave an estimate of about zero | E06.C4 (option c), E08.C5 |
+| M13 | An SD estimated at zero proves there is no variation | self-test: 11 of 50 data sets simulated with sd_walk 0.13 gave an estimate of about zero | E06.C4 (option c), E08.C6 |
 | M14 | `obj$simulate()` without arguments uses the fitted values | it uses the parameters evaluated last | Episode 8 caution |
 | M15 | S_max is a carrying capacity | (terminology) | Episode 5 caution |
 | M16 | AIC can compare a model of log(R/S) with a model of R | the two models describe different responses | E09.C5 |
@@ -262,7 +262,7 @@ Table: The Upper Pitt River report card (answer key for the "Your Turn" challeng
 | 3 | Estimates | alpha 8.9 recruits per spawner (95% CI 6.5 to 12.1); S_max 20 thousand spawners (15 to 28), inside the observed range | E05.C4 |
 | 4 | Random effect | sd_walk 0.33 (0.14 to 0.78): productivity typically changes by about a third from year to year; 10.4 recruits per spawner in 1948, 16.3 in 1965, 4.7 in 1980, 10.9 in 2000, 2.9 in 2021 | E06.C3 |
 | 5 | Residuals | Ricker lag-1 0.47 against a limit of 0.23, long waves over time, QQ plot bends below the line at both ends; random walk lag-1 0.13 | E07.C2 |
-| 6 | Simulation | observed lag-1 0.58: reached by 0 of 200 Ricker simulations and 62.5% of random-walk simulations; self-test of the walk: 30 of 30 refits pass, no sd_walk at zero | E08.C4 |
+| 6 | Simulation | observed lag-1 0.58: reached by 0 of 200 Ricker simulations and 62.5% of random-walk simulations; self-test of the walk: 30 of 30 refits pass, no sd_walk at zero | E08.C5 |
 | 7 | Comparison | random walk best: 6.2 below Ricker + NPGO, 7.5 below Beverton-Holt, 11.8 below the Ricker; NPGO helps here (b_npgo 0.28, 95% CI 0.09 to 0.48) | E09.C4 |
 | 8 | Forecast skill | hindcast from 2007: Ricker skill 0.78, bias +0.74, coverage 0.67; random walk skill 0.82, bias 0.00, coverage 0.60; benchmark coverage 0.40. AIC and the hindcast disagree | E11.C4 |
 | 9 | Forecast | random walk: median 12 thousand recruits (80% prediction interval 4.4 to 35 thousand) from 5.3 thousand spawners | E11.C4 |

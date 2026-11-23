@@ -72,6 +72,7 @@ Table: The two data files and their columns.
 | | `npgo` | NPGO index of ocean conditions; higher values usually mean more food for young salmon | index (mean -0.18, standard deviation 1.05) |
 
 `sockeye.csv` has one row for each stock and brood year, with no zeros and no missing values.
+Not every stock covers the whole period: eight stocks start after 1948, a few have gaps, and only Harrison has data for brood year 2022.
 If you did not download the files during [Setup](../learners/setup.md), save [the sockeye salmon data (sockeye.csv)](data/sockeye.csv) and [the ocean index data (npgo.csv)](data/npgo.csv) in the `data/` folder of your project.
 
 :::::::::::::::::::::::::::::::::::::::: caution

@@ -161,7 +161,7 @@ ggplot(series, aes(x = brood_year, y = logRS)) +
 
 The real series is high before 1990 and low after 2000.
 The Ricker simulation moves up and down around one level, with no long runs: the [Ricker model](../learners/reference.md#glossary) draws each year's scatter afresh, with no memory of the year before.
-Data simulated from the Ricker can still be alike from one year to the next where the spawner numbers are, because the curve follows the spawners, but Stellako's spawner numbers are not.
+Data simulated from the Ricker can be alike from one year to the next only when the spawner numbers are, because the curve follows the spawners, and Stellako's spawner numbers are not.
 The random-walk simulation drifts: it dips in the 1990s and climbs to its highest values after 2010.
 Its path is not the real one, because every simulation draws a new productivity path.
 What it shares with the real data is the persistence, not the history.
@@ -186,7 +186,7 @@ Write down your answers before you run the recipe below.
 
 1. Will any of 200 data sets simulated from the fitted Ricker have a lag-1 correlation of 0.40 or more?
 2. What share of 200 data sets simulated from the random walk will reach 0.40?
-   (a) none; (b) about 10%; (c) about half; (d) nearly all.
+   **(a)** none; **(b)** about 10%; **(c)** about half; **(d)** nearly all.
 
 :::::::::::::::::::::::: solution
 
@@ -194,9 +194,9 @@ The recipe below gives the answers.
 
 1. No. Ricker simulations centre near 0 (95% of them between -0.23 and 0.24), and none of the 200 reach 0.40: the Ricker's yearly scatter has no memory from year to year.
 2. **(b).** 12% of the random-walk simulations reach 0.40. They centre near 0.21: the drift in productivity creates persistence, and 0.40 is on the high side of what it produces.
-   - (a) would mean that the random walk cannot produce persistence either, but its drift does.
-   - (c) would mean that 0.40 is typical of the random walk; most of its simulations have less persistence than that.
-   - (d) would mean that the random walk nearly always produces more persistence than the real data.
+   - **(a)** would mean that the random walk cannot produce persistence either, but its drift does.
+   - **(c)** would mean that 0.40 is typical of the random walk; most of its simulations have less persistence than that.
+   - **(d)** would mean that the random walk nearly always produces more persistence than the real data.
 
 :::::::::::::::::::::::::
 
@@ -404,10 +404,10 @@ Ask for sticky notes when the self-test table prints.
 In the Stellako self-test, the coverage of `log_sd_walk` is 1.00: all 50 intervals caught the true value.
 Which reading is best?
 
-- (a) sd_walk is estimated very precisely.
-- (b) Some of the intervals are so wide that they would catch any value, so this coverage says little about how good the intervals are.
-- (c) The self-test failed, because coverage should be 0.95.
-- (d) Higher coverage is always better, so these are the best intervals in the table.
+- **(a)** sd_walk is estimated very precisely.
+- **(b)** Some of the intervals are so wide that they would catch any value, so this coverage says little about how good the intervals are.
+- **(c)** The self-test failed, because coverage should be 0.95.
+- **(d)** Higher coverage is always better, so these are the best intervals in the table.
 
 :::::::::::::::::::::::: hint
 
@@ -419,10 +419,10 @@ Look at the sd_walk panel of the plot, and remember Harrison's interval for sd_w
 
 **(b).** The 11 estimates near zero come with intervals from 0 to `Inf`, like Harrison's in Episode 6: they catch the true value, whatever it is.
 
-- (a): coverage is not precision. A wider interval catches the truth more often, and 11 of the 50 estimates are far from the truth of 0.13.
-- (b) is right. The next section counts these estimates.
-- (c): all 50 refits pass the checks, and with 50 refits any coverage from 0.88 to 1 is consistent with 0.95. The problem is not the number but what lies behind it.
-- (d): an interval from 0 to `Inf` always catches the truth and tells you nothing about the parameter.
+- **(a)**: coverage is not precision. A wider interval catches the truth more often, and 11 of the 50 estimates are far from the truth of 0.13.
+- **(b)** is right. The next section counts these estimates.
+- **(c)**: all 50 refits pass the checks, and with 50 refits any coverage from 0.88 to 1 is consistent with 0.95. The problem is not the number but what lies behind it.
+- **(d)**: an interval from 0 to `Inf` always catches the truth and tells you nothing about the parameter.
 
 :::::::::::::::::::::::::
 

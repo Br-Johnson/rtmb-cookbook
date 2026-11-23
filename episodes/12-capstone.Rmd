@@ -57,7 +57,8 @@ Where you can, pair up with someone whose experience differs from yours: a confi
 
 ### Years with Very Few Spawners
 
-In some brood years of Quesnel, Late Stuart and Birkenhead, very few fish spawned: as few as 9 fish in Quesnel's 1951.
+In some brood years of Quesnel, Late Stuart and Harrison, fewer than 1 thousand fish spawned: as few as 9 fish in Quesnel's 1951.
+Birkenhead's last few brood years are low for that stock (2.0 and 1.6 thousand in 2019 and 2020).
 Recruits per spawner in such years can be extreme, and these years can pull estimates and forecasts.
 Every fit on the menu passes the four checks, but before you trust a result, look at those years (`arrange(my_stock, spawners)` lists them first).
 Say in your report when an estimate, such as S_max, lies beyond the spawner counts in the data.
@@ -314,7 +315,7 @@ The report card for Late Stuart:
 - Row 9: "From 66 thousand spawners, the random walk forecasts a median of 491 thousand recruits (80% prediction interval 100 to 2420 thousand)."
 - Row 10: "Productivity has fallen from about 34 recruits per spawner around 1950 to about 4 in the 2000s, with a partial recovery to about 8 by 2021. The random walk captures this: it passes the residual checks and has the lowest AIC, but in past years it forecast no better than the average of the last four years (skill 1.06). Its forecast is very uncertain (100 to 2420 thousand recruits), although its intervals were honest in the hindcast (93% coverage)."
 
-Late Stuart shows why a report needs both kinds of evidence: AIC and the residuals choose the random walk, and the hindcast says a simple average forecasts as well.
+Late Stuart shows why a report needs both kinds of evidence: AIC and the residuals choose the random walk, and the hindcast says the recent average forecasts as well.
 
 :::::::::::::::::::::::::
 
@@ -407,7 +408,7 @@ Further key values:
   - Chilko: 11.2 (8.4-14.9), 388 (268-560);
   - Harrison: 7.3 (5.3-10.2), 112 (69-179); Beverton-Holt alpha 21.1 (10.1-44.5), S_half 3.7 (1.2-11.4);
   - Birkenhead: 11.4 (7.8-16.5), 77.5 (47.8-125.5).
-- **sd_walk:** Quesnel 0.22 (0.11-0.43); Late Stuart 0.28 (0.11-0.72); Chilko 0.12 (0.024-0.59); Harrison at zero; Birkenhead 0.48 (0.24-0.94).
+- **sd_walk:** Quesnel 0.22 (0.11-0.43); Late Stuart 0.28 (0.11-0.71); Chilko 0.12 (0.024-0.59); Harrison at zero; Birkenhead 0.48 (0.24-0.94).
 - **Simulated-data check**, share of random-walk simulations at or above the observed lag-1 correlation of log(R/S): Quesnel 0.375 (observed 0.43); Late Stuart 0.65; Chilko 0.06 (observed 0.46); Harrison 0.235 (Ricker 0.22); Birkenhead 0.78.
   The Ricker has 0 for every stock except Harrison.
 - **Self-test** (30 simulations; Harrison tests Beverton-Holt): every refit passes.

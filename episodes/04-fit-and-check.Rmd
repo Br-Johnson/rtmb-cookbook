@@ -273,26 +273,24 @@ m_sign$checks
 
 R printed two warnings, `NA/NaN function evaluation`, and then:
 
-```output
-$objective
-[1] -Inf
-
-$convergence
-[1] 0
-
-$message
-[1] "X-convergence (3)"
-
- finished      flat    curved finite_se
-     TRUE     FALSE     FALSE     FALSE
+```{r ch1-output, echo=FALSE, warning=FALSE}
+nll_sign <- function(par, dat) {
+  getAll(par, dat)
+  logRS <- OBS(logRS)
+  mu <- log_alpha - S / exp(log_Smax)
+  sum(dnorm(logRS, mu, exp(log_sigma), log = TRUE))
+}
+m_sign <- fit_model(nll_sign, start_ricker(dat), dat)
+m_sign$opt[c("objective", "convergence", "message")]
+m_sign$checks
 ```
 
 Is this fit usable?
 
-- (a) Yes: convergence is 0.
-- (b) No: three of the four checks fail.
-- (c) Yes, if the estimates look reasonable.
-- (d) No, because the message is not "relative convergence".
+- **(a)** Yes: convergence is 0.
+- **(b)** No: three of the four checks fail.
+- **(c)** Yes, if the estimates look reasonable.
+- **(d)** No, because the message is not "relative convergence".
 
 :::::::::::::::::::::::: solution
 
@@ -313,14 +311,15 @@ m_sign$opt$par
 
 The two warnings, `NA/NaN function evaluation`, come from the two runs of `nlminb()`: the optimiser tried values where the score could not be computed.
 
-- (a) is the most common mistake: convergence code 0 only says that the optimiser stopped, not that it stopped at a sensible bottom.
-- (b) is right.
+- **(a)** is the most common mistake: convergence code 0 only says that the optimiser stopped, not that it stopped at a sensible bottom.
+- **(b)** is right.
   The cause is the missing minus sign: the function returns the log-likelihood, and the optimiser makes it as small as possible, so it runs off to minus infinity.
   The ground is not flat there, and there is no bowl.
-- (c) is wrong twice.
-  The estimates are absurd: `log_Smax` is about -176, so S_max would be exp(-176) thousand spawners, far less than one fish.
+- **(c)** is wrong twice.
+  The estimates are absurd: `log_Smax` is about `r round(m_sign$opt$par[["log_Smax"]])`, so S_max would be exp(`r round(m_sign$opt$par[["log_Smax"]])`) thousand spawners, far less than one fish.
+  (The exact value depends on your computer, because this score has no bottom; it is always a huge negative number.)
   And judging estimates by eye is not a test; the four checks are.
-- (d) is the right verdict for the wrong reason.
+- **(d)** is the right verdict for the wrong reason.
   The wording of the message is not the test: usable fits can also stop with other messages.
 
 :::::::::::::::::::::::::
@@ -368,30 +367,33 @@ Two causes are not used.
 
 Output A shows `m$checks`, `m$opt$message` and the number of estimated parameters, `length(m$opt$par)`:
 
-```output
- finished      flat    curved finite_se
-    FALSE     FALSE     FALSE     FALSE
-[1] "false convergence (8)"
-[1] 79
+```{r ch2-output-a, echo=FALSE}
+m_a <- fit_model(nll_walk, start_walk(dat), dat)
+m_a$checks
+m_a$opt$message
+length(m_a$opt$par)
 ```
 
 Output B shows `m$checks` and `summary(m$sdr, "fixed")`:
 
-```output
- finished      flat    curved finite_se
-     TRUE      TRUE     FALSE     FALSE
-            Estimate Std. Error
-log_alpha  2.1576015        NaN
-log_Smax   4.8081069        NaN
-log_sigma -0.1199050        NaN
-log_extra  0.2221058        NaN
+```{r ch2-output-b, echo=FALSE}
+nll_two <- function(par, dat) {
+  getAll(par, dat)
+  logRS <- OBS(logRS)
+  mu <- log_alpha + log_extra - S / exp(log_Smax)     # two parameters doing one job
+  -sum(dnorm(logRS, mu, exp(log_sigma), log = TRUE))
+}
+m_b <- fit_model(nll_two, c(start_ricker(dat), list(log_extra = 0)), dat)
+m_b$checks
+summary(m_b$sdr, "fixed")
 ```
 
 Output C is an error:
 
-```error
-Error in `fit_model()`:
-! The negative log-likelihood is not a finite number at the starting values.
+```{r ch2-output-c, echo=FALSE, error=TRUE}
+dat_na <- dat
+dat_na$logRS[5] <- NA
+fit_model(nll_ricker, start_ricker(dat_na), dat_na)
 ```
 
 :::::::::::::::::::::::: hint
@@ -422,8 +424,8 @@ m_a$opt$objective
 ```
 
 Without `random =`, the optimiser chooses every yearly value itself.
-It makes all 75 of them the same (2.11 on the log scale), so every yearly step is zero, and then shrinks the size of the steps towards zero: sd_walk collapses to about 1e-14 and the score runs down to -2213.
-The score has no bottom, so all four checks fail.
+It makes all 75 of them the same (about `r round(mean(m_a$opt$par[-(1:4)]), 1)` on the log scale), so every yearly step is zero, and then shrinks the size of the steps towards zero: sd_walk collapses to about `r sprintf("%.0e", exp(m_a$opt$par[["log_sd_walk"]]))` and the score runs down to `r round(m_a$opt$objective)`.
+The score has no bottom, so all four checks fail; the exact numbers depend on your computer, because the optimiser stops wherever it gives up.
 The 79 parameters are the clue: the random walk has four fixed parameters, so a correct fit reports four.
 The fix is to name the random effects:
 
@@ -449,7 +451,7 @@ summary(m_b$sdr, "fixed")
 
 `log_alpha` and `log_extra` add up to 2.38, the Ricker's `log_alpha`, but the data can only tell their sum.
 Any split between them fits equally well: the valley has a long flat floor, so the standard errors cannot be computed.
-`curved` is FALSE here, but in fits like this it can come out TRUE: trust `finite_se`.
+`curved` is `r if (isTRUE(m_b$checks[["curved"]])) "TRUE here, but in fits like this it can also come out FALSE" else "FALSE here, but in fits like this it can also come out TRUE"`, depending on the computer: trust `finite_se`.
 The fix is to remove `log_extra`: the model is then the Ricker, which passes all four checks (`ricker$checks` above).
 
 **C: a missing value in the data.**
@@ -526,12 +528,17 @@ m_nolog$checks
 
 R printed `There were 50 or more warnings (use warnings() to see the first 50)`, and then:
 
-```output
-[1] "function evaluation limit reached without convergence (9)"
-  log_alpha    log_Smax   log_sigma
-   2.423670    5.356583 -357.507334
- finished      flat    curved finite_se
-    FALSE     FALSE     FALSE     FALSE
+```{r ch3-output, echo=FALSE}
+nll_nolog <- function(par, dat) {
+  getAll(par, dat)
+  logRS <- OBS(logRS)
+  mu <- log_alpha - S / exp(log_Smax)
+  -sum(dnorm(logRS, mu, exp(log_sigma)))
+}
+m_nolog <- suppressWarnings(fit_model(nll_nolog, start_ricker(dat), dat))
+m_nolog$opt$message
+m_nolog$opt$par
+m_nolog$checks
 ```
 
 Use the table above to find the likely cause.
@@ -559,7 +566,7 @@ m_nolog$checks
 
 Without `log = TRUE`, `dnorm()` returns densities, and the function adds them up instead of adding log-densities.
 When the curve passes through one point exactly, that point's density grows without limit as sigma shrinks towards zero, so the score has no bottom.
-The first run of `nlminb()` walked downhill until `log_sigma` reached -357, and stopped there.
+The first run of `nlminb()` walked downhill until `log_sigma` reached `r round(m_nolog$opt$par[["log_sigma"]])` (the exact value depends on your computer), and stopped there.
 The restart then tried 10 000 times to take one more step, but the score could not be computed at any of the new values it tried, so nearly every try printed a warning.
 It stopped at its limit of 10 000 evaluations without moving, so `finished` is FALSE.
 

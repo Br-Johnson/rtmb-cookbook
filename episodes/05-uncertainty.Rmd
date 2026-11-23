@@ -91,10 +91,10 @@ If answers are spread out, go back to step 5 of the Quick Start: the interval is
 `log_alpha` is 2.38 with standard error 0.16.
 Which is the 95% confidence interval for alpha, in recruits per spawner?
 
-- (a) exp(2.38) ± 1.96 × 0.16 = 10.5 to 11.1.
-- (b) exp(2.38 - 0.31) to exp(2.38 + 0.31) = about 7.9 to 14.7.
-- (c) 2.07 to 2.69.
-- (d) 10.8 ± 1.96 × exp(0.16) = 8.5 to 13.1.
+- **(a)** exp(2.38) ± 1.96 × 0.16 = 10.5 to 11.1.
+- **(b)** exp(2.38 - 0.31) to exp(2.38 + 0.31) = about 7.9 to 14.7.
+- **(c)** 2.07 to 2.69.
+- **(d)** 10.8 ± 1.96 × exp(0.16) = 8.5 to 13.1.
 
 :::::::::::::::::::::::: solution
 
@@ -106,10 +106,10 @@ est <- summary(ricker$sdr, "fixed")
 exp(est["log_alpha", "Estimate"] + c(-1.96, 1.96) * est["log_alpha", "Std. Error"])
 ```
 
-- (a) back-transforms the estimate but not the interval, so a log-scale standard error is used on the natural scale, and the interval is far too narrow.
-- (b) is right.
-- (c) forgets to back-transform at all: 2.07 and 2.69 are on the log scale, not in recruits per spawner.
-- (d) back-transforms the standard error, which has no meaning: only the estimate and the two ends of the interval are back-transformed.
+- **(a)** back-transforms the estimate but not the interval, so a log-scale standard error is used on the natural scale, and the interval is far too narrow.
+- **(b)** is right.
+- **(c)** forgets to back-transform at all: 2.07 and 2.69 are on the log scale, not in recruits per spawner.
+- **(d)** back-transforms the standard error, which has no meaning: only the estimate and the two ends of the interval are back-transformed.
 
 :::::::::::::::::::::::::
 
@@ -416,10 +416,10 @@ If answers are spread out, go back to the plot and ask what the grey band is abo
 The 95% band contains only about a quarter of the points (24%).
 What does this mean?
 
-- (a) The model is wrong.
-- (b) This is as it should be: the band shows uncertainty about the median curve; single years scatter around it with standard deviation sigma.
-- (c) The band should be 99%.
-- (d) The points outside the band are outliers.
+- **(a)** The model is wrong.
+- **(b)** This is as it should be: the band shows uncertainty about the median curve; single years scatter around it with standard deviation sigma.
+- **(c)** The band should be 99%.
+- **(d)** The points outside the band are outliers.
 
 :::::::::::::::::::::::: solution
 
@@ -445,12 +445,12 @@ The confidence band contains 24% of the points; the 95% prediction interval cont
 Both shares come from the years the model was fitted to, so they describe the fit, not forecasts.
 [Episode 11](11-forecasting.Rmd) tests prediction intervals on years the model did not see: there the Ricker model's 80% interval held only 60% of them.
 
-- (a) confuses uncertainty about the curve with the scatter of single years.
+- **(a)** confuses uncertainty about the curve with the scatter of single years.
   The Ricker model does miss something (the Quick Start's residuals showed drift), but points outside the band are not the evidence: the band is not meant to contain them.
-- (b) is right.
-- (c): a wider band would still describe the curve, not the years.
+- **(b)** is right.
+- **(c)**: a wider band would still describe the curve, not the years.
   Episode 11's prediction interval adds the scatter.
-- (d) makes the same confusion as (a): an outlier is a year far outside the scatter that sigma describes, and three quarters of the years cannot all be outliers.
+- **(d)** makes the same confusion as (a): an outlier is a year far outside the scatter that sigma describes, and three quarters of the years cannot all be outliers.
 
 :::::::::::::::::::::::::
 

@@ -184,23 +184,23 @@ This movement is called [shrinkage](../learners/reference.md#glossary).
 
 Before you run the next two chunks, predict: which stocks' productivity estimates will move most toward the average when pooled?
 
-- (a) Stocks with the most years of data.
-- (b) Stocks far from the average whose own estimates are uncertain.
-- (c) The largest stocks.
-- (d) All stocks move equally.
+- **(a)** Stocks with the most years of data.
+- **(b)** Stocks far from the average whose own estimates are uncertain.
+- **(c)** The largest stocks.
+- **(d)** All stocks move equally.
 
 :::::::::::::::::::::::: solution
 
-(b).
+The answer is (b).
 
 ```{r ch1-solution}
 table(sockeye$stock)
 ```
 
-- (b) is right. Weaver Creek, Portage and Gates (high, with 54 to 67 years of data each) and Scotch Creek and Late Shuswap (low) move most. Their own estimates are far from the average, and their own data are too uncertain to hold them there.
-- (a) is backwards: more years make a stock's own estimate more certain, so, at the same distance from the average, it moves less.
-- (c): the size of a stock does not matter. The model pools productivity, recruits per spawner, not numbers of fish.
-- (d): the arrows in the plot below have very different lengths.
+- **(b)** is right. Weaver Creek, Portage and Gates (high, with 54 to 67 years of data each) and Scotch Creek and Late Shuswap (low) move most. Their own estimates are far from the average, and their own data are too uncertain to hold them there.
+- **(a)** is backwards: more years make a stock's own estimate more certain, so, at the same distance from the average, it moves less.
+- **(c)**: the size of a stock does not matter. The model pools productivity, recruits per spawner, not numbers of fish.
+- **(d)**: the arrows in the plot below have very different lengths.
 
 :::::::::::::::::::::::::
 

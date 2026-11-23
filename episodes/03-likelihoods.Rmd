@@ -326,12 +326,12 @@ If most learners chose B or C in Challenge 1, point at the plot: the score adds 
 
 ### If You Know lm()
 
-`lm(logRS ~ spawners)` fits the Ricker model too.
+`lm(dat$logRS ~ dat$S)` fits the Ricker model too.
 The RTMB numbers below are the fitted values for Stellako from the Quick Start.
 
 Table: The output of lm() for Stellako and the same quantities from the Ricker model fitted with RTMB.
 
-| `lm(logRS ~ spawners)` reports | RTMB equivalent |
+| `lm(dat$logRS ~ dat$S)` reports | RTMB equivalent |
 |---|---|
 | intercept 2.3797 | `log_alpha` 2.3797 |
 | slope -0.008163 | -1 / S_max, so S_max = 122.5 |
@@ -473,22 +473,22 @@ Both models estimate every positive quantity on the log scale and use `exp()` in
 
 Why do we estimate `log_sigma` and use `exp(log_sigma)` in the model?
 
-- (a) Sigma must be positive; on the log scale the optimiser can try any number, and `exp()` keeps sigma positive.
-- (b) It makes fitting faster.
-- (c) Because the data are on the log scale.
-- (d) Because `dnorm()` needs a logged standard deviation.
+- **(a)** Sigma must be positive; on the log scale the optimiser can try any number, and `exp()` keeps sigma positive.
+- **(b)** It makes fitting faster.
+- **(c)** Because the data are on the log scale.
+- **(d)** Because `dnorm()` needs a logged standard deviation.
 
 :::::::::::::::::::::::: solution
 
-(a).
+The answer is (a).
 
-- (a) Right: a standard deviation must be positive, and `exp()` of any number is positive.
+- **(a)** Right: a standard deviation must be positive, and `exp()` of any number is positive.
   Whatever value the optimiser tries for `log_sigma`, sigma stays positive.
   The same holds for alpha, S_max and S_half.
-- (b) Speed is not the reason: the log scale keeps the parameter in its allowed range.
-- (c) `log_Smax` is on the log scale too, and S is not logged.
+- **(b)** Speed is not the reason: the log scale keeps the parameter in its allowed range.
+- **(c)** `log_Smax` is on the log scale too, and S is not logged.
   The reason is that the parameter must be positive, not the scale of the data.
-- (d) `dnorm()` takes the standard deviation itself, which is why the model passes it `exp(log_sigma)`.
+- **(d)** `dnorm()` takes the standard deviation itself, which is why the model passes it `exp(log_sigma)`.
 
 :::::::::::::::::::::::::
 

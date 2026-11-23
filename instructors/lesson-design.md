@@ -74,12 +74,12 @@ Table: Where each objective is assessed.
 | LO1 Write | E03.C2 Parsons problem, E03.C3 faded Beverton-Holt, E05.C2 faded S_rep, E10.C3 faded NPGO term | (Beverton-Holt used in row 7) | 11, and every model in rows 2 to 8 |
 | LO2 Fit and check | E02.C1, E04.C1, E04.C2, E04.C3, E06.C2, E08.C1 Parsons problem | row 2 (E04.C4) | 2 |
 | LO3 Report | E05.C1, E05.C3, E11.C1 | row 3 (E05.C4) | 3, 9 |
-| LO4 Random effects | E06.C1, E06.C4, E08.C5, E10.C1, E10.C2 | row 4 (E06.C3) | 4 |
-| LO5 Check the model | E02.C2, E07.C1, E07.C3, E08.C2, E08.C3 | rows 5, 6 (E07.C2, E08.C4) | 5, 6 |
+| LO4 Random effects | E06.C1, E06.C4, E08.C6, E10.C1, E10.C2 | row 4 (E06.C3) | 4 |
+| LO5 Check the model | E02.C2, E07.C1, E07.C3, E08.C2, E08.C3, E08.C4 | rows 5, 6 (E07.C2, E08.C5) | 5, 6 |
 | LO6 Compare | E02.C3, E09.C1, E09.C2, E09.C3, E09.C5, E10.C4 | row 7 (E09.C4) | 7 |
 | LO7 Forecast and test | E02.C4, E11.C1, E11.C2, E11.C3, E11.C5 | rows 8, 9 (E11.C4) | 8, 9, 10 |
 
-Episodes 1 to 11 have 48 challenges (one of them optional) in 585 minutes, 330 of them teaching: about one challenge every 7 minutes of teaching, plus a sticky-note checkpoint after every recipe ("Check it worked").
+Episodes 1 to 11 have 50 challenges (two of them optional) in 585 minutes, 330 of them teaching: about one challenge every 7 minutes of teaching, plus a sticky-note checkpoint after every recipe ("Check it worked").
 The capstone is one long applied assessment.
 
 ## Misconceptions and the Answer Plan
@@ -103,7 +103,7 @@ Table: Misconceptions, the evidence for them, and where the lesson targets them.
 | M10 | Lower AIC means better forecasts | Upper Pitt River: AIC prefers the random walk by 11.8, but the Ricker's hindcast errors are slightly smaller (skill 0.78 against 0.82); Chilko and Birkenhead in the capstone (AIC and the hindcast choose different models), and Late Stuart (the lowest-AIC model forecasts no better than the recent-average benchmark) | E11.C4, capstone share-out |
 | M11 | Changing `dat` after a fit is harmless | with the raw RTMB calls, `dat$S_new <- 150` after fitting silently changed `sdreport()`'s `mu_new` from 1.97 to 1.16 | Episode 4 spoiler (demonstration) |
 | M12 | A covariate that lowers AIC is robust | pooled NPGO: AIC changes by -16.0 without year effects and +0.57 with them | E10.C4 |
-| M13 | An SD estimated at zero proves there is no variation | self-test: 11 of 50 data sets simulated with sd_walk 0.13 gave an estimate of about zero | E06.C4 (option c), E08.C5 |
+| M13 | An SD estimated at zero proves there is no variation | self-test: 11 of 50 data sets simulated with sd_walk 0.13 gave an estimate of about zero | E06.C4 (option c), E08.C6 |
 | M14 | `obj$simulate()` without arguments uses the fitted values | it uses the parameters evaluated last | Episode 8 caution |
 | M15 | S_max is a carrying capacity | (terminology) | Episode 5 caution |
 | M16 | AIC can compare a model of log(R/S) with a model of R | the two models describe different responses | E09.C5 |
