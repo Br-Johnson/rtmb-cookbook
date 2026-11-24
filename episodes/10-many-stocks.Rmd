@@ -31,9 +31,9 @@ It is optional: the episodes after it use only the single-stock recipes.
 
 :::::::::::::::::::::::::::::::::::::::: prereq
 
-### Run This If You Are Starting Here
+### Run This Only If You Are Starting Here
 
-If you have followed along, you already have these objects.
+If you have followed along in `stellako.R`, you already have these objects: skip this chunk.
 If you are starting here or have restarted R, run this chunk first.
 It needs `data/sockeye.csv`, `data/npgo.csv` and `files/cookbook.R` in your project (see [Setup](../learners/setup.md)).
 

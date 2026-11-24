@@ -50,6 +50,7 @@ Not sure? Answer the three questions under "Before You Come" in the [Setup](lear
 ## What You Will Leave With
 
 - Your own recipe box, `my-recipes.R`: every function the lesson teaches, typed by you.
+- Your own analysis script, `upper-pitt-river.R`, built one step per episode from the data to a tested forecast, with the report card as its comment lines.
 - A completed model report card for a stock you chose: data, fits, estimates, checks, model comparison and a tested forecast.
 - A template for your next analysis: [the capstone template (capstone-template.R)](episodes/files/capstone-template.R), a fill-in-the-blanks script for the whole workflow, on another stock or on your own data.
 - The one-page [Recipe Index](learners/recipe-index.md), which answers "Which recipe do I need?".

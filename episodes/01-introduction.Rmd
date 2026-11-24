@@ -87,7 +87,7 @@ Write the units every time you report a number: "122 thousand spawners", not "12
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: instructor
 
-Before the first chunk, check that every learner has a project with `data/` and `files/` folders and two empty scripts, `my-recipes.R` and `report-card.R`.
+Before the first chunk, check that every learner has a project with `data/` and `files/` folders and three empty scripts: `my-recipes.R`, `stellako.R` and `upper-pitt-river.R`.
 Show where the code handout is (`files/code-handout.R` on the lesson website): it collects the recipe code of every episode.
 Keep this episode to 25 minutes and do not introduce models yet; the Quick Start does that next.
 
@@ -277,8 +277,9 @@ Table: The model report card, completed for Stellako.
 
 In the capstone, the same table becomes a checklist that says when each row is done.
 
-Open `report-card.R` in your project now (create an empty R script with that name if you do not have one).
-You will write one row in it for Upper Pitt River in each episode, starting with Challenge 2.
+Open `upper-pitt-river.R` in your project now (create an empty R script with that name if you do not have one).
+It is your own analysis script: in each episode, a "Your Turn" challenge adds the code for one step and a comment line that records the report-card row it produces, starting with Challenge 2.
+By Episode 11 it runs Upper Pitt River from the data to a tested forecast, and the capstone asks you to do the same for a new stock.
 
 :::::::::::::::::::::::::::::::::::::::: challenge
 
@@ -289,7 +290,7 @@ Call its data frame `pitt`, so that `my_stock` stays Stellako.
 Describe in one sentence how log(R/S) changed after 2000.
 
 Then start your report card.
-In `report-card.R`, write row 1 as a comment line (starting with `#`): the first and last brood year, the number of years, and the range of spawners with units.
+In `upper-pitt-river.R`, keep the code you ran, then write row 1 under it as a comment line (starting with `#`): the first and last brood year, the number of years, and the range of spawners with units.
 
 :::::::::::::::::::::::: hint
 
@@ -330,7 +331,7 @@ pitt %>%
 After 2000, log(R/S) fell: it averaged about 1.85 (6.3 recruits per spawner) before 2000 and 0.52 (1.7) since, and nine of the 22 years since 2000 are below zero, meaning fewer recruits than spawners.
 
 Row 1: "Upper Pitt River, brood years 1948-2021, 74 years, spawners 2.1 to 74.6 thousand."
-In `report-card.R` it reads `# Row 1 (data): Upper Pitt River, brood years 1948-2021, 74 years, spawners 2.1 to 74.6 thousand.`
+In `upper-pitt-river.R`, below the code above, it reads `# Row 1 (data): Upper Pitt River, brood years 1948-2021, 74 years, spawners 2.1 to 74.6 thousand.`
 Episode 3 adds the spawner count for the forecast to this row.
 
 :::::::::::::::::::::::::

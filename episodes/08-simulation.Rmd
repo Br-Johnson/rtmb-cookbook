@@ -29,9 +29,9 @@ This episode extends step 6 of the [Quick Start](02-quick-start.Rmd): a second w
 
 :::::::::::::::::::::::::::::::::::::::: prereq
 
-### Run This If You Are Starting Here
+### Run This Only If You Are Starting Here
 
-If you have followed along, you already have these objects.
+If you have followed along in `stellako.R`, you already have these objects: skip this chunk.
 If you are starting here or have restarted R, run this chunk first.
 It needs `data/sockeye.csv` and `files/cookbook.R` in your project (see [Setup](../learners/setup.md)).
 
@@ -479,14 +479,14 @@ So when sd_walk collapses for your stock, as it did for Harrison, alpha's interv
 ### Challenge 5: Your Turn: Upper Pitt River, Row 6 (10 minutes)
 
 Run the simulated-data check (lag-1) for both Upper Pitt River models and a self-test of the random walk with `n_sim = 30`.
-Write row 6 of your report card in `report-card.R`:
+Add the code to `upper-pitt-river.R` and write row 6 of your report card under it:
 
 - for each model, the share of simulations with a lag-1 correlation at least as large as the data's;
 - for the self-test, the median estimates against the truth, the number of refits that pass, and the number of sd_walk estimates that collapse to zero.
 
 :::::::::::::::::::::::: hint
 
-If `walk_pitt` is not in your workspace (for example, in a new R session), make the Upper Pitt River objects as in [Episode 7](07-residuals.Rmd), Challenge 2: `pitt <- filter(sockeye, stock == "Upper Pitt River")`, then `dat_pitt <- make_dat(pitt, S_new = mean(tail(pitt$spawners, 4)))`, then fit `ricker_pitt` and `walk_pitt` with `fit_model()` as in the warm-up.
+If `walk_pitt` is not in your workspace (for example, in a new R session), run `upper-pitt-river.R` from the top: it makes `pitt`, `dat_pitt`, `ricker_pitt` and `walk_pitt`.
 Then use `simulate_stat()` and `self_test()` as in this episode: call `set.seed(2026)` once before the two `simulate_stat()` calls, and again before `self_test()`.
 
 :::::::::::::::::::::::::
@@ -525,6 +525,8 @@ All 30 refits pass, every median is close to its true value, and no sd_walk esti
 Row 6: "The Ricker never reproduces the data's year-to-year persistence (0 of 200 simulations reach the real lag-1 correlation of 0.58); the random walk does in 62.5% of simulations.
 In a self-test of the random walk, all 30 refits pass and every parameter is recovered: the medians are close to the true values, and no sd_walk estimate collapses to zero.
 The yearly steps here are large (sd_walk 0.33), so 74 years are enough to detect them."
+
+In `upper-pitt-river.R`, add the lines from `lag1(dat_pitt$logRS)` on (the four fitting lines are already there), then the row comment.
 
 :::::::::::::::::::::::::
 

@@ -29,9 +29,9 @@ This episode opens step 6 of the [Quick Start](02-quick-start.Rmd): checking the
 
 :::::::::::::::::::::::::::::::::::::::: prereq
 
-### Run This If You Are Starting Here
+### Run This Only If You Are Starting Here
 
-If you have followed along, you already have these objects.
+If you have followed along in `stellako.R`, you already have these objects: skip this chunk.
 If you are starting here or have restarted R, run this chunk first.
 It needs `data/sockeye.csv` and `files/cookbook.R` in your project (see [Setup](../learners/setup.md)).
 
@@ -340,13 +340,13 @@ If a learner asks for a test, say that the QQ plot shows the same thing and also
 
 Run the three checks (shape, pattern over time and independence) for the Upper Pitt River Ricker and random-walk models.
 Which checks does each model pass?
-Write row 5 of your report card in `report-card.R`.
+Add the code to `upper-pitt-river.R` and write row 5 of your report card under it.
 Row 5 records these three checks; the plot against spawners is optional.
 
 :::::::::::::::::::::::: hint
 
 Copy the recipe chunks in order and change three names: `my_stock` to `pitt`, `res_long` to `res_long_pitt`, and the fitted models in `osa_residuals(ricker)` and `osa_residuals(walk)` to `ricker_pitt` and `walk_pitt`.
-If `ricker_pitt` and `walk_pitt` are not in your workspace, fit them first, as in Episodes 5 and 6.
+If `ricker_pitt` and `walk_pitt` are not in your workspace, run `upper-pitt-river.R` from the top: it has them from Episodes 4 and 6.
 For the random walk's QQ plot, change `res_ricker` to `res_walk` and `(Ricker)` to `(random walk)`, as you did for Stellako.
 
 :::::::::::::::::::::::::
@@ -407,7 +407,7 @@ The Ricker fails all three checks, and the random walk passes all three.
 
 Row 5: "Ricker: fails all three residual checks, with lag-1 correlation 0.47 (limit 0.23), long waves over time (above zero in the 1960s and 1990s, below zero around 1980 and after 2010) and a QQ plot that bends below the line at both ends.
 Random walk: passes all three, with lag-1 correlation 0.13, no long runs and a QQ plot close to the line."
-In `report-card.R` it reads `# Row 5 (residuals): Ricker fails all three checks (lag-1 0.47, limit 0.23; long waves over time; QQ plot bends at both ends); random walk passes all three (lag-1 0.13).`
+In `upper-pitt-river.R`, add the residual and plot lines (the four fitting lines are already there), then the row comment `# Row 5 (residuals): Ricker fails all three checks (lag-1 0.47, limit 0.23; long waves over time; QQ plot bends at both ends); random walk passes all three (lag-1 0.13).`
 
 As for Stellako, the Ricker misses productivity that changes over time, and the random walk captures it.
 The random walk also straightens the QQ plot, so the bend most likely came from the same missing drift as the long waves: the Ricker's five lowest residuals all come from 2005 or later, when productivity was falling to its lowest.
@@ -419,7 +419,7 @@ The random walk also straightens the QQ plot, so the bend most likely came from 
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: instructor
 
 Challenge 2 takes about 14 minutes.
-Learners who restarted R need `pitt`, `dat_pitt`, `ricker_pitt` and `walk_pitt`: paste the first four lines of the solution into the shared notes document for them.
+Learners who restarted R get `pitt`, `dat_pitt`, `ricker_pitt` and `walk_pitt` back by running `upper-pitt-river.R` from the top; paste the first four lines of the solution into the shared notes document for anyone whose script is incomplete.
 Watch for `object 'res_long_pitt' not found`: the renamed `bind_rows()` lines must run before the plot.
 Ask for a green sticky note when the three lag-1 numbers print and row 5 is written.
 If the class is behind, do the lag-1 numbers and the brood-year plot only, and come back to the QQ plots at the start of Day 2.

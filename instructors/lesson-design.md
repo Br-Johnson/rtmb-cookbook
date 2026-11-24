@@ -42,7 +42,7 @@ The end goal of the lesson is a model report card for one stock.
 It appears three times:
 
 - completed for Stellako in the [Introduction](../episodes/01-introduction.Rmd), as the target;
-- one row at a time for Upper Pitt River in the "Your Turn" challenges, which learners keep in `report-card.R`;
+- one row at a time for Upper Pitt River in the "Your Turn" challenges, which learners keep as code and row comments in `upper-pitt-river.R`, their own analysis script;
 - as a checklist in the [Capstone](../episodes/12-capstone.Rmd), where the "Done when..." column is the rubric.
 
 Table: The model report card, with Stellako as the worked example.

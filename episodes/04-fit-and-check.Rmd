@@ -29,9 +29,9 @@ This episode opens steps 3 and 4 of the [Quick Start](02-quick-start.Rmd): fitti
 
 :::::::::::::::::::::::::::::::::::::::: prereq
 
-### Run This If You Are Starting Here
+### Run This Only If You Are Starting Here
 
-If you have followed along, you already have these objects.
+If you have followed along in `stellako.R`, you already have these objects: skip this chunk.
 If you are starting here or have restarted R, run this chunk first.
 It needs `data/sockeye.csv` and `files/cookbook.R` in your project (see [Setup](../learners/setup.md)).
 
@@ -596,12 +596,12 @@ All four checks are TRUE, and the estimates are the Ricker's: 2.38, 4.81 and -0.
 
 Fit the Ricker model to Upper Pitt River with `fit_model()`.
 Use the names `pitt`, `dat_pitt` and `ricker_pitt`, so that the Stellako objects stay as they are.
-Record its checks in row 2 of your report card (`report-card.R`).
+Add the code to `upper-pitt-river.R` and record its checks in row 2 of your report card, as a comment line under it.
 Put up a green sticky note when `ricker_pitt$checks` shows four TRUE.
 
 :::::::::::::::::::::::: hint
 
-If you still have `pitt` and `dat_pitt` from Episode 3 (Challenge 5), use them; otherwise make them as there, with `S_new` set to the average spawner count of the last four brood years.
+`pitt` and `dat_pitt` are in `upper-pitt-river.R` from Episode 3 (Challenge 5); if they are not in your workspace, run the script from the top.
 Then copy the line that fitted `ricker` above, `ricker <- fit_model(nll_ricker, start_ricker(dat), dat)`, and change `ricker` to `ricker_pitt` and each `dat` to `dat_pitt`.
 
 :::::::::::::::::::::::::
@@ -618,7 +618,7 @@ ricker_pitt$checks
 All four checks are TRUE, so the fit can be used.
 
 Row 2: "Ricker: all four checks TRUE." (Other models are added in Episodes 6 and 9.)
-In `report-card.R` it reads `# Row 2 (fits usable): Ricker: all four checks TRUE.`
+In `upper-pitt-river.R`, add the two `ricker_pitt` lines (the first two lines of the chunk are already there from Episode 3), then the row comment `# Row 2 (fits usable): Ricker: all four checks TRUE.`
 
 :::::::::::::::::::::::::
 

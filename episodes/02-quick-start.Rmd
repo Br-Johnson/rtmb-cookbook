@@ -567,7 +567,7 @@ The workflow runs unchanged, and the random walk again fixes the residual patter
 But the forecast is for 50 thousand spawners, and the last four brood years of Upper Pitt River had only 2.1 to 8.8 thousand spawners (average 5.3 thousand), although the whole series ranges from 2.1 to 74.6 thousand.
 Fifty thousand spawners is not a realistic scenario for this stock.
 From [Episode 3](03-likelihoods.Rmd) on, `S_new` is set from the average spawner count of the stock's last four brood years (rounded to 50 for Stellako, 5.3 for Upper Pitt River).
-Nothing from this challenge goes into `report-card.R`: later episodes fill the rows for Upper Pitt River one at a time, with `S_new` set for this stock.
+Nothing from this challenge goes into `upper-pitt-river.R`: later episodes fill the rows for Upper Pitt River one at a time, with `S_new` set for this stock.
 
 :::::::::::::::::::::::::
 

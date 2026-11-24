@@ -30,9 +30,9 @@ This episode opens step 8 of the [Quick Start](02-quick-start.Rmd): comparing mo
 
 :::::::::::::::::::::::::::::::::::::::: prereq
 
-### Run This If You Are Starting Here
+### Run This Only If You Are Starting Here
 
-If you have followed along, you already have these objects.
+If you have followed along in `stellako.R`, you already have these objects: skip this chunk.
 If you are starting here or have restarted R, run this chunk first.
 It needs `data/sockeye.csv`, `data/npgo.csv` and `files/cookbook.R` in your project (see [Setup](../learners/setup.md)).
 
@@ -464,7 +464,7 @@ Always compare models with `aic_table()`: it checks the rows for you.
 
 ### Challenge 4: Your Turn: Upper Pitt River, Row 7 (12 minutes)
 
-Fit the four candidate models to Upper Pitt River, make the AIC table, and write row 7 of your report card in `report-card.R`, using the four rules.
+Fit the four candidate models to Upper Pitt River, make the AIC table, and write row 7 of your report card under the code in `upper-pitt-river.R`, using the four rules.
 Add the new models' checks to row 2.
 
 :::::::::::::::::::::::: hint
@@ -498,6 +498,8 @@ Row 7: "The random walk is best: its AIC is 6.2 below Ricker + NPGO and 11.8 bel
 A difference of 6.2 is between 2 and 10, so we favour the random walk and check it against the residuals (row 5) and the forecasts (row 8).
 Unlike Stellako, NPGO helps here: it lowers AIC by 5.6 against the Ricker, and its effect, 0.28 (95% confidence interval 0.09 to 0.48), excludes zero.
 AIC cannot tell us whether the random walk also forecasts better (row 8)."
+
+In `upper-pitt-river.R`, add this chunk as it is: it refits `ricker_pitt` and `walk_pitt` inside `models_pitt`, the named list that the capstone template uses too, and the two row comments go under it.
 
 :::::::::::::::::::::::::
 

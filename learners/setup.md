@@ -7,7 +7,7 @@ At the end, a short script tells you whether everything works.
 
 ## Data Sets and Files
 
-Make a project folder (an RStudio or Positron project) with two subfolders, `data/` and `files/`, and two empty scripts, `my-recipes.R` (your recipe box) and `report-card.R` (your report card).
+Make a project folder (an RStudio or Positron project) with two subfolders, `data/` and `files/`, and three empty scripts: `my-recipes.R` (your recipe box, the functions you write), `stellako.R` (the code you type along with the instructor) and `upper-pitt-river.R` (your own work from the "Your Turn" challenges, with the report card as comment lines).
 In RStudio, use File > New Project > New Directory > New Project.
 In Positron, make a new folder and open it with File > Open Folder.
 
@@ -36,7 +36,8 @@ my-project/
 |   |-- cookbook.R
 |   `-- quick-start.R
 |-- my-recipes.R
-`-- report-card.R
+|-- stellako.R
+`-- upper-pitt-river.R
 ```
 
 Every path in the lesson, such as `read.csv("data/sockeye.csv")`, assumes that R is running in this project folder.
