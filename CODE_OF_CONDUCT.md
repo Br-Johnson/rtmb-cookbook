@@ -2,12 +2,11 @@
 title: "Contributor Code of Conduct"
 ---
 
-As contributors and maintainers of this project,
-we pledge to follow the [The Carpentries Code of Conduct][coc].
+Everyone who contributes to, teaches or learns from this lesson
+is expected to follow [The Carpentries Code of Conduct][coc].
 
-Instances of abusive, harassing, or otherwise unacceptable behavior
-may be reported by following our [reporting guidelines][coc-reporting].
+This lesson is not run by The Carpentries.
+To report a problem with behaviour in a workshop that uses it, contact the workshop's organisers.
+To report a problem in this repository, contact the lesson maintainer listed in `README.md`.
 
-
-[coc-reporting]: https://docs.carpentries.org/policies/coc/incident-reporting.html
 [coc]: https://docs.carpentries.org/policies/coc/

@@ -1,11 +1,11 @@
-# This template CITATION.cff file was generated with cffinit.
-# Visit https://bit.ly/cffinit to replace its contents
-# with information about your lesson.
-# Remember to update this file periodically, 
-# ensuring that the author list and other fields remain accurate.
+# Citation information for this lesson, in the Citation File Format (https://citation-file-format.github.io/).
+# Keep the author list and the other fields up to date.
+# When you first share the lesson, add `version:` and `date-released:` (YYYY-MM-DD).
+# Once GitHub Pages serves the lesson, point `url` at the published site
+# (for example https://br-johnson.github.io/rtmb-cookbook/).
 
 cff-version: 1.2.0
-title: FIXME
+title: "RTMB Cookbook: Fit, Check, Compare and Forecast with Your Own Models"
 message: >-
   Please cite this lesson using the information in this file
   when you refer to it in publications, and/or if you
@@ -13,10 +13,44 @@ message: >-
   training material.
 type: dataset
 authors:
-  - given-names: FIXME
-    family-names: FIXME
+  # The lesson's Cite page prints only given-names and family-names.
+  # family-names repeats the GitHub alias so that the page shows an author;
+  # replace it with your given-names and family-names if you want them shown.
+  - alias: Br-Johnson
+    family-names: Br-Johnson
 abstract: >-
-  FIXME Replace this with a short abstract describing the
-  lesson, e.g. its target audience and main intended
-  learning objectives.
+  In two hands-on days you will write your own statistical model as a
+  short R function, fit it with RTMB, check that the fit worked, compare
+  it with other models and test its forecasts on years it never saw,
+  using one tested recipe for each step and no proofs.
 license: CC-BY-4.0
+repository-code: "https://github.com/Br-Johnson/rtmb-cookbook"
+url: "https://github.com/Br-Johnson/rtmb-cookbook"
+keywords:
+  - RTMB
+  - TMB
+  - R
+  - statistical modelling
+  - likelihood
+  - random effects
+  - model selection
+  - model evaluation
+  - forecasting
+  - sockeye salmon
+  - Carpentries-style lesson
+references:
+  - type: generic
+    title: "RTMB workshop materials, Pacific Salmon Commission, November 2026"
+    authors:
+      - given-names: Paul
+        name-particle: van
+        family-names: Dam-Bates
+    year: 2026
+    month: 11
+    institution:
+      name: Pacific Salmon Commission
+    url: "https://github.com/Pacific-salmon-assess/RTMBWorkshop_Nov2026"
+    notes: >-
+      Slides, examples and the sockeye salmon data of the two-day RTMB
+      workshop hosted by the Pacific Salmon Commission, from which this
+      lesson was developed.

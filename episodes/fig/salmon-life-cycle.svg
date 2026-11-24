@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 560" width="800" height="560" role="img" aria-labelledby="cycle-title cycle-desc" font-family="Helvetica, Arial, sans-serif">
+  <title id="cycle-title">The sockeye salmon life cycle</title>
+  <desc id="cycle-desc">A loop of six boxes joined by arrows. Adults spawn in a river in the brood year and then die; eggs hatch in the river gravel; young fish spend about a year in a lake; they migrate to the ocean; they spend two to three years growing at sea; adults return to the river, and some are caught on the way. The returning adults become the next spawners. The spawning box is labelled spawners. The return box is labelled recruits, with the note: recruits are all adults from one brood year, caught or returning.</desc>
+  <defs>
+    <marker id="cycle-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#333333"/>
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="800" height="560" fill="#ffffff"/>
+
+  <!-- the ocean: pale fill, dashed border and a text label -->
+  <rect x="345" y="215" width="440" height="330" rx="16" fill="#e8f1f8" stroke="#666666" stroke-width="1.5" stroke-dasharray="6 4"/>
+  <text x="365" y="244" font-size="16" font-weight="bold" fill="#000000">Ocean</text>
+
+  <!-- the six stages -->
+  <g fill="#f2f2f2" stroke="#333333" stroke-width="2">
+    <rect x="40" y="250" width="270" height="76" rx="10"/>
+    <rect x="40" y="440" width="270" height="76" rx="10"/>
+    <rect x="370" y="440" width="230" height="76" rx="10"/>
+    <rect x="540" y="250" width="220" height="76" rx="10"/>
+  </g>
+  <!-- emphasis: spawners (orange border) and recruits (blue border); both also named in text -->
+  <rect x="40" y="50" width="270" height="76" rx="10" fill="#f2f2f2" stroke="#E69F00" stroke-width="4"/>
+  <rect x="490" y="50" width="270" height="76" rx="10" fill="#f2f2f2" stroke="#0072B2" stroke-width="4"/>
+  <text x="40" y="38" font-size="16" font-weight="bold" fill="#000000">SPAWNERS</text>
+  <text x="490" y="38" font-size="16" font-weight="bold" fill="#000000">RECRUITS</text>
+
+  <g font-size="16" fill="#000000" text-anchor="middle">
+    <text x="175" y="83">Adults spawn in the river</text>
+    <text x="175" y="106">in the brood year, then die</text>
+    <text x="175" y="283">Eggs hatch in</text>
+    <text x="175" y="306">the river gravel</text>
+    <text x="175" y="473">Young fish spend about</text>
+    <text x="175" y="496">a year in a lake</text>
+    <text x="485" y="473">Young fish migrate</text>
+    <text x="485" y="496">to the ocean</text>
+    <text x="650" y="283">Two to three years</text>
+    <text x="650" y="306">growing at sea</text>
+    <text x="625" y="83">Adults return to the river;</text>
+    <text x="625" y="106">some are caught on the way</text>
+  </g>
+
+  <!-- note on recruits -->
+  <g font-size="14" fill="#000000">
+    <text x="490" y="152">Recruits = all adults from</text>
+    <text x="490" y="170">one brood year, caught</text>
+    <text x="490" y="188">or returning to spawn</text>
+  </g>
+
+  <!-- arrows around the loop -->
+  <g stroke="#333333" stroke-width="2.5" fill="none" marker-end="url(#cycle-arrow)">
+    <line x1="175" y1="128" x2="175" y2="247"/>
+    <line x1="175" y1="328" x2="175" y2="437"/>
+    <line x1="312" y1="478" x2="367" y2="478"/>
+    <line x1="580" y1="438" x2="632" y2="330"/>
+    <line x1="730" y1="248" x2="730" y2="130"/>
+    <line x1="488" y1="100" x2="314" y2="100"/>
+  </g>
+  <g font-size="14" fill="#000000" text-anchor="middle">
+    <text x="401" y="70">and become</text>
+    <text x="401" y="88">the next spawners</text>
+  </g>
+</svg>
