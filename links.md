@@ -1,10 +1,11 @@
-<!-- 
-Place links that you need to refer to multiple times across pages here. Delete
-any links that you are not going to use. 
- -->
+<!--
+Links used on more than one page. Any page of the lesson can refer to these labels.
+-->
 
-[pandoc]: https://pandoc.org/MANUAL.html
-[r-markdown]: https://rmarkdown.rstudio.com/
-[rstudio]: https://www.rstudio.com/
-[carpentries-workbench]: https://carpentries.github.io/sandpaper-docs/
+[rtmb-cran]: https://cran.r-project.org/package=RTMB
+[tmb-docs]: https://kaskr.github.io/adcomp/
+[rtmb-docs]: https://kaskr.github.io/RTMB/
+[r-ecology]: https://datacarpentry.org/R-ecology-lesson/
+[care]: https://www.gida-global.org/care
+[workbench]: https://carpentries.github.io/sandpaper-docs/
 

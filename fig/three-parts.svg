@@ -1,0 +1,76 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" width="800" height="450" font-family="sans-serif" font-size="16" role="img" aria-labelledby="three-parts-title three-parts-desc">
+  <title id="three-parts-title">The three parts of a model: expected value, spread and distribution</title>
+  <desc id="three-parts-desc">A straight line of expected log recruits per spawner falls as spawners increase. Grey points, one per year, scatter around it. Three bell-shaped curves are drawn sideways at low, middle and high spawner values; each is centred on the line and has the same width. Labels point to the line (expected value, mu), the width of a bell (spread, sigma) and the bell shape (normal distribution).</desc>
+  <defs>
+    <marker id="tp-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#000000"/>
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="800" height="450" fill="#FFFFFF"/>
+  <!-- Axes (no numbers: the picture is the same for any stock) -->
+  <g stroke="#000000" stroke-width="2" fill="none">
+    <line x1="70" y1="385" x2="70" y2="30" marker-end="url(#tp-arrow)"/>
+    <line x1="70" y1="385" x2="785" y2="385" marker-end="url(#tp-arrow)"/>
+  </g>
+  <text x="427" y="423" text-anchor="middle" font-size="18" fill="#000000">Spawners, S</text>
+  <text x="0" y="0" transform="translate(38, 207) rotate(-90)" text-anchor="middle" font-size="18" fill="#000000">log(recruits per spawner)</text>
+  <!-- Single years: grey points scattered around the line -->
+  <g fill="#8C8C8C">
+    <circle cx="125" cy="99" r="4.5"/>
+    <circle cx="131" cy="92" r="4.5"/>
+    <circle cx="139" cy="79" r="4.5"/>
+    <circle cx="142" cy="69" r="4.5"/>
+    <circle cx="146" cy="80" r="4.5"/>
+    <circle cx="148" cy="119" r="4.5"/>
+    <circle cx="160" cy="79" r="4.5"/>
+    <circle cx="178" cy="108" r="4.5"/>
+    <circle cx="182" cy="113" r="4.5"/>
+    <circle cx="196" cy="75" r="4.5"/>
+    <circle cx="200" cy="110" r="4.5"/>
+    <circle cx="220" cy="145" r="4.5"/>
+    <circle cx="248" cy="81" r="4.5"/>
+    <circle cx="293" cy="132" r="4.5"/>
+    <circle cx="305" cy="141" r="4.5"/>
+    <circle cx="315" cy="129" r="4.5"/>
+    <circle cx="343" cy="167" r="4.5"/>
+    <circle cx="348" cy="156" r="4.5"/>
+    <circle cx="364" cy="130" r="4.5"/>
+    <circle cx="382" cy="187" r="4.5"/>
+    <circle cx="388" cy="185" r="4.5"/>
+    <circle cx="437" cy="207" r="4.5"/>
+    <circle cx="456" cy="224" r="4.5"/>
+    <circle cx="464" cy="203" r="4.5"/>
+    <circle cx="484" cy="204" r="4.5"/>
+    <circle cx="487" cy="174" r="4.5"/>
+    <circle cx="517" cy="226" r="4.5"/>
+    <circle cx="525" cy="202" r="4.5"/>
+    <circle cx="533" cy="208" r="4.5"/>
+    <circle cx="643" cy="226" r="4.5"/>
+    <circle cx="650" cy="235" r="4.5"/>
+    <circle cx="671" cy="251" r="4.5"/>
+    <circle cx="730" cy="310" r="4.5"/>
+    <circle cx="749" cy="244" r="4.5"/>
+  </g>
+  <!-- Three identical sideways bells (normal distributions), centred on the line -->
+  <path d="M 175 35.1 L 175.8 35.1 L 176.1 37.3 L 176.4 39.5 L 176.9 41.7 L 177.5 43.9 L 178.2 46.1 L 179.0 48.3 L 180.1 50.5 L 181.4 52.7 L 182.9 54.9 L 184.7 57.1 L 186.8 59.3 L 189.2 61.5 L 192.0 63.7 L 195.0 65.9 L 198.4 68.1 L 202.0 70.3 L 205.9 72.5 L 210.0 74.7 L 214.3 76.9 L 218.7 79.1 L 223.0 81.3 L 227.3 83.5 L 231.4 85.7 L 235.1 87.9 L 238.5 90.1 L 241.5 92.3 L 243.8 94.5 L 245.6 96.7 L 246.6 98.9 L 247.0 101.1 L 246.6 103.3 L 245.6 105.5 L 243.8 107.7 L 241.5 109.9 L 238.5 112.1 L 235.1 114.3 L 231.4 116.5 L 227.3 118.7 L 223.0 120.9 L 218.7 123.1 L 214.3 125.3 L 210.0 127.5 L 205.9 129.7 L 202.0 131.9 L 198.4 134.1 L 195.0 136.3 L 192.0 138.5 L 189.2 140.7 L 186.8 142.9 L 184.7 145.1 L 182.9 147.3 L 181.4 149.5 L 180.1 151.7 L 179.0 153.9 L 178.2 156.1 L 177.5 158.3 L 176.9 160.5 L 176.4 162.7 L 176.1 164.9 L 175.8 167.1 L 175 167.1 Z" fill="#0072B2" fill-opacity="0.15" stroke="#0072B2" stroke-width="2.5"/>
+  <line x1="175" y1="35.1" x2="175" y2="167.1" stroke="#0072B2" stroke-width="1.5"/>
+  <path d="M 415 113.3 L 415.8 113.3 L 416.1 115.5 L 416.4 117.7 L 416.9 119.9 L 417.5 122.1 L 418.2 124.3 L 419.0 126.5 L 420.1 128.7 L 421.4 130.9 L 422.9 133.1 L 424.7 135.3 L 426.8 137.5 L 429.2 139.7 L 432.0 141.9 L 435.0 144.1 L 438.4 146.3 L 442.0 148.5 L 445.9 150.7 L 450.0 152.9 L 454.3 155.1 L 458.7 157.3 L 463.0 159.5 L 467.3 161.7 L 471.4 163.9 L 475.1 166.1 L 478.5 168.3 L 481.5 170.5 L 483.8 172.7 L 485.6 174.9 L 486.6 177.1 L 487.0 179.3 L 486.6 181.5 L 485.6 183.7 L 483.8 185.9 L 481.5 188.1 L 478.5 190.3 L 475.1 192.5 L 471.4 194.7 L 467.3 196.9 L 463.0 199.1 L 458.7 201.3 L 454.3 203.5 L 450.0 205.7 L 445.9 207.9 L 442.0 210.1 L 438.4 212.3 L 435.0 214.5 L 432.0 216.7 L 429.2 218.9 L 426.8 221.1 L 424.7 223.3 L 422.9 225.5 L 421.4 227.7 L 420.1 229.9 L 419.0 232.1 L 418.2 234.3 L 417.5 236.5 L 416.9 238.7 L 416.4 240.9 L 416.1 243.1 L 415.8 245.3 L 415 245.3 Z" fill="#0072B2" fill-opacity="0.15" stroke="#0072B2" stroke-width="2.5"/>
+  <line x1="415" y1="113.3" x2="415" y2="245.3" stroke="#0072B2" stroke-width="1.5"/>
+  <path d="M 655 191.5 L 655.8 191.5 L 656.1 193.7 L 656.4 195.9 L 656.9 198.1 L 657.5 200.3 L 658.2 202.5 L 659.0 204.7 L 660.1 206.9 L 661.4 209.1 L 662.9 211.3 L 664.7 213.5 L 666.8 215.7 L 669.2 217.9 L 672.0 220.1 L 675.0 222.3 L 678.4 224.5 L 682.0 226.7 L 685.9 228.9 L 690.0 231.1 L 694.3 233.3 L 698.7 235.5 L 703.0 237.7 L 707.3 239.9 L 711.4 242.1 L 715.1 244.3 L 718.5 246.5 L 721.5 248.7 L 723.8 250.9 L 725.6 253.1 L 726.6 255.3 L 727.0 257.5 L 726.6 259.7 L 725.6 261.9 L 723.8 264.1 L 721.5 266.3 L 718.5 268.5 L 715.1 270.7 L 711.4 272.9 L 707.3 275.1 L 703.0 277.3 L 698.7 279.5 L 694.3 281.7 L 690.0 283.9 L 685.9 286.1 L 682.0 288.3 L 678.4 290.5 L 675.0 292.7 L 672.0 294.9 L 669.2 297.1 L 666.8 299.3 L 664.7 301.5 L 662.9 303.7 L 661.4 305.9 L 660.1 308.1 L 659.0 310.3 L 658.2 312.5 L 657.5 314.7 L 656.9 316.9 L 656.4 319.1 L 656.1 321.3 L 655.8 323.5 L 655 323.5 Z" fill="#0072B2" fill-opacity="0.15" stroke="#0072B2" stroke-width="2.5"/>
+  <line x1="655" y1="191.5" x2="655" y2="323.5" stroke="#0072B2" stroke-width="1.5"/>
+  <!-- The expected value: a falling straight line -->
+  <line x1="95" y1="75" x2="770" y2="295" stroke="#000000" stroke-width="4"/>
+  <!-- Label: the bell shape -->
+  <line x1="268" y1="62" x2="210" y2="70" stroke="#000000" stroke-width="1.5"/>
+  <text x="272" y="56" fill="#000000"><tspan font-weight="bold">Distribution:</tspan> normal (a bell)</text>
+  <text x="272" y="77" fill="#000000" font-size="15">the shape of the scatter</text>
+  <!-- Label: the spread, one sigma above and below the line -->
+  <line x1="459" y1="157.3" x2="507" y2="157.3" stroke="#000000" stroke-width="1.5" stroke-dasharray="4 3"/>
+  <line x1="459" y1="201.3" x2="507" y2="201.3" stroke="#000000" stroke-width="1.5" stroke-dasharray="4 3"/>
+  <line x1="501" y1="158.3" x2="501" y2="200.3" stroke="#000000" stroke-width="2" marker-start="url(#tp-arrow)" marker-end="url(#tp-arrow)"/>
+  <text x="515" y="131" fill="#000000"><tspan font-weight="bold">Spread:</tspan> sigma</text>
+  <text x="515" y="152" fill="#000000" font-size="15">the same width every year</text>
+  <!-- Label: the line -->
+  <line x1="560" y1="352" x2="596" y2="244" stroke="#000000" stroke-width="1.5"/>
+  <text x="560" y="368" text-anchor="end" fill="#000000"><tspan font-weight="bold">Expected value:</tspan> mu, the line</text>
+</svg>

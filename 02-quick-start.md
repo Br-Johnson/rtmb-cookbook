@@ -1,0 +1,708 @@
+---
+title: "Quick Start: The Whole Workflow in Nine Steps"
+teaching: 40
+exercises: 20
+---
+
+:::::::::::::::::::::::::::::::::::::::: questions
+
+- What are the steps from data to a checked model and its forecast?
+- What does each step produce, and what should I look for in it?
+
+::::::::::::::::::::::::::::::::::::::::::::::::::
+
+:::::::::::::::::::::::::::::::::::::::: objectives
+
+- Run the nine-step workflow on one stock, from data to forecast.
+- Match a question about a model to the step that answers it.
+- Interpret the main output of the check, estimate, residual, comparison and forecast steps in one sentence each.
+
+::::::::::::::::::::::::::::::::::::::::::::::::::
+
+
+
+## Nine Steps from Data to Forecast
+
+This episode runs the whole workflow once, on one stock, Stellako, from the data to a forecast for the next brood year.
+The nine steps are called QS1 to QS9 (Quick Start steps 1 to 9).
+The story has five parts: we fit a model, find a problem with it, fix the problem, confirm the fix, and use the better model to forecast.
+Each step is one or two short chunks of code, and the text after them says what to look for in the output.
+Together, the steps give a first, rough version of rows 1 to 5, 7 and 9 of the model report card from [the Introduction](01-introduction.Rmd): data, fits usable, estimates, random effect, residuals, comparison and forecast.
+Later episodes add the other four rows: simulation, forecast skill, conclusion and stretch.
+Type each chunk into a new script in your project folder, for example `my-quick-start.R`, and run it as you go.
+
+:::::::::::::::::::::::::::::::::::::::: callout
+
+### A Tour, Not a Test
+
+Not every line will make sense yet.
+That is expected.
+Each later episode opens one or two of these steps and explains them slowly.
+The whole script is in [the Quick Start script (quick-start.R)](files/quick-start.R) if you fall behind.
+If a step gives an error, compare your lines with that script, or find the message on the [Troubleshooting](../learners/troubleshooting.md) page.
+
+::::::::::::::::::::::::::::::::::::::::::::::::::
+
+![
+The nine steps of the workflow. Each later episode opens one or two of them.
+](fig/workflow.svg){
+alt="Nine numbered boxes in a row joined by arrows: 1 data, 2 model, 3 fit, 4 check the fit, 5 estimates, 6 check the model, 7 random effect, 8 compare, 9 forecast."
+}
+
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: instructor
+
+Type steps 1 to 5 live, saying each line aloud; for steps 6 to 9, keep typing but explain only what to look for in the output, because later episodes explain every line.
+This is the only episode where learners who fall behind may paste from `files/quick-start.R`.
+Keep to 60 minutes: aim for four TRUE at QS4 by about minute 20, Challenge 2 done by minute 35, and both AIC values at QS8 by minute 45.
+If you are behind at QS7, type it while learners paste it from `files/quick-start.R`, explain only what to look for, and take Challenge 5 orally in one minute.
+Write deep questions on a "parking lot" list, labelled with the episode that answers them (the table at the end of this episode).
+
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+## QS1: Get the Data Ready
+
+Step 1 reads the data, keeps one stock and puts what the model needs into a named list, the [data list](../learners/reference.md#glossary).
+It needs `data/sockeye.csv` in your project (see [Setup](../learners/setup.md)).
+
+
+``` r
+library(RTMB)
+library(dplyr)
+library(ggplot2)
+
+sockeye  <- read.csv("data/sockeye.csv")
+my_stock <- filter(sockeye, stock == "Stellako")
+
+dat <- list(
+  S     = my_stock$spawners,                                  # spawners
+  logRS = log(my_stock$recruits / my_stock$spawners),         # log(recruits per spawner)
+  year  = my_stock$brood_year - min(my_stock$brood_year) + 1, # 1, 2, 3, ...
+  S_new = 50                                                  # spawners for the forecast
+)
+```
+
+If `read.csv()` says it cannot open the file, R is not running in your project folder: open your project and run the chunk again ([Setup](../learners/setup.md) explains how).
+Loading dplyr may print a message that some functions are masked; that is normal ([the Introduction](01-introduction.Rmd) explains it).
+
+The data list `dat` has four parts:
+
+- `S`, the spawners in each brood year (in thousands of fish), which the model uses as inputs;
+- `logRS`, the log of recruits per spawner, which are the observations the model describes;
+- `year`, a year index: 1 for the first brood year, 2 for the next, and so on;
+- `S_new`, the number of spawners (in thousands) to forecast for.
+
+`S`, `logRS` and `year` each have 74 values, one per brood year.
+`S_new = 50` is about the average spawner count of the last four brood years: `mean(tail(my_stock$spawners, 4))` gives 51.7 thousand.
+
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: instructor
+
+Before QS2, check that everyone has `dat`: `length(dat$S)` is 74.
+The most common problem here is a wrong working directory, which stops `read.csv()`: help the learner open the project, then rerun the chunk.
+
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+## QS2: Write the Model
+
+Step 2 writes the model as an R function.
+The function takes the parameters and the data, and returns the [negative log-likelihood](../learners/reference.md#glossary): a score of how surprising the data are for those parameter values.
+
+The model is the [Ricker model](../learners/reference.md#glossary).
+In words: the expected log(R/S) is log(alpha) minus S over S_max.
+Here alpha is [productivity](../learners/reference.md#glossary), the recruits per spawner when spawners are few, and [S_max](../learners/reference.md#glossary) is the spawner count that produces the most recruits.
+Single years scatter around this expected value with standard deviation (SD) [sigma](../learners/reference.md#glossary).
+
+
+``` r
+nll_ricker <- function(par, dat) {
+  getAll(par, dat)
+  logRS <- OBS(logRS)                                  # these are the observations
+  mu     <- log_alpha - S / exp(log_Smax)              # expected log(R/S)
+  mu_new <- log_alpha - S_new / exp(log_Smax)          # ... for the forecast
+  ADREPORT(mu_new)
+  -sum(dnorm(logRS, mu, exp(log_sigma), log = TRUE))   # negative log-likelihood
+}
+par_ricker <- list(log_alpha = mean(dat$logRS),        # starting values from the data
+                   log_Smax  = log(mean(dat$S)),
+                   log_sigma = log(sd(dat$logRS)))
+```
+
+Nothing is printed: the chunk only defines the function and its starting values, and step 3 uses them.
+Inside the function, `mu` is the expected log(R/S) in each year, and the last line adds up how surprising each year is, which gives the negative log-likelihood.
+`mu_new` is the expected log(R/S) for `S_new` spawners, and [ADREPORT()](../learners/reference.md#glossary) asks RTMB for its [standard error](../learners/reference.md#glossary); step 9 uses both for the forecast.
+`par_ricker` holds the [starting values](../learners/reference.md#glossary), where the search for the best values begins: typical values taken from the data.
+Names that start with `log_` are parameters estimated on the log scale, which keeps alpha, S_max and sigma positive ([Episode 3](03-likelihoods.Rmd) explains why).
+
+:::::::::::::::::::::::::::::::::::::::: spoiler
+
+### What Do getAll() and OBS() Do? (optional)
+
+`getAll()` lets you write `log_alpha` instead of `par$log_alpha`.
+`OBS()` marks the observations, so RTMB can compute residuals (QS6) and simulate new data ([Episode 8](08-simulation.Rmd)).
+
+::::::::::::::::::::::::::::::::::::::::::::::::::
+
+## QS3: Fit the Model
+
+Step 3 fits the model with three calls.
+`MakeADFun()` builds an object, `obj`, from the function and the starting values.
+`obj$par` holds the starting values, `obj$fn` computes the negative log-likelihood, and `obj$gr` computes its slope.
+`nlminb()`, the [optimiser](../learners/reference.md#glossary), starts from `obj$par` and uses `obj$fn` and `obj$gr` to search for the parameter values with the smallest negative log-likelihood.
+`sdreport()` computes a standard error for each estimate.
+
+
+``` r
+obj <- MakeADFun(function(p) nll_ricker(p, dat), par_ricker, silent = TRUE)  # build
+opt <- nlminb(obj$par, obj$fn, obj$gr)                                       # fit
+sdr <- sdreport(obj)                                                         # standard errors
+```
+
+Nothing is printed here either.
+The best values are stored in `opt`, and the standard errors in `sdr`.
+
+:::::::::::::::::::::::::::::::::::::::: spoiler
+
+### What Does function(p) nll_ricker(p, dat) Do? (optional)
+
+`MakeADFun()` needs a function of the parameters only, and `function(p) nll_ricker(p, dat)` makes one.
+Each time RTMB runs it, it calls `nll_ricker()` with whatever `dat` holds at that moment, so do not change `dat` after fitting ([Episode 4](04-fit-and-check.Rmd) shows why).
+
+::::::::::::::::::::::::::::::::::::::::::::::::::
+
+:::::::::::::::::::::::::::::::::::::::: challenge
+
+### Challenge 1: Predict the Score (2 minutes)
+
+`obj$fn()` returns the negative log-likelihood for any parameter values.
+At the starting values, `obj$par`, it is:
+
+
+``` r
+obj$fn(obj$par)
+```
+
+``` output
+[1] 144.8327
+```
+
+Will `opt$objective`, the value after fitting, be larger, smaller or the same?
+Write down your prediction, then run `opt$objective`.
+
+:::::::::::::::::::::::: solution
+
+
+``` r
+opt$objective
+```
+
+``` output
+[1] 96.12848
+```
+
+It is smaller: 96.1 against 144.8.
+Fitting looks for the parameter values that make the data least surprising, and a smaller negative log-likelihood means less surprise.
+[Episode 3](03-likelihoods.Rmd) explains the score.
+
+:::::::::::::::::::::::::
+
+::::::::::::::::::::::::::::::::::::::::::::::::::
+
+## QS4: Check the Fit
+
+Step 4 asks whether the fit can be used.
+Picture the negative log-likelihood as a valley, and the optimiser as a hiker walking downhill in fog, using the slope to choose each step.
+The [four checks](../learners/reference.md#glossary) test where the hiker stopped:
+
+- `finished`: the optimiser stopped normally;
+- `flat`: the ground is level where it stopped;
+- `curved`: the ground curves up in every direction, like the bottom of a bowl;
+- `finite_se`: every standard error is a number.
+
+
+``` r
+check_fit <- function(opt, sdr) {
+  c(finished  = opt$convergence == 0,                         # the optimiser stopped normally
+    flat      = max(abs(sdr$gradient.fixed)) < 0.001,         # the ground is level
+    curved    = sdr$pdHess,                                   # the bottom is a bowl
+    finite_se = all(is.finite(summary(sdr, "fixed")[, "Std. Error"])))  # every SE is a number
+}
+check_fit(opt, sdr)
+```
+
+``` output
+ finished      flat    curved finite_se 
+     TRUE      TRUE      TRUE      TRUE 
+```
+
+Four TRUE mean the fit can be used.
+When `check_fit()` shows four TRUE, put up a green sticky note.
+
+:::::::::::::::::::::::::::::::::::::::: caution
+
+### Convergence Code 0 Is Not Enough
+
+`finished` reads the optimiser's own report, `opt$convergence`: 0 means it stopped normally.
+That report can be 0 for a fit that is useless, so use all four checks ([Episode 4](04-fit-and-check.Rmd)).
+
+::::::::::::::::::::::::::::::::::::::::::::::::::
+
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: instructor
+
+Ask for sticky notes here: green when `check_fit(opt, sdr)` shows four TRUE, the other colour for any error.
+The most common problem at this point is a typing error in `nll_ricker`: compare it with `files/quick-start.R`.
+
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+## QS5: Estimates with Uncertainty
+
+Step 5 reports the estimates with their uncertainty.
+
+
+``` r
+est <- summary(sdr, "fixed")
+est
+```
+
+``` output
+            Estimate Std. Error
+log_alpha  2.3797073 0.15733923
+log_Smax   4.8081068 0.26753555
+log_sigma -0.1199054 0.08219944
+```
+
+``` r
+exp(est["log_Smax", "Estimate"] + c(-1.96, 0, 1.96) * est["log_Smax", "Std. Error"])
+```
+
+``` output
+[1]  72.51092 122.49948 206.94985
+```
+
+The table gives each estimate and its standard error on the log scale, the scale the model uses.
+The last line turns `log_Smax` into a 95% [confidence interval](../learners/reference.md#glossary) on the natural scale (thousands of spawners): it adds and subtracts 1.96 standard errors on the log scale, then uses `exp()`.
+Its three numbers are the lower limit, the estimate and the upper limit.
+S_max, the spawner count that produces the most recruits, is 122 thousand spawners (95% confidence interval 73 to 207 thousand).
+The same line with `log_alpha` in place of `log_Smax` gives productivity: 10.8 recruits per spawner when spawners are few (95% confidence interval 7.9 to 14.7).
+
+## QS6: Check the Model with Residuals
+
+Step 6 checks the model against the data.
+A [one-step-ahead residual](../learners/reference.md#glossary) is how far each year's log(R/S) is from what the model expected, given all the years before it, measured in standard deviations.
+Above zero means the stock produced more recruits than the model expected for that year; below zero means fewer.
+If the model describes the data, the residuals scatter around zero, mostly between -2 and 2, with no pattern over time.
+
+
+``` r
+my_stock$res_ricker <- oneStepPredict(obj, method = "fullGaussian", trace = FALSE)$residual
+ggplot(my_stock, aes(x = brood_year, y = res_ricker)) +
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  geom_point() +
+  labs(x = "Brood year", y = "One-step-ahead residual (Ricker)")
+```
+
+<img src="fig/02-quick-start-rendered-qs6-residual-plot-1.png" alt="Scatter plot of one-step-ahead residuals from the Ricker model against brood year for Stellako, 1948 to 2021, with a dashed line at zero. Most residuals are above zero before 1990, between about minus 0.6 and plus 1.7, and below zero after 2000, mostly between minus 2.2 and minus 0.7 after 2010. One residual, in 2005, is far below the others at about minus 4.2." style="display: block; margin: auto;" />
+
+The residuals are mostly above zero before 1990 (they average +0.43) and mostly below zero after 2000 (average -0.95).
+One year, 2005, stands out far below the others, at -4.2.
+
+:::::::::::::::::::::::::::::::::::::::: spoiler
+
+### Where the Residual Numbers Come From (optional)
+
+These lines compute the averages, the lowest residual and its brood year.
+`which.min()` gives the position of the smallest value.
+
+
+``` r
+mean(my_stock$res_ricker[my_stock$brood_year < 1990])   # average before 1990
+```
+
+``` output
+[1] 0.4335237
+```
+
+``` r
+mean(my_stock$res_ricker[my_stock$brood_year > 2000])   # average after 2000
+```
+
+``` output
+[1] -0.9494193
+```
+
+``` r
+min(my_stock$res_ricker)                                # the lowest residual
+```
+
+``` output
+[1] -4.196076
+```
+
+``` r
+my_stock$brood_year[which.min(my_stock$res_ricker)]     # ... and its brood year
+```
+
+``` output
+[1] 2005
+```
+
+::::::::::::::::::::::::::::::::::::::::::::::::::
+
+
+``` r
+lag1 <- function(r) cor(head(r, -1), tail(r, -1))     # are neighbouring years alike?
+lag1(my_stock$res_ricker)
+```
+
+``` output
+[1] 0.2503649
+```
+
+The [lag-1 correlation](../learners/reference.md#glossary) is the correlation between each year's residual and the next year's: `head(r, -1)` drops the last value and `tail(r, -1)` the first, so `cor()` pairs each year with the next.
+Near zero means the residuals have no memory from one year to the next.
+With 74 years, chance alone usually keeps it between about -0.23 and +0.23 (2/sqrt(74); [Episode 7](07-residuals.Rmd) explains this limit).
+Here it is 0.25, a little above that limit: neighbouring years tend to be alike, so good years often follow good years and bad years follow bad years.
+
+:::::::::::::::::::::::::::::::::::::::: challenge
+
+### Challenge 2: Read the Residuals (3 minutes)
+
+Most residuals are above zero before 1990 and below zero after 2000.
+What is the most likely reason?
+
+- **(a)** The fit failed.
+- **(b)** Productivity changed over time, and the model assumes it is constant.
+- **(c)** One outlier year, 2005, pulls every residual down.
+- **(d)** The yearly scatter, sigma, is too small.
+
+:::::::::::::::::::::::: solution
+
+The answer is (b).
+The plot and the lag-1 correlation say that the model misses something that changes over time.
+The Ricker model has one productivity for all 74 years, so when productivity falls, the early years sit above the curve and the late years below it.
+
+- **(a)** All four checks were TRUE, so the fit worked. It is the model that misses the pattern.
+- **(b)** Right: the model assumes productivity is constant, and the residuals show that it was not.
+- **(c)** One very low year cannot shift decades of residuals, and the residuals before 1990 are above zero, not below. A very low year in fact pulls the curve down a little, which raises the other years' residuals.
+- **(d)** Sigma scales all residuals equally, so it cannot create a pattern over time.
+
+:::::::::::::::::::::::::
+
+::::::::::::::::::::::::::::::::::::::::::::::::::
+
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: instructor
+
+If many learners choose (a), they think a pattern in the residuals means the fit failed: point back to the four TRUE in QS4, and say that the checks test the fit, while residuals test the model.
+If many choose (c), show the plot again and count the years above zero before 1990.
+If answers are spread out, go back to what a residual is: how far each year is from what the model expected, given the years before it.
+
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+Residuals are one way to check a model.
+[Episode 8](08-simulation.Rmd) adds a second: simulate many data sets from the fitted model and compare them with the real data.
+
+## QS7: Let Productivity Drift
+
+Step 7 fixes the problem with a [random effect](../learners/reference.md#glossary): a set of related unknown values that come from a distribution, here one productivity for each year.
+Each year's log productivity is last year's plus a small random step, which makes a [random walk](../learners/reference.md#glossary).
+The model estimates the size of the steps, [sd_walk](../learners/reference.md#glossary).
+
+
+``` r
+nll_walk <- function(par, dat) {
+  getAll(par, dat)
+  logRS <- OBS(logRS)
+  sd_walk <- exp(log_sd_walk)
+  nll <- -dnorm(log_alpha_year[1], log_alpha, sd_walk, log = TRUE)       # first year
+  nll <- nll - sum(dnorm(diff(log_alpha_year), 0, sd_walk, log = TRUE))  # yearly steps
+  mu     <- log_alpha_year[year] - S / exp(log_Smax)
+  mu_new <- log_alpha_year[max(year) + 1] - S_new / exp(log_Smax)        # next year
+  ADREPORT(mu_new)
+  nll - sum(dnorm(logRS, mu, exp(log_sigma), log = TRUE))
+}
+```
+
+Compared with `nll_ricker`, the new lines say that the first year's productivity starts near `log_alpha`, and that the steps between years, `diff(log_alpha_year)`, are small, with SD `sd_walk`.
+`log_alpha_year[year]` picks each brood year's productivity, and `log_alpha_year[max(year) + 1]` is the year after the data, for the forecast.
+
+We fit it with the same three calls, adding `random = "log_alpha_year"`.
+This tells RTMB to average over every possible path of productivity, and to estimate only the four [fixed parameters](../learners/reference.md#glossary): `log_alpha`, `log_Smax`, `log_sigma` and `log_sd_walk`.
+
+
+``` r
+par_walk <- c(par_ricker,
+              list(log_sd_walk    = log(0.1),                            # small steps
+                   log_alpha_year = rep(mean(dat$logRS), max(dat$year) + 1)))
+obj_walk <- MakeADFun(function(p) nll_walk(p, dat), par_walk,
+                      random = "log_alpha_year", silent = TRUE)
+opt_walk <- nlminb(obj_walk$par, obj_walk$fn, obj_walk$gr)
+sdr_walk <- sdreport(obj_walk)
+check_fit(opt_walk, sdr_walk)
+```
+
+``` output
+ finished      flat    curved finite_se 
+     TRUE      TRUE      TRUE      TRUE 
+```
+
+``` r
+my_stock$res_walk <- oneStepPredict(obj_walk, method = "fullGaussian", trace = FALSE)$residual
+lag1(my_stock$res_walk)
+```
+
+``` output
+[1] -0.100152
+```
+
+`par_walk` adds two kinds of starting values: sd_walk at 0.1 (small steps), and 75 yearly productivities, one for each of the 74 brood years plus one for next year.
+The model that lets productivity drift passes all four checks.
+The lag-1 correlation of its residuals is -0.10, against 0.25 for the Ricker: well inside the limits of ±0.23, so neighbouring years are no longer alike.
+The size of the yearly steps, sd_walk, is estimated at 0.13 (`exp(opt_walk$par[["log_sd_walk"]])` prints it): productivity typically changes by about 13% from one year to the next ([Episode 6](06-random-effects.Rmd) explains how to read it).
+
+## QS8: Compare the Two Models
+
+Step 8 compares the two models with the Akaike information criterion ([AIC](../learners/reference.md#glossary)): twice the negative log-likelihood plus twice the number of fixed parameters.
+The first part rewards a model that makes the data less surprising, and the second is a penalty for each parameter.
+Lower AIC means more support from the data.
+AIC can only compare models fitted to the same data, as here: the same 74 values of log(R/S) ([Episode 9](09-model-selection.Rmd)).
+
+:::::::::::::::::::::::::::::::::::::::: challenge
+
+### Challenge 3: Predict the Winner (2 minutes)
+
+The random walk has one more fixed parameter, which adds 2 to its AIC.
+But its residuals suggest that it describes the drift that the Ricker misses (lag-1 correlation -0.10 against 0.25).
+Which model do you expect to have the lower AIC?
+Write down your prediction, then run the next chunk.
+
+:::::::::::::::::::::::: solution
+
+The random walk: its AIC is 178.3 against 198.3 for the Ricker, a difference of 20.
+Describing the drift makes the data much less surprising, which outweighs the penalty of 2 for the extra parameter.
+[Episode 9](09-model-selection.Rmd) gives the rules for reading AIC differences.
+
+:::::::::::::::::::::::::
+
+::::::::::::::::::::::::::::::::::::::::::::::::::
+
+
+``` r
+aic <- function(opt) 2 * opt$objective + 2 * length(opt$par)
+c(ricker = aic(opt), walk = aic(opt_walk))
+```
+
+``` output
+  ricker     walk 
+198.2570 178.3082 
+```
+
+The random walk's AIC is 20 lower.
+Lower is better, and 20 is a large difference.
+When you have both AIC values, put up a green sticky note.
+
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: instructor
+
+Ask for sticky notes when learners have the two AIC values.
+Misconception to listen for: "the model with more parameters always wins".
+The penalty counts only the fixed parameters (three for the Ricker, four for the random walk), and Episode 9 shows a model with one more parameter that loses.
+
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+## QS9: Forecast Next Year
+
+Step 9 uses the random walk to forecast the recruits that `S_new` = 50 thousand spawners would produce in the next brood year, 2022.
+The model reports `mu_new`, the expected log(R/S) for that year, with its standard error.
+Adding the yearly scatter, sigma, gives an 80% [prediction interval](../learners/reference.md#glossary): a range that should hold the actual recruits in about 8 years out of 10, if the model is right.
+
+
+``` r
+p <- summary(sdr_walk, "report")["mu_new", ]
+sd_pred <- sqrt(p[["Std. Error"]]^2 + exp(opt_walk$par[["log_sigma"]])^2)   # curve + yearly noise
+dat$S_new * exp(p[["Estimate"]] + qnorm(c(0.1, 0.5, 0.9)) * sd_pred)
+```
+
+``` output
+[1]  55.27905 148.08070 396.67636
+```
+
+In the last line, `qnorm(c(0.1, 0.5, 0.9))` picks the 10%, 50% and 90% points of a normal distribution, `exp()` turns log(R/S) into recruits per spawner, and multiplying by `S_new` turns recruits per spawner into recruits.
+The three numbers are the lower limit, the [median](../learners/reference.md#glossary) and the upper limit, in thousands of recruits.
+From 50 thousand spawners, the random walk forecasts a median of 148 thousand recruits, with an 80% prediction interval of 55 to 397 thousand.
+Can this forecast be trusted?
+[Episode 11](11-forecasting.Rmd) replays the past: it refits each model to the years before each year from 2007 on, forecasts that year, and compares the errors with those of a plain forecasting rule, the [benchmark](../learners/reference.md#glossary).
+
+:::::::::::::::::::::::::::::::::::::::: callout
+
+### A Median, Not a Mean
+
+`exp()` of a log-scale forecast is the median: half of the outcomes are expected below it ([Episode 11](11-forecasting.Rmd)).
+
+::::::::::::::::::::::::::::::::::::::::::::::::::
+
+:::::::::::::::::::::::::::::::::::::::: challenge
+
+### Challenge 4: Which Forecast Would You Trust? (3 minutes)
+
+Copy the three lines of QS9 and paste the copy below them.
+In the copy, change `sdr_walk` to `sdr` and `opt_walk` to `opt`, so that it forecasts with the Ricker.
+Also rename `p` to `p_ricker` and `sd_pred` to `sd_ricker` in the copy, so that `p` and `sd_pred` keep the random walk's forecast.
+Run the copy.
+How different is the forecast?
+Which would you trust, and why?
+Write your answer down: [Episode 11](11-forecasting.Rmd) tests it.
+
+:::::::::::::::::::::::: solution
+
+With new names, `p` and `sd_pred` still hold the random walk's forecast.
+
+
+``` r
+p_ricker  <- summary(sdr, "report")["mu_new", ]
+sd_ricker <- sqrt(p_ricker[["Std. Error"]]^2 + exp(opt$par[["log_sigma"]])^2)
+dat$S_new * exp(p_ricker[["Estimate"]] + qnorm(c(0.1, 0.5, 0.9)) * sd_ricker)
+```
+
+``` output
+[1]  114.3315  359.0872 1127.8054
+```
+
+The Ricker forecasts 2.4 times as many recruits: a median of 359 thousand (80% prediction interval 114 to 1128 thousand), against 148 thousand for the random walk.
+The Ricker assumes that productivity is still its 74-year average, whereas the random walk uses the recent, lower productivity.
+The residuals (QS6) and AIC (QS8) favour the random walk.
+Neither forecast has been tested yet: [Episode 11](11-forecasting.Rmd) tests both on years the models were not fitted to.
+
+:::::::::::::::::::::::::
+
+::::::::::::::::::::::::::::::::::::::::::::::::::
+
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: instructor
+
+Ask two or three pairs which forecast they would trust.
+Listen for "the random walk, because recent productivity is lower" and "the Ricker, because it uses all 74 years".
+Say that Episode 11 settles it, and put the question on the parking lot.
+
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+## Where Each Step Is Explained
+
+Each step answers one question about a model, and every later episode opens one or two of the nine steps and turns them into recipes you can reuse.
+Before you read the table of steps and episodes, test yourself with Challenge 5.
+
+:::::::::::::::::::::::::::::::::::::::: challenge
+
+### Challenge 5: Which Step Answers Which Question? (3 minutes)
+
+Match each situation to the step (QS1 to QS9) that deals with it.
+
+1. Your fit gives standard errors of `NaN`. Which step should have warned you?
+2. A report needs a range of plausible values for S_max.
+3. A reviewer asks whether the model missed a change in productivity over the years.
+4. A colleague wants to add an ocean index to the model. Which step tells you whether the data support the bigger model?
+5. Your manager asks how many recruits 50 thousand spawners will produce.
+
+:::::::::::::::::::::::: solution
+
+1. QS4: `finite_se`, one of the four checks, is FALSE when a standard error is `NaN`, so the fit cannot be used yet.
+2. QS5: the standard error from `sdreport()` gives a 95% confidence interval for S_max.
+3. QS6: one-step-ahead residuals show patterns over time and memory from year to year; QS7 is one way to fix such a pattern.
+4. QS8: AIC compares models fitted to the same data, with a penalty for each extra parameter.
+5. QS9: the forecast gives a median and an 80% prediction interval for the recruits.
+
+:::::::::::::::::::::::::
+
+::::::::::::::::::::::::::::::::::::::::::::::::::
+
+Table: The question each step answers, and the episode that explains it.
+
+| Step | Question it answers | Episode |
+|---|---|---|
+| QS1 | What goes into the model? | [03 Writing a Model as a Likelihood](03-likelihoods.Rmd) |
+| QS2 | How do I write my model? | [03 Writing a Model as a Likelihood](03-likelihoods.Rmd) |
+| QS3 | How do I fit it? | [04 Fitting a Model and Checking the Fit](04-fit-and-check.Rmd) |
+| QS4 | Can I use the fit? | [04 Fitting a Model and Checking the Fit](04-fit-and-check.Rmd) |
+| QS5 | How sure am I? | [05 Estimates, Intervals and Derived Quantities](05-uncertainty.Rmd) |
+| QS6 | Does the model miss a pattern? | [07 Checking a Model with Residuals](07-residuals.Rmd); [08 Checking a Model with Simulation](08-simulation.Rmd) |
+| QS7 | How do I let a quantity vary? | [06 Random Effects: Productivity That Changes over Time](06-random-effects.Rmd); [10 Many Stocks: Random Effects for Groups](10-many-stocks.Rmd) (optional) |
+| QS8 | Which model do the data support? | [09 Comparing Models with AIC](09-model-selection.Rmd) |
+| QS9 | What happens next year, and can I trust it? | [11 Forecasting and Testing Forecasts](11-forecasting.Rmd) |
+
+:::::::::::::::::::::::::::::::::::::::: challenge
+
+### Challenge 6: Your Turn: Change One Word (7 minutes)
+
+In QS1, replace `"Stellako"` with `"Upper Pitt River"` and run every step again.
+
+- Do all checks pass?
+- Does the random walk again lower AIC and bring the lag-1 correlation closer to zero?
+- Write one sentence that reports S_max for Upper Pitt River with its 95% confidence interval and units (QS5).
+- Compare 50 thousand spawners with the average of the stock's last four brood years, `mean(tail(my_stock$spawners, 4))`, as in QS1. Is the forecast for 50 thousand spawners sensible for this stock?
+
+:::::::::::::::::::::::: hint
+
+Run the whole script again from the top: select all of it and run it (Ctrl+A, then Ctrl+Enter; use Cmd instead of Ctrl on a Mac), or run `source("my-quick-start.R", echo = TRUE)` with your script's name.
+Plain `source()` runs the code but prints nothing and draws no plot.
+This replaces the Stellako objects in your R session, so change the name back to `"Stellako"` and run the script again when you are done.
+
+:::::::::::::::::::::::::
+
+:::::::::::::::::::::::: solution
+
+The only change is in QS1:
+
+```r
+my_stock <- filter(sockeye, stock == "Upper Pitt River")
+```
+
+Running every step with this change gives these results (they are not run on this page, because that would replace the Stellako objects):
+
+- all eight checks are TRUE (four for each model);
+- AIC is 197.5 for the Ricker and 185.6 for the random walk, so the random walk is lower by 11.8;
+- the lag-1 correlation of the residuals falls from 0.47 for the Ricker, far above the limit of 0.23, to 0.13 for the random walk, inside it;
+- S_max is 20 thousand spawners (95% confidence interval 15 to 28 thousand);
+- the random walk's forecast is a median of 19.7 thousand recruits (80% prediction interval 6.3 to 61.6 thousand).
+
+The workflow runs unchanged, and the random walk again fixes the residual pattern and lowers AIC.
+But the forecast is for 50 thousand spawners, and the last four brood years of Upper Pitt River had only 2.1 to 8.8 thousand spawners (average 5.3 thousand), although the whole series ranges from 2.1 to 74.6 thousand.
+Fifty thousand spawners is not a realistic scenario for this stock.
+From [Episode 3](03-likelihoods.Rmd) on, `S_new` is set from the average spawner count of the stock's last four brood years (rounded to 50 for Stellako, 5.3 for Upper Pitt River).
+Nothing from this challenge goes into `report-card.R`: later episodes fill the rows for Upper Pitt River one at a time, with `S_new` set for this stock.
+
+:::::::::::::::::::::::::
+
+::::::::::::::::::::::::::::::::::::::::::::::::::
+
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: instructor
+
+Ask for a green sticky note when learners have the four answers.
+Watch for learners whose QS9 now uses `sdr` and `opt` because they edited it in place in Challenge 4: their forecast is the Ricker's (a median of 37.1 thousand recruits), not the random walk's.
+Watch also for anyone who ran plain `source()` and got no output.
+Before the break, ask everyone to switch back to Stellako and rerun the script (Episode 3's Starting Point chunk also recreates the Stellako data).
+
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+:::::::::::::::::::::::::::::::::::::::: callout
+
+### Add to Your Recipe Box
+
+Copy the three helper functions you typed, `check_fit()`, `lag1()` and `aic()`, into your `my-recipes.R`: later episodes use all three.
+The two models join the box as recipes in [Episode 3](03-likelihoods.Rmd) and [Episode 6](06-random-effects.Rmd).
+The finished box is [cookbook.R](files/cookbook.R).
+
+::::::::::::::::::::::::::::::::::::::::::::::::::
+
+:::::::::::::::::::::::::::::::::::::::: callout
+
+### In Your Field
+
+The nine steps do not depend on salmon.
+For your own data, write a new data list, a model function that computes `mu` and `mu_new` from your own parameters, and starting values for those parameters.
+The fitting calls, the four checks, the residuals and AIC then work unchanged; in the estimates and the forecast, use your own parameter names and turn `mu_new` back into your own units.
+
+::::::::::::::::::::::::::::::::::::::::::::::::::
+
+:::::::::::::::::::::::::::::::::::::::: keypoints
+
+- Every model in this lesson is fitted and used with the same nine steps.
+- You write the model as a negative log-likelihood function; `MakeADFun()`, `nlminb()` and `sdreport()` fit it; four checks tell you whether the fit can be used.
+- Each step answers one question and has one thing to look for: four TRUE (can I use the fit?), a 95% confidence interval (how sure am I?), residuals with no pattern over time (does the model miss something?), the lower AIC (which model do the data support?), and a median with an 80% prediction interval (what happens next year?).
+- A residual check can show what a model misses, a random effect can fix it, and AIC and forecasts show whether the fix matters.
+
+::::::::::::::::::::::::::::::::::::::::::::::::::

@@ -1,0 +1,674 @@
+---
+title: "Estimates, Intervals and Derived Quantities"
+teaching: 30
+exercises: 20
+---
+
+:::::::::::::::::::::::::::::::::::::::: questions
+
+- How sure am I about each estimate?
+- How do I report a quantity computed from the parameters?
+- How does uncertainty about the curve differ from the scatter of the data?
+
+::::::::::::::::::::::::::::::::::::::::::::::::::
+
+:::::::::::::::::::::::::::::::::::::::: objectives
+
+- Report every parameter with a 95% confidence interval on the natural scale using `ci_table()`.
+- Add a derived quantity to a model with `ADREPORT()` and report its interval.
+- Distinguish a confidence band for the fitted curve from the scatter of single years.
+
+::::::::::::::::::::::::::::::::::::::::::::::::::
+
+
+
+## Starting Point
+
+This episode opens step 5 of the [Quick Start](02-quick-start.Rmd): estimates with uncertainty.
+
+:::::::::::::::::::::::::::::::::::::::: prereq
+
+### Run This If You Are Starting Here
+
+If you have followed along, you already have these objects.
+If you are starting here or have restarted R, run this chunk first.
+It needs `data/sockeye.csv` and `files/cookbook.R` in your project (see [Setup](../learners/setup.md)).
+
+
+``` r
+library(RTMB)
+library(dplyr)
+library(ggplot2)
+source("files/cookbook.R")        # the finished recipe box (your my-recipes.R works too)
+sockeye  <- read.csv("data/sockeye.csv")
+my_stock <- filter(sockeye, stock == "Stellako")
+dat      <- make_dat(my_stock, S_new = 50)
+ricker   <- fit_model(nll_ricker, start_ricker(dat), dat)
+ricker$checks
+```
+
+``` output
+ finished      flat    curved finite_se 
+     TRUE      TRUE      TRUE      TRUE 
+```
+
+::::::::::::::::::::::::::::::::::::::::::::::::::
+
+## Standard Errors from sdreport()
+
+The fitted Ricker model for Stellako passes all [four checks](../learners/reference.md#glossary), so we can use it.
+Fitting gives the best value of each parameter.
+Before you report a number, you also need to know how sure you can be about it.
+
+`sdreport()` measures this with a [standard error](../learners/reference.md#glossary) for each parameter.
+A standard error says how uncertain an estimate is: a small one means the data allow only a narrow range of values.
+In the valley picture of [Episode 4](04-fit-and-check.Rmd), a narrow, steep bowl gives small standard errors, and a wide, shallow bowl gives large ones.
+`fit_model()` has already run `sdreport()` and kept the result in `ricker$sdr`.
+
+
+``` r
+summary(ricker$sdr, "fixed")
+```
+
+``` output
+            Estimate Std. Error
+log_alpha  2.3797073 0.15733923
+log_Smax   4.8081068 0.26753555
+log_sigma -0.1199054 0.08219944
+```
+
+`"fixed"` asks for the parameters that the [optimiser](../learners/reference.md#glossary) estimated directly.
+The estimates are the ones from the Quick Start: `log_alpha` 2.38, `log_Smax` 4.81 and `log_sigma` -0.12.
+These are on the scale the model uses: the [log scale](../learners/reference.md#glossary) for all three.
+A reader cannot do much with "`log_Smax` is 4.81 with standard error 0.27".
+They need a [confidence interval](../learners/reference.md#glossary) (CI) on the natural scale, that is, in the original units, such as thousands of spawners.
+A confidence interval is a range of values for a parameter that is consistent with the data; this lesson uses 95%.
+Going back from the log scale to the natural scale with `exp()` is called a [back-transform](../learners/reference.md#glossary).
+In step 5 of the Quick Start you made a 95% confidence interval for S_max by hand in this way.
+Try it for alpha in Challenge 1, before the next recipe does it for every parameter.
+
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: instructor
+
+Challenge 1 targets misconception M4 (back-transforming only the estimate).
+It comes before `ci_table()` prints any interval, so learners cannot find the answer on the screen.
+If most learners choose (a), write both calculations on the board and compare 10.5 to 11.1 with 7.9 to 14.7 (for S_max, the same mistake gives 122.2 to 123.3 thousand instead of 73 to 207).
+If answers are spread out, go back to step 5 of the Quick Start: the interval is made on the log scale, then both ends go through `exp()`.
+
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+:::::::::::::::::::::::::::::::::::::::: challenge
+
+### Challenge 1: Back to the Natural Scale (3 minutes)
+
+`log_alpha` is 2.38 with standard error 0.16.
+Which is the 95% confidence interval for alpha, in recruits per spawner?
+
+- **(a)** exp(2.38) ± 1.96 × 0.16 = 10.5 to 11.1.
+- **(b)** exp(2.38 - 0.31) to exp(2.38 + 0.31) = about 7.9 to 14.7.
+- **(c)** 2.07 to 2.69.
+- **(d)** 10.8 ± 1.96 × exp(0.16) = 8.5 to 13.1.
+
+:::::::::::::::::::::::: solution
+
+**(b).** Add and subtract 1.96 standard errors (1.96 × 0.16 = 0.31) on the log scale, then back-transform both ends with `exp()`.
+With the unrounded estimate and standard error, this is the interval that `ci_table()` prints in the next recipe:
+
+
+``` r
+est <- summary(ricker$sdr, "fixed")
+exp(est["log_alpha", "Estimate"] + c(-1.96, 1.96) * est["log_alpha", "Std. Error"])
+```
+
+``` output
+[1]  7.93531 14.70360
+```
+
+- **(a)** back-transforms the estimate but not the interval, so a log-scale standard error is used on the natural scale, and the interval is far too narrow.
+- **(b)** is right.
+- **(c)** forgets to back-transform at all: 2.07 and 2.69 are on the log scale, not in recruits per spawner.
+- **(d)** back-transforms the standard error, which has no meaning: only the estimate and the two ends of the interval are back-transformed.
+
+:::::::::::::::::::::::::
+
+::::::::::::::::::::::::::::::::::::::::::::::::::
+
+## Recipe: 95% Intervals on the Natural Scale
+
+**Use it when:** you report any parameter.
+
+**Ingredients:** a fitted model.
+
+For a parameter estimated on the log scale, there is one rule: add and subtract 1.96 standard errors on the log scale, then `exp()` all three numbers (the lower end, the estimate and the upper end).
+`ci_table()` does this for every parameter at once.
+If you ran the Starting Point chunk, it is already loaded from `cookbook.R`; type it anyway, so that you know what it does.
+
+
+``` r
+ci_table <- function(m, select = "fixed") {
+  est <- summary(m$sdr, select)
+  out <- data.frame(parameter = rownames(est),
+                    estimate  = est[, "Estimate"],
+                    lower     = est[, "Estimate"] - 1.96 * est[, "Std. Error"],
+                    upper     = est[, "Estimate"] + 1.96 * est[, "Std. Error"],
+                    row.names = NULL)
+  logs <- startsWith(out$parameter, "log_")
+  out[logs, 2:4] <- exp(out[logs, 2:4])                       # back to the natural scale
+  out$parameter[logs] <- sub("^log_", "", out$parameter[logs])
+  out
+}
+ci_table(ricker)
+```
+
+``` output
+  parameter    estimate      lower      upper
+1     alpha  10.8017411  7.9353101  14.703598
+2      Smax 122.4994848 72.5109178 206.949853
+3     sigma   0.8870044  0.7550161   1.042066
+```
+
+Read the function from top to bottom:
+
+- `summary(m$sdr, select)` takes the estimates and their standard errors (`select` is `"fixed"` unless you ask for something else);
+- `lower` and `upper` are the estimate minus and plus 1.96 standard errors, still on the model's scale;
+- every row whose name starts with `log_` is back-transformed with `exp()` in columns 2 to 4 (`estimate`, `lower` and `upper`), and loses `log_` from its name;
+- a parameter that can be negative, such as the effect of an ocean index in [Episode 9](09-model-selection.Rmd), is not named `log_...` and stays as it is.
+
+The table reads:
+
+- alpha is 10.8 recruits per spawner when spawners are few (95% CI 7.9 to 14.7);
+- S_max is 122 thousand spawners (95% CI 73 to 207 thousand);
+- [sigma](../learners/reference.md#glossary), the yearly scatter of log(R/S) around the curve, is 0.89 on the log scale (95% CI 0.76 to 1.04); like log(R/S), it has no units.
+
+The interval for S_max is not symmetric: it runs 50 thousand below the estimate and 84 thousand above it.
+That is what happens after `exp()`, and it means the interval can never go below zero.
+
+These intervals assume that the model is right.
+The Quick Start's [residuals](../learners/reference.md#glossary) showed that Stellako's [productivity](../learners/reference.md#glossary), alpha, drifts over time, but the Ricker model holds it constant, so its intervals are probably too narrow.
+[Episode 6](06-random-effects.Rmd) models the drift and gives a wider interval: S_max 200 thousand spawners (95% CI 94 to 422 thousand).
+Check the model before you report its intervals: [Episode 7](07-residuals.Rmd) does this with residuals and [Episode 8](08-simulation.Rmd) with simulated data.
+
+**Check it worked:** S_max is about 122 thousand spawners, 95% CI 73 to 207 thousand.
+Put up a green sticky note when your table shows these numbers.
+
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: instructor
+
+Ask for sticky notes when `ci_table(ricker)` prints (about 15 minutes into the episode, after Challenge 1).
+Misconception to listen for: "a 95% interval means there is a 95% chance that the true value is inside".
+Say "it is a range that, in 95% of repeated studies, would catch the true value", and move on; do not dwell on it.
+
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+:::::::::::::::::::::::::::::::::::::::: caution
+
+### S_max Is Not a Carrying Capacity
+
+S_max is the spawner count that produces the most recruits: the top of the curve.
+Do not call it a carrying capacity, the largest number of fish a habitat can hold.
+Spawner counts above S_max happen (Stellako had several), and the curve predicts fewer recruits from them, not none.
+
+::::::::::::::::::::::::::::::::::::::::::::::::::
+
+:::::::::::::::::::::::::::::::::::::::: callout
+
+### Report with Units on the Natural Scale
+
+Write "S_max is 122 thousand spawners (95% CI 73 to 207 thousand)", not "`log_Smax` is 4.81".
+Give the estimate, the interval, its level (95%) and the units, rounded to two or three significant figures.
+
+::::::::::::::::::::::::::::::::::::::::::::::::::
+
+:::::::::::::::::::::::::::::::::::::::: spoiler
+
+### Intervals for Standard Deviations Near Zero (optional)
+
+`ci_table()` builds the interval for every `log_` quantity, including sigma and other standard deviations, on the log scale.
+That works well for sigma here, because 0.89 is far from zero.
+These intervals can be poor when a standard deviation (SD) is estimated close to zero: its log heads towards minus infinity, its standard error becomes very large, and the interval can run from 0 to `Inf`.
+This happens with [random effects](../learners/reference.md#glossary); [Episode 6](06-random-effects.Rmd) shows how to recognise it and what to report instead.
+
+::::::::::::::::::::::::::::::::::::::::::::::::::
+
+## Recipe: Report Anything Computed in the Function
+
+**Use it when:** you need a standard error for a quantity computed from the parameters.
+
+**Ingredients:** a copy of the model function, one line computing the quantity on the log scale, `ADREPORT()`.
+
+Readers often ask for numbers that are not parameters themselves but are computed from them.
+These are called [derived quantities](../learners/reference.md#glossary).
+Our example is [R_max](../learners/reference.md#glossary), the most recruits the Ricker curve can produce:
+
+$$R_{max} = \alpha \, S_{max} / e$$
+
+In words: the most recruits are alpha times S_max, divided by e (2.718, the base of natural logarithms).
+On the log scale this is `log_Rmax = log_alpha + log_Smax - 1`: dividing by e subtracts 1, because log(e) = 1.
+
+To get its standard error, compute it inside a copy of the model function and pass it to [ADREPORT()](../learners/reference.md#glossary).
+RTMB then carries the uncertainty of the parameters through to the new quantity.
+Compute it on the log scale and name it `log_...`, so that `ci_table()` back-transforms it and its interval stays above zero.
+
+
+``` r
+nll_ricker_rmax <- function(par, dat) {
+  getAll(par, dat)
+  logRS <- OBS(logRS)
+  mu     <- log_alpha - S / exp(log_Smax)
+  mu_new <- log_alpha - S_new / exp(log_Smax)
+  ADREPORT(mu_new)
+  log_Rmax <- log_alpha + log_Smax - 1          # most recruits: alpha * Smax / e
+  ADREPORT(log_Rmax)
+  -sum(dnorm(logRS, mu, exp(log_sigma), log = TRUE))
+}
+ricker_rmax <- fit_model(nll_ricker_rmax, start_ricker(dat), dat)
+ci_table(ricker_rmax, "report")
+```
+
+``` output
+  parameter   estimate      lower      upper
+1    mu_new   1.971542   1.768561   2.174524
+2      Rmax 486.780918 341.435327 693.998668
+```
+
+The new lines add no parameters, so the fit is the same as before; only the report gains a row.
+`ci_table(m, "report")` reads the reported quantities instead of the parameters, one row for each:
+
+- `mu_new` (1.97) is the Ricker model's forecast of log(R/S) for `S_new` = 50 thousand spawners.
+  It is not named `log_...`, so it stays on the log scale.
+  In recruits, the forecast is 50 × exp(1.97) = 359 thousand, a [median](../learners/reference.md#glossary): half of the outcomes would fall below it.
+  This is the Ricker forecast from Challenge 4 of the Quick Start; [Episode 11](11-forecasting.Rmd) uses `mu_new` again.
+- `Rmax` is 487 thousand recruits (95% CI 341 to 694 thousand).
+
+**Check it worked:** R_max is about 487 thousand recruits, the top of the curve in the next plot.
+Put up a green sticky note when your table has a row named `Rmax`.
+
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: instructor
+
+Copy `nll_ricker` in your script, rename it and add the two lines, saying aloud that each derived quantity goes into a copy of the function with a new name, so the original stays unchanged.
+In Challenge 2, watch for `log(alpha)`: the function has no object called `alpha`, but ggplot2 has a function `alpha()`, so R stops with `non-numeric argument to mathematical function` (`sigma` gives the same error); inside the function, use the names in `par`, such as `log_alpha`.
+If you are behind, cut Challenge 2 (third on the list of cuts in the instructor notes) and tell learners that its solution is on the page.
+Then ask a 1-minute question instead: to report S_rep with an interval that stays above zero, which two lines do you add, and what must the new quantity's name start with?
+(Answer: compute `log_Srep`, then `ADREPORT(log_Srep)`; the name starts with `log_`.)
+
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+:::::::::::::::::::::::::::::::::::::::: challenge
+
+### Challenge 2: Where the Stock Replaces Itself (7 minutes)
+
+Each spawner exactly replaces itself (log(R/S) = 0) at [S_rep](../learners/reference.md#glossary) = log(alpha) × S_max spawners.
+Fill in the blanks, fit, and report S_rep with its 95% CI.
+Is it inside the range of spawner counts in the data (9 to 240 thousand)?
+
+```r
+nll_ricker_srep <- function(par, dat) {
+  getAll(par, dat)
+  logRS <- OBS(logRS)
+  mu     <- log_alpha - S / exp(log_Smax)
+  mu_new <- log_alpha - S_new / exp(log_Smax)
+  ADREPORT(mu_new)
+  log_Srep <- log(___) + ___
+  ADREPORT(___)
+  -sum(dnorm(logRS, mu, exp(log_sigma), log = TRUE))
+}
+ricker_srep <- fit_model(nll_ricker_srep, start_ricker(dat), dat)
+ci_table(ricker_srep, "report")
+```
+
+:::::::::::::::::::::::: hint
+
+On the log scale, log(S_rep) = log(log(alpha)) + log(S_max), and log(alpha) is `log_alpha` in the function.
+
+:::::::::::::::::::::::::
+
+:::::::::::::::::::::::: solution
+
+
+``` r
+nll_ricker_srep <- function(par, dat) {
+  getAll(par, dat)
+  logRS <- OBS(logRS)
+  mu     <- log_alpha - S / exp(log_Smax)
+  mu_new <- log_alpha - S_new / exp(log_Smax)
+  ADREPORT(mu_new)
+  log_Srep <- log(log_alpha) + log_Smax         # replacement: log(R/S) = 0
+  ADREPORT(log_Srep)
+  -sum(dnorm(logRS, mu, exp(log_sigma), log = TRUE))
+}
+ricker_srep <- fit_model(nll_ricker_srep, start_ricker(dat), dat)
+ci_table(ricker_srep, "report")
+```
+
+``` output
+  parameter   estimate      lower      upper
+1    mu_new   1.971542   1.768561   2.174524
+2      Srep 291.512923 188.712260 450.314062
+```
+
+The S_rep estimate is 292 thousand spawners (95% CI 189 to 450 thousand).
+It is beyond the largest spawner count ever observed (240 thousand), so it is an extrapolation: the curve has not been tested there.
+Report it with that warning.
+(The formula needs `log_alpha` above 0, that is, more than one recruit per spawner when spawners are few.)
+
+:::::::::::::::::::::::::
+
+::::::::::::::::::::::::::::::::::::::::::::::::::
+
+## Recipe: A Confidence Band for the Curve
+
+**Use it when:** you plot a fitted curve with its uncertainty.
+
+**Ingredients:** the model function and the [data list](../learners/reference.md#glossary) you fitted, a grid of spawner values.
+
+First, a function that turns the reported `mu_new` values into recruits with an interval.
+If you ran the Starting Point chunk, it is already loaded from `cookbook.R`; type it anyway, so that you know what it does.
+
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: instructor
+
+If you are behind, do not have learners type `predict_recruits()`: show it, explain it line by line, and let them use the copy in `cookbook.R` (the Starting Point chunk loads it).
+They copy it into `my-recipes.R` at the break.
+
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+
+``` r
+predict_recruits <- function(m, interval = "prediction", level = 0.80) {
+  rep <- summary(m$sdr, "report")
+  p   <- rep[rownames(rep) == "mu_new", , drop = FALSE]       # one row per value of S_new
+  se  <- p[, "Std. Error"]                                    # uncertainty about the curve
+  if (interval == "prediction") se <- sqrt(se^2 + exp(m$opt$par[["log_sigma"]])^2)
+  z <- qnorm(1 - (1 - level) / 2)
+  data.frame(S_new  = m$dat$S_new,
+             median = m$dat$S_new * exp(p[, "Estimate"]),
+             lower  = m$dat$S_new * exp(p[, "Estimate"] - z * se),
+             upper  = m$dat$S_new * exp(p[, "Estimate"] + z * se))
+}
+```
+
+Line by line:
+
+- `summary(m$sdr, "report")` takes everything reported with `ADREPORT()`, and the next line keeps only the rows named `mu_new`, one for each value of `S_new`.
+- `se` is the standard error of `mu_new`: the uncertainty about the curve.
+- The line starting `if (interval == "prediction")` adds the yearly scatter, sigma, to give a [prediction interval](../learners/reference.md#glossary) for a single new year.
+  Episode 11 uses it.
+  Here we ask for `interval = "confidence"`, so this line changes nothing.
+  This `if()` is safe because it runs after fitting, outside the model function.
+- `z` is 1.96 for a 95% interval and 1.28 for an 80% interval.
+- The last lines turn log(R/S) into recruits: spawners × exp(log(R/S)).
+  `exp()` of a log-scale value gives the median, not the mean.
+
+Try it on `ricker`:
+
+
+``` r
+predict_recruits(ricker, interval = "confidence", level = 0.95)
+```
+
+``` output
+  S_new   median    lower    upper
+1    50 359.0872 293.1215 439.8983
+```
+
+`ricker` was fitted with one value of `S_new`, 50 thousand spawners, so the table has one row: a median of 359 thousand recruits (95% CI 293 to 440 thousand).
+
+To draw the curve, `S_new` can be a whole grid of spawner values instead of one number.
+`mu_new` then has one value for each, and `ADREPORT()` gives each one a standard error.
+`ricker` computed `mu_new` only for the `S_new` it was fitted with (50), and `fit_model()` kept its own copy of that data list.
+To get `mu_new` at other spawner counts, copy the data list, put the grid in `S_new`, and fit again.
+The estimates do not change, because `S_new` is not used in the [negative log-likelihood](../learners/reference.md#glossary); only the reported `mu_new` values do.
+Do not change `dat` itself: later steps use it.
+
+Here the grid has 250 spawner values, and we ask for a 95% confidence band: a 95% confidence interval for the median recruits at each spawner count, drawn as a shaded ribbon.
+
+
+``` r
+dat_grid <- dat
+dat_grid$S_new <- seq(1, 250, by = 1)                # a grid of spawner values
+ricker_grid <- fit_model(nll_ricker, start_ricker(dat_grid), dat_grid)
+band <- predict_recruits(ricker_grid, interval = "confidence", level = 0.95)
+filter(band, median == max(median))
+```
+
+``` output
+  S_new   median    lower    upper
+1   123 486.7769 340.8334 695.2127
+```
+
+The highest point of the curve is at 123 thousand spawners: a median of 487 thousand recruits (95% CI 341 to 695 thousand).
+Plot the curve, its band and the data:
+
+
+``` r
+ggplot(band, aes(x = S_new, y = median)) +
+  geom_ribbon(aes(ymin = lower, ymax = upper), fill = "grey80") +
+  geom_line() +
+  geom_point(data = my_stock, aes(x = spawners, y = recruits), shape = 1) +
+  labs(x = "Spawners (thousands)", y = "Recruits (thousands)")
+```
+
+<div class="figure" style="text-align: center">
+<img src="fig/05-uncertainty-rendered-plot-curve-band-1.png" alt="Scatter plot of Stellako recruits (12 to about 1900 thousand) against spawners (9 to 240 thousand), drawn as open circles, with the fitted Ricker curve and a shaded 95% confidence band. The curve rises to about 490 thousand recruits near 120 thousand spawners, then falls slowly to about 350 thousand at 250 thousand spawners. The band is narrow below 60 thousand spawners and widens to about 150 to 830 thousand at 250 thousand. Most points lie outside the band."  />
+<p class="caption">The fitted Ricker curve for Stellako with its 95% confidence band.</p>
+</div>
+
+`geom_ribbon()` draws the band from `lower` to `upper`, and `geom_line()` draws the median curve.
+`geom_point(data = my_stock, ...)` adds the observed years from a second data frame, as open circles (`shape = 1`), so that the band shows through them.
+
+The band is narrow where most of the data lie, below about 60 thousand spawners, and widens where there are only a few years, above 150 thousand.
+Most points lie outside it: Challenge 3 asks why.
+
+**Check it worked:** the curve peaks at about 123 thousand spawners and 487 thousand recruits, matching R_max.
+Put up a green sticky note when your plot shows the curve, the grey band and the points.
+
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: instructor
+
+Challenge 3 is the first appearance of misconception M5 ("a confidence band should contain most data points"); come back to it in Episode 11, Challenge 1.
+If most learners choose (a) or (d), point at sigma in `ci_table(ricker)`: about two years in three lie within a factor of 2.4 of the curve, above or below it, and the band does not include this scatter.
+If answers are spread out, go back to the plot and ask what the grey band is about: the curve, or the years.
+
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+:::::::::::::::::::::::::::::::::::::::: challenge
+
+### Challenge 3: Why Are Most Points Outside the Band? (3 minutes)
+
+The 95% band contains only about a quarter of the points (24%).
+What does this mean?
+
+- **(a)** The model is wrong.
+- **(b)** This is as it should be: the band shows uncertainty about the median curve; single years scatter around it with standard deviation sigma.
+- **(c)** The band should be 99%.
+- **(d)** The points outside the band are outliers.
+
+:::::::::::::::::::::::: solution
+
+**(b).** The band answers "where is the median curve?", not "where will a single year fall?".
+Single years scatter around the curve with sigma = 0.89 on the log scale: about two years in three lie within a factor of exp(0.89) = 2.4 of the curve, above or below it, and the rest lie further away.
+
+The code below works out the share of points inside the band.
+It refits with `S_new` set to the observed spawner counts, so that there is a band value for every year.
+For comparison, it also asks for a 95% prediction interval, which adds the yearly scatter (Episode 11):
+
+
+``` r
+dat_obs <- dat
+dat_obs$S_new <- my_stock$spawners                 # the band at every observed spawner count
+ricker_obs <- fit_model(nll_ricker, start_ricker(dat_obs), dat_obs)
+band_obs <- predict_recruits(ricker_obs, interval = "confidence", level = 0.95)
+# share of years inside: mean() counts TRUE as 1 and FALSE as 0
+mean(my_stock$recruits >= band_obs$lower & my_stock$recruits <= band_obs$upper)
+```
+
+``` output
+[1] 0.2432432
+```
+
+``` r
+pred_obs <- predict_recruits(ricker_obs, interval = "prediction", level = 0.95)
+mean(my_stock$recruits >= pred_obs$lower & my_stock$recruits <= pred_obs$upper)
+```
+
+``` output
+[1] 0.9594595
+```
+
+The confidence band contains 24% of the points; the 95% prediction interval contains 96% of them.
+Both shares come from the years the model was fitted to, so they describe the fit, not forecasts.
+[Episode 11](11-forecasting.Rmd) tests prediction intervals on years the model did not see: there the Ricker model's 80% interval held only 60% of them.
+
+- **(a)** confuses uncertainty about the curve with the scatter of single years.
+  The Ricker model does miss something (the Quick Start's residuals showed drift), but points outside the band are not the evidence: the band is not meant to contain them.
+- **(b)** is right.
+- **(c)**: a wider band would still describe the curve, not the years.
+  Episode 11's prediction interval adds the scatter.
+- **(d)** makes the same confusion as (a): an outlier is a year far outside the scatter that sigma describes, and three quarters of the years cannot all be outliers.
+
+:::::::::::::::::::::::::
+
+::::::::::::::::::::::::::::::::::::::::::::::::::
+
+:::::::::::::::::::::::::::::::::::::::: challenge
+
+### Challenge 4: Your Turn: Upper Pitt River, Row 3 (7 minutes)
+
+Make the interval table for the Upper Pitt River Ricker model, `ricker_pitt`, and write two sentences for row 3 of your report card (`report-card.R`), with units.
+
+:::::::::::::::::::::::: hint
+
+If you still have `ricker_pitt` from Episode 4 (Challenge 4), use it.
+If not, for example after restarting R, fit it again with these three lines:
+
+- `pitt <- filter(sockeye, stock == "Upper Pitt River")`
+- `dat_pitt <- make_dat(pitt, S_new = mean(tail(pitt$spawners, 4)))`, where `S_new` is the average spawner count of the last four brood years
+- `ricker_pitt <- fit_model(nll_ricker, start_ricker(dat_pitt), dat_pitt)`
+
+Then make the table as you did for Stellako.
+
+:::::::::::::::::::::::::
+
+:::::::::::::::::::::::: solution
+
+
+``` r
+pitt        <- filter(sockeye, stock == "Upper Pitt River")
+dat_pitt    <- make_dat(pitt, S_new = mean(tail(pitt$spawners, 4)))
+ricker_pitt <- fit_model(nll_ricker, start_ricker(dat_pitt), dat_pitt)
+ci_table(ricker_pitt)
+```
+
+``` output
+  parameter   estimate      lower     upper
+1     alpha  8.8875036  6.5085923 12.135914
+2      Smax 20.1446518 14.5621147 27.867312
+3     sigma  0.8822382  0.7509591  1.036467
+```
+
+Row 3: "When spawners are few, each spawner produces about 9 recruits (95% CI 6.5 to 12).
+Recruitment peaks at about 20 thousand spawners (95% CI 15 to 28 thousand), well inside the range of spawner counts observed (2 to 75 thousand)."
+
+Like Stellako's S_max, this S_max lies inside the observed spawner counts, so it is not an extrapolation (Stellako's S_rep in Challenge 2 was).
+
+In `report-card.R` it reads `# Row 3 (estimates): alpha 8.9 recruits per spawner when spawners are few (95% CI 6.5 to 12); S_max 20 thousand spawners (95% CI 15 to 28 thousand), inside the observed 2 to 75 thousand.`
+
+:::::::::::::::::::::::::
+
+::::::::::::::::::::::::::::::::::::::::::::::::::
+
+:::::::::::::::::::::::::::::::::::::::: challenge
+
+### Challenge 5 (Optional): Salmon Reference Points (not timed)
+
+This challenge is for learners who work with salmon management.
+[U_MSY](../learners/reference.md#glossary) is the harvest rate (the share of recruits that are caught) that gives the maximum sustainable yield (MSY), and [S_MSY](../learners/reference.md#glossary) is the spawner count that gives it.
+Add the lines below to a copy of the Ricker model function (before the last line), fit it to Stellako, and report both.
+Then do the same for Upper Pitt River with `dat_pitt` from Challenge 4.
+
+```r
+U_msy <- uniroot(function(U) log(1 - U) + log_alpha - U,     # harvest rate for maximum yield
+                 lower = 1e-8, upper = 1 - 1e-8, tol = 1e-10)$root
+log_Smsy <- log(U_msy) + log_Smax                            # spawners for maximum yield
+ADREPORT(U_msy)
+ADREPORT(log_Smsy)
+```
+
+:::::::::::::::::::::::: solution
+
+
+``` r
+nll_ricker_msy <- function(par, dat) {
+  getAll(par, dat)
+  logRS <- OBS(logRS)
+  mu     <- log_alpha - S / exp(log_Smax)
+  mu_new <- log_alpha - S_new / exp(log_Smax)
+  ADREPORT(mu_new)
+  U_msy <- uniroot(function(U) log(1 - U) + log_alpha - U,     # harvest rate for maximum yield
+                   lower = 1e-8, upper = 1 - 1e-8, tol = 1e-10)$root
+  log_Smsy <- log(U_msy) + log_Smax                            # spawners for maximum yield
+  ADREPORT(U_msy)
+  ADREPORT(log_Smsy)
+  -sum(dnorm(logRS, mu, exp(log_sigma), log = TRUE))
+}
+ricker_msy <- fit_model(nll_ricker_msy, start_ricker(dat), dat)
+ci_table(ricker_msy, "report")
+```
+
+``` output
+  parameter   estimate      lower       upper
+1    mu_new  1.9715424  1.7685605   2.1745242
+2     U_msy  0.7949935  0.7425283   0.8474587
+3      Smsy 97.3862993 60.4729605 156.8319330
+```
+
+``` r
+pitt     <- filter(sockeye, stock == "Upper Pitt River")             # as in Challenge 4
+dat_pitt <- make_dat(pitt, S_new = mean(tail(pitt$spawners, 4)))
+ricker_msy_pitt <- fit_model(nll_ricker_msy, start_ricker(dat_pitt), dat_pitt)
+ci_table(ricker_msy_pitt, "report")
+```
+
+``` output
+  parameter   estimate      lower      upper
+1    mu_new  1.9210651  1.6687771  2.1733531
+2     U_msy  0.7595215  0.6991298  0.8199132
+3      Smsy 15.3002966 11.6949581 20.0170940
+```
+
+For Stellako, U_MSY is 0.79 (95% CI 0.74 to 0.85) and S_MSY is 97 thousand spawners (95% CI 60 to 157 thousand).
+For Upper Pitt River, U_MSY is 0.76 (95% CI 0.70 to 0.82) and S_MSY is 15 thousand spawners (95% CI 12 to 20 thousand).
+
+The `uniroot()` line solves the equation for U_MSY; it is given here, not derived, and RTMB can carry standard errors through it.
+It needs `log_alpha` above 0.
+`U_msy` is not named `log_...`, so `ci_table()` leaves it as a proportion.
+Its interval is symmetric because it is not on the log scale.
+That is fine here, because 0.74 to 0.85 is far from 0 and 1; for a stock with very low or very high productivity, check that the interval stays between 0 and 1.
+These numbers illustrate the method; they are not management advice, and they ignore the drift in productivity that Episode 6 models.
+
+:::::::::::::::::::::::::
+
+::::::::::::::::::::::::::::::::::::::::::::::::::
+
+:::::::::::::::::::::::::::::::::::::::: callout
+
+### Add to Your Recipe Box
+
+Copy these functions into your `my-recipes.R`: `ci_table()`, `predict_recruits()`.
+The finished box is [cookbook.R](files/cookbook.R).
+
+::::::::::::::::::::::::::::::::::::::::::::::::::
+
+:::::::::::::::::::::::::::::::::::::::: callout
+
+### In Your Field
+
+The peak of a fitted curve (like R_max), an LD50 (the dose that kills half of the test animals), a doubling time or a rate at a given temperature are all derived quantities when the model does not estimate them directly.
+Compute them inside the function, name them `log_...` if they must be positive, and `ADREPORT()` them.
+
+::::::::::::::::::::::::::::::::::::::::::::::::::
+
+:::::::::::::::::::::::::::::::::::::::: keypoints
+
+- `summary(m$sdr, "fixed")` gives estimates and standard errors on the scale the model uses.
+- For a log-scale parameter, add and subtract 1.96 standard errors on the log scale, then use `exp()`; `ci_table()` does this for every parameter.
+- `ADREPORT()` any quantity computed inside the function to get its standard error; `ci_table(m, "report")` gives its interval.
+- A confidence band shows uncertainty about the curve, not where single years will fall.
+
+::::::::::::::::::::::::::::::::::::::::::::::::::
