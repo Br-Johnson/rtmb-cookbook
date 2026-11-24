@@ -27,7 +27,7 @@ This episode runs all nine steps of the [Quick Start](02-quick-start.Rmd) again,
 
 :::::::::::::::::::::::::::::::::::::::: prereq
 
-### Run This If You Are Starting Here
+### Download the Template
 
 Download [the capstone template (capstone-template.R)](files/capstone-template.R) into your project's `files/` folder and open it.
 It loads everything it needs, including `files/cookbook.R`.
@@ -39,6 +39,7 @@ Run it from your project folder, which must also hold `data/sockeye.csv`, `data/
 
 In pairs, choose a stock you have not seen in class and complete rows 1 to 10 of the report card with the template.
 This is your third pass over the workflow: the instructor showed it on Stellako, you repeated it on Upper Pitt River, and now you run it on your own.
+Your `upper-pitt-river.R` is a worked example of the template: the same steps in the same order, with the row comments as the report card.
 
 Choose one of these stocks, or use your own data:
 
@@ -484,12 +485,13 @@ These pages help you keep going:
 - [Troubleshooting](../learners/troubleshooting.md): what to do when a check fails or an error appears;
 - [Going Further](../learners/going-further.md): the methods this lesson left out, and where to learn them.
 
-Your `my-recipes.R` and report card are a template for your next analysis: copy the capstone template, change C1, and work down the rows.
+Your `my-recipes.R` and `upper-pitt-river.R` are a template for your next analysis: copy the capstone template, change C1, and work down the rows.
+If you use Quarto, the same script works as a `.qmd` document: each section becomes a code chunk and each row comment becomes a paragraph, and rendering it gives a report with the code, the output and the plots in one file.
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: instructor
 
 After the share-out, close the workshop outside the counted minutes: minute cards, the post-workshop survey, and one-up/one-down.
-Point learners to the Going Further page and the Recipe Index, and remind them to keep `my-recipes.R`, `report-card.R` and the filled template.
+Point learners to the Going Further page and the Recipe Index, and remind them to keep `my-recipes.R`, `stellako.R`, `upper-pitt-river.R` and the filled template.
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
@@ -498,7 +500,7 @@ Point learners to the Going Further page and the Recipe Index, and remind them t
 ### Add to Your Recipe Box
 
 Your recipe box is complete.
-Keep `my-recipes.R`, `report-card.R` and the template for your next analysis.
+Keep `my-recipes.R`, `upper-pitt-river.R` and the filled template for your next analysis.
 If you wrote `nll_bh_walk()` in Challenge 2, add it too.
 The finished box is [cookbook.R](files/cookbook.R).
 

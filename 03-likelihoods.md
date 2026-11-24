@@ -26,11 +26,16 @@ exercises: 25
 
 This episode opens steps 1 and 2 of the [Quick Start](02-quick-start.Rmd): the data list and the model.
 
+From here on, keep two scripts of your own beside `my-recipes.R`.
+Type the Stellako code into `stellako.R` and add each recipe's lines to it as you go, so that the script grows with the lesson.
+Put your "Your Turn" work into `upper-pitt-river.R`, which you opened in the Introduction.
+The functions you write go into `my-recipes.R`, and the Starting Point chunk below is only for anyone who starts here or restarts R.
+
 :::::::::::::::::::::::::::::::::::::::: prereq
 
-### Run This If You Are Starting Here
+### Run This Only If You Are Starting Here
 
-If you have followed along, you already have these objects.
+If you have followed along in `stellako.R`, you already have these objects: skip this chunk.
 If you are starting here or have restarted R, run this chunk first.
 It needs `data/sockeye.csv` in your project (see [Setup](../learners/setup.md)).
 This episode writes the first recipes of your recipe box, so it does not load `files/cookbook.R`.
@@ -584,7 +589,7 @@ If answers are spread out, go back to the starting values: `log_sigma` is -0.027
 
 Make the data list for Upper Pitt River with `S_new` set to the average spawner count of its last four brood years.
 Check that the Ricker model returns a finite number at the starting values.
-Then add `S_new` to row 1 of your report card.
+Then add `S_new` to row 1 of your report card, in `upper-pitt-river.R`.
 Use the names `pitt`, `dat_pitt` and `obj_pitt`, so that the Stellako objects stay as they are.
 
 :::::::::::::::::::::::: solution
@@ -613,7 +618,7 @@ The negative log-likelihood at the starting values is a finite number, 131.5, so
 The average spawner count of the last four brood years (2018 to 2021) is 5.3 thousand, much lower than the 50 thousand used for Stellako.
 
 Row 1: "Upper Pitt River, brood years 1948-2021, 74 years, spawners 2.1 to 74.6 thousand; S_new = 5.3 thousand spawners (the average of brood years 2018-2021)."
-In `report-card.R` it reads `# Row 1 (data): Upper Pitt River, brood years 1948-2021, 74 years, spawners 2.1 to 74.6 thousand; S_new = 5.3 thousand spawners.`
+In `upper-pitt-river.R`, below the code above, row 1 now reads `# Row 1 (data): Upper Pitt River, brood years 1948-2021, 74 years, spawners 2.1 to 74.6 thousand; S_new = 5.3 thousand spawners.`
 
 :::::::::::::::::::::::::
 

@@ -28,9 +28,9 @@ It answers the Quick Start's question: which forecast would you trust?
 
 :::::::::::::::::::::::::::::::::::::::: prereq
 
-### Run This If You Are Starting Here
+### Run This Only If You Are Starting Here
 
-If you have followed along, you already have these objects.
+If you have followed along in `stellako.R`, you already have these objects: skip this chunk.
 If you are starting here or have restarted R, run this chunk first.
 It needs `data/sockeye.csv` and `files/cookbook.R` in your project (see [Setup](../learners/setup.md)).
 
@@ -589,7 +589,7 @@ The log score rewards forecasts that are close and honest about their uncertaint
 
 For Upper Pitt River, run the hindcast from 2007 for the Ricker, the random walk and the benchmark, and score it.
 Then forecast from the random walk, with `S_new` set to the average spawners of the last four brood years.
-Write rows 8 and 9 of your report card in `report-card.R`:
+Add the code to `upper-pitt-river.R` and write rows 8 and 9 of your report card under it:
 
 - row 8: the bias, MAE, skill and 80% coverage of each model and the benchmark, in one or two sentences;
 - row 9: the median and 80% prediction interval from the random walk, with units and the word "median".
@@ -598,7 +598,7 @@ Compare row 8 with row 7 (AIC): do they agree?
 
 :::::::::::::::::::::::: hint
 
-Start from the Upper Pitt River code of [Checking a Model with Residuals](07-residuals.Rmd), Challenge 2: it makes `pitt`, `dat_pitt`, `ricker_pitt` and `walk_pitt`.
+`pitt`, `dat_pitt`, `ricker_pitt` and `walk_pitt` are in `upper-pitt-river.R`; run it from the top if they are not in your workspace.
 Then copy the `hc <- bind_rows(...)` chunk that ran the hindcast from 2007 and change the names: `pitt` for `my_stock`, `ricker_pitt` and `walk_pitt` for `ricker` and `walk`, and `hc_pitt` for `hc`.
 If row 7 is not in your report card, run `aic_table(list(ricker = ricker_pitt, walk = walk_pitt))`.
 Row 9 can follow this frame: "From ___ thousand spawners, the random walk forecasts a median of ___ thousand recruits (80% prediction interval ___ to ___ thousand)."
@@ -659,6 +659,9 @@ aic_table(list(ricker = ricker_pitt, walk = walk_pitt))    # row 7, for the comp
 Row 8: "Both models beat the recent-average benchmark in these 15 years (skill 0.78 for the Ricker and 0.82 for the random walk). Their errors are about the same size (MAE 0.88 and 0.92), but the Ricker was too high by a factor of exp(0.74) = 2.1 on average, while the random walk shows no sign of bias (0.002). All intervals caught fewer outcomes than the 80% promised (coverage 0.40 to 0.67); the benchmark's 0.40 is far too low."
 
 Row 9: "From 5.3 thousand spawners, the random walk forecasts a median of 12 thousand recruits (80% prediction interval 4.4 to 35 thousand)."
+
+In `upper-pitt-river.R`, add the lines from `hc_pitt <- bind_rows(` on, then the two row comments.
+Your script now runs Upper Pitt River from the data to a tested forecast, which is what the capstone asks you to do for a new stock.
 
 Rows 7 and 8 agree only in part.
 AIC (row 7) prefers the random walk by 11.8, but the Ricker's forecast errors were slightly smaller (mean absolute error 0.88 against 0.92): a lower AIC did not bring smaller forecast errors.

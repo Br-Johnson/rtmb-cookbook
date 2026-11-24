@@ -244,7 +244,7 @@ Say these out loud when they first come up; experienced R users do them without 
 - Keep code in a script, not in the console, so you can rerun it.
 - Read an error message from the bottom up, then find it on the [Troubleshooting](../learners/troubleshooting.md) page.
 - Call `set.seed()` before anything that simulates, so the numbers can be reproduced.
-- Save `report-card.R` as you go: each row is written as soon as its challenge runs.
+- Save `upper-pitt-river.R` as you go: each "Your Turn" challenge adds its code and its row comment as soon as it runs, and by Episode 11 the script runs the stock from the data to a tested forecast.
 - Use new object names in your own experiments (`ricker_test`, not `ricker`), so you do not overwrite the demonstration objects that later steps use.
 
 ## Answer Keys

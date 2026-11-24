@@ -28,9 +28,9 @@ This episode opens step 5 of the [Quick Start](02-quick-start.Rmd): estimates wi
 
 :::::::::::::::::::::::::::::::::::::::: prereq
 
-### Run This If You Are Starting Here
+### Run This Only If You Are Starting Here
 
-If you have followed along, you already have these objects.
+If you have followed along in `stellako.R`, you already have these objects: skip this chunk.
 If you are starting here or have restarted R, run this chunk first.
 It needs `data/sockeye.csv` and `files/cookbook.R` in your project (see [Setup](../learners/setup.md)).
 
@@ -530,12 +530,12 @@ Both shares come from the years the model was fitted to, so they describe the fi
 
 ### Challenge 4: Your Turn: Upper Pitt River, Row 3 (7 minutes)
 
-Make the interval table for the Upper Pitt River Ricker model, `ricker_pitt`, and write two sentences for row 3 of your report card (`report-card.R`), with units.
+Make the interval table for the Upper Pitt River Ricker model, `ricker_pitt`, and write two sentences for row 3 of your report card, with units, as a comment under the code in `upper-pitt-river.R`.
 
 :::::::::::::::::::::::: hint
 
-If you still have `ricker_pitt` from Episode 4 (Challenge 4), use it.
-If not, for example after restarting R, fit it again with these three lines:
+`ricker_pitt` is in `upper-pitt-river.R` from Episode 4 (Challenge 4); if it is not in your workspace, run the script from the top.
+Without the script, fit it again with these three lines:
 
 - `pitt <- filter(sockeye, stock == "Upper Pitt River")`
 - `dat_pitt <- make_dat(pitt, S_new = mean(tail(pitt$spawners, 4)))`, where `S_new` is the average spawner count of the last four brood years
@@ -567,7 +567,7 @@ Recruitment peaks at about 20 thousand spawners (95% CI 15 to 28 thousand), well
 
 Like Stellako's S_max, this S_max lies inside the observed spawner counts, so it is not an extrapolation (Stellako's S_rep in Challenge 2 was).
 
-In `report-card.R` it reads `# Row 3 (estimates): alpha 8.9 recruits per spawner when spawners are few (95% CI 6.5 to 12); S_max 20 thousand spawners (95% CI 15 to 28 thousand), inside the observed 2 to 75 thousand.`
+In `upper-pitt-river.R`, add the `ci_table(ricker_pitt)` line, then the row comment `# Row 3 (estimates): alpha 8.9 recruits per spawner when spawners are few (95% CI 6.5 to 12); S_max 20 thousand spawners (95% CI 15 to 28 thousand), inside the observed 2 to 75 thousand.`
 
 :::::::::::::::::::::::::
 

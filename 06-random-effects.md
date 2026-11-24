@@ -28,9 +28,9 @@ This episode opens step 7 of the [Quick Start](02-quick-start.Rmd): a random eff
 
 :::::::::::::::::::::::::::::::::::::::: prereq
 
-### Run This If You Are Starting Here
+### Run This Only If You Are Starting Here
 
-If you have followed along, you already have these objects.
+If you have followed along in `stellako.R`, you already have these objects: skip this chunk.
 If you are starting here or have restarted R, run this chunk first.
 It needs `data/sockeye.csv` and `files/cookbook.R` in your project (see [Setup](../learners/setup.md)).
 
@@ -405,12 +405,12 @@ The fix is to use `start_walk(dat)`, which already makes `max(dat$year) + 1` val
 ### Challenge 3: Your Turn: Upper Pitt River, Row 4 (10 minutes)
 
 Fit the random walk to Upper Pitt River.
-Record its checks in row 2 of your report card (`report-card.R`).
+Add the code to `upper-pitt-river.R`, and record its checks in row 2 of your report card.
 In row 4, write sd_walk in words, and productivity in 1948, 1965, 1980, 2000 and 2021.
 
 :::::::::::::::::::::::: hint
 
-Make `pitt` and `dat_pitt` as in Episode 4, with `S_new` set to the average spawner count of the last four brood years.
+`pitt` and `dat_pitt` are in `upper-pitt-river.R` from Episode 3; if they are not in your workspace, run the script from the top.
 Then copy the three lines that fitted `walk` and the plot recipe, and change `dat` to `dat_pitt`, `walk` to `walk_pitt`, `prod` to `prod_pitt` and `my_stock` to `pitt`.
 Leave out the dashed line.
 
@@ -475,6 +475,8 @@ Row 2: "Random walk: all four checks TRUE."
 
 Row 4: "sd_walk is 0.33 (95% CI 0.14 to 0.78): productivity typically changes by about a third from year to year.
 In recruits per spawner, it was 10.4 in 1948, rose to 16.3 in 1965, fell to 4.7 in 1980, rose again to 10.9 in 2000, and has been at its lowest since about 2012: 2.9 in 2021 (95% CI 1.3 to 6.6)."
+
+In `upper-pitt-river.R`, add the lines from `walk_pitt <- fit_model(` on (the first two lines are already there), then the two row comments.
 
 :::::::::::::::::::::::::
 

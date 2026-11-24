@@ -27,9 +27,9 @@ This episode opens steps 3 and 4 of the [Quick Start](02-quick-start.Rmd): fitti
 
 :::::::::::::::::::::::::::::::::::::::: prereq
 
-### Run This If You Are Starting Here
+### Run This Only If You Are Starting Here
 
-If you have followed along, you already have these objects.
+If you have followed along in `stellako.R`, you already have these objects: skip this chunk.
 If you are starting here or have restarted R, run this chunk first.
 It needs `data/sockeye.csv` and `files/cookbook.R` in your project (see [Setup](../learners/setup.md)).
 
@@ -554,7 +554,7 @@ range(m_a$opt$par[-(1:4)])          # the 75 yearly values: lowest and highest
 ```
 
 ``` output
-[1] 2.089195 2.089195
+[1] 2.114435 2.114435
 ```
 
 ``` r
@@ -562,7 +562,7 @@ exp(m_a$opt$par[["log_sd_walk"]])   # sd_walk, the size of the yearly steps
 ```
 
 ``` output
-[1] 4.510447e-13
+[1] 6.231478e-15
 ```
 
 ``` r
@@ -570,11 +570,11 @@ m_a$opt$objective
 ```
 
 ``` output
-[1] -1943.498
+[1] -1950.661
 ```
 
 Without `random =`, the optimiser chooses every yearly value itself.
-It makes all 75 of them the same (about 2.1 on the log scale), so every yearly step is zero, and then shrinks the size of the steps towards zero: sd_walk collapses to about 5e-13 and the score runs down to -1943.
+It makes all 75 of them the same (about 2.1 on the log scale), so every yearly step is zero, and then shrinks the size of the steps towards zero: sd_walk collapses to about 6e-15 and the score runs down to -1951.
 The score has no bottom, so all four checks fail; the exact numbers depend on your computer, because the optimiser stops wherever it gives up.
 The 79 parameters are the clue: the random walk has four fixed parameters, so a correct fit reports four.
 The fix is to name the random effects:
@@ -721,7 +721,7 @@ R printed `There were 50 or more warnings (use warnings() to see the first 50)`,
 
 ``` output
   log_alpha    log_Smax   log_sigma 
-   2.422631    5.360880 -611.189597 
+   2.398421    5.466528 -666.201828 
 ```
 
 ``` output
@@ -761,7 +761,7 @@ m_nolog$opt$par
 
 ``` output
   log_alpha    log_Smax   log_sigma 
-   2.422631    5.360880 -611.189597 
+   2.398421    5.466528 -666.201828 
 ```
 
 ``` r
@@ -775,7 +775,7 @@ m_nolog$checks
 
 Without `log = TRUE`, `dnorm()` returns densities, and the function adds them up instead of adding log-densities.
 When the curve passes through one point exactly, that point's density grows without limit as sigma shrinks towards zero, so the score has no bottom.
-The first run of `nlminb()` walked downhill until `log_sigma` reached -611 (the exact value depends on your computer), and stopped there.
+The first run of `nlminb()` walked downhill until `log_sigma` reached -666 (the exact value depends on your computer), and stopped there.
 The restart then tried 10 000 times to take one more step, but the score could not be computed at any of the new values it tried, so nearly every try printed a warning.
 It stopped at its limit of 10 000 evaluations without moving, so `finished` is FALSE.
 
@@ -819,12 +819,12 @@ All four checks are TRUE, and the estimates are the Ricker's: 2.38, 4.81 and -0.
 
 Fit the Ricker model to Upper Pitt River with `fit_model()`.
 Use the names `pitt`, `dat_pitt` and `ricker_pitt`, so that the Stellako objects stay as they are.
-Record its checks in row 2 of your report card (`report-card.R`).
+Add the code to `upper-pitt-river.R` and record its checks in row 2 of your report card, as a comment line under it.
 Put up a green sticky note when `ricker_pitt$checks` shows four TRUE.
 
 :::::::::::::::::::::::: hint
 
-If you still have `pitt` and `dat_pitt` from Episode 3 (Challenge 5), use them; otherwise make them as there, with `S_new` set to the average spawner count of the last four brood years.
+`pitt` and `dat_pitt` are in `upper-pitt-river.R` from Episode 3 (Challenge 5); if they are not in your workspace, run the script from the top.
 Then copy the line that fitted `ricker` above, `ricker <- fit_model(nll_ricker, start_ricker(dat), dat)`, and change `ricker` to `ricker_pitt` and each `dat` to `dat_pitt`.
 
 :::::::::::::::::::::::::
@@ -847,7 +847,7 @@ ricker_pitt$checks
 All four checks are TRUE, so the fit can be used.
 
 Row 2: "Ricker: all four checks TRUE." (Other models are added in Episodes 6 and 9.)
-In `report-card.R` it reads `# Row 2 (fits usable): Ricker: all four checks TRUE.`
+In `upper-pitt-river.R`, add the two `ricker_pitt` lines (the first two lines of the chunk are already there from Episode 3), then the row comment `# Row 2 (fits usable): Ricker: all four checks TRUE.`
 
 :::::::::::::::::::::::::
 
