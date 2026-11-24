@@ -554,7 +554,7 @@ range(m_a$opt$par[-(1:4)])          # the 75 yearly values: lowest and highest
 ```
 
 ``` output
-[1] 2.114435 2.114435
+[1] 2.089195 2.089195
 ```
 
 ``` r
@@ -562,7 +562,7 @@ exp(m_a$opt$par[["log_sd_walk"]])   # sd_walk, the size of the yearly steps
 ```
 
 ``` output
-[1] 6.231478e-15
+[1] 4.510447e-13
 ```
 
 ``` r
@@ -570,11 +570,11 @@ m_a$opt$objective
 ```
 
 ``` output
-[1] -1950.661
+[1] -1943.498
 ```
 
 Without `random =`, the optimiser chooses every yearly value itself.
-It makes all 75 of them the same (about 2.1 on the log scale), so every yearly step is zero, and then shrinks the size of the steps towards zero: sd_walk collapses to about 6e-15 and the score runs down to -1951.
+It makes all 75 of them the same (about 2.1 on the log scale), so every yearly step is zero, and then shrinks the size of the steps towards zero: sd_walk collapses to about 5e-13 and the score runs down to -1943.
 The score has no bottom, so all four checks fail; the exact numbers depend on your computer, because the optimiser stops wherever it gives up.
 The 79 parameters are the clue: the random walk has four fixed parameters, so a correct fit reports four.
 The fix is to name the random effects:
@@ -721,7 +721,7 @@ R printed `There were 50 or more warnings (use warnings() to see the first 50)`,
 
 ``` output
   log_alpha    log_Smax   log_sigma 
-   2.398421    5.466528 -666.201828 
+   2.422631    5.360880 -611.189597 
 ```
 
 ``` output
@@ -761,7 +761,7 @@ m_nolog$opt$par
 
 ``` output
   log_alpha    log_Smax   log_sigma 
-   2.398421    5.466528 -666.201828 
+   2.422631    5.360880 -611.189597 
 ```
 
 ``` r
@@ -775,7 +775,7 @@ m_nolog$checks
 
 Without `log = TRUE`, `dnorm()` returns densities, and the function adds them up instead of adding log-densities.
 When the curve passes through one point exactly, that point's density grows without limit as sigma shrinks towards zero, so the score has no bottom.
-The first run of `nlminb()` walked downhill until `log_sigma` reached -666 (the exact value depends on your computer), and stopped there.
+The first run of `nlminb()` walked downhill until `log_sigma` reached -611 (the exact value depends on your computer), and stopped there.
 The restart then tried 10 000 times to take one more step, but the score could not be computed at any of the new values it tried, so nearly every try printed a warning.
 It stopped at its limit of 10 000 evaluations without moving, so `finished` is FALSE.
 

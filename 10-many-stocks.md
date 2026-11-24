@@ -152,7 +152,7 @@ exp(stocks$opt$par[c("mean_log_alpha", "log_sd_stock")])
 
 ``` output
 mean_log_alpha   log_sd_stock 
-     9.4753487      0.1056451 
+     9.4753233      0.1056285 
 ```
 
 The four checks pass.
@@ -171,7 +171,7 @@ ci_table(stocks) %>% filter(parameter == "sd_stock")
 
 ``` output
   parameter  estimate      lower     upper
-1  sd_stock 0.1056451 0.02430769 0.4591504
+1  sd_stock 0.1056285 0.02429118 0.4593184
 ```
 
 ``` r
@@ -180,7 +180,7 @@ summary(stocks$sdr, "fixed")["log_sd_stock", ]
 
 ``` output
   Estimate Std. Error 
- -2.247670   0.749639 
+-2.2478268  0.7499057 
 ```
 
 Do not report this interval (0.024 to 0.46).
@@ -205,7 +205,7 @@ exp(confint(prof))
 
 ``` output
                     lower     upper
-log_sd_stock 6.278372e-08 0.2522632
+log_sd_stock 6.277388e-08 0.2522627
 ```
 
 The profile interval runs from about zero to 0.25: the data are consistent with no differences in productivity among stocks at all, once each stock has its own S_max and sigma.
@@ -296,7 +296,7 @@ shrink %>%
      Scotch Creek     6.43   8.71  2.285
      Late Shuswap     6.63   8.55  1.923
            Nadina     7.06   8.70  1.639
-         Harrison     7.34   8.83  1.487
+         Harrison     7.34   8.83  1.488
        Birkenhead    11.36   9.89 -1.470
            Chilko    11.20  10.03 -1.176
      Early Stuart     7.70   8.67  0.962
@@ -633,7 +633,7 @@ summary(stocks_npgo$sdr, "fixed")["b_npgo", ]
 
 ``` output
   Estimate Std. Error 
-0.12885136 0.03026176 
+0.12885135 0.03026176 
 ```
 
 ``` r
