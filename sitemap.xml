@@ -1,75 +1,171 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://carpentries.github.io/workbench-template-rmd/404.html</loc>
+    <loc>https://Br-Johnson.github.io/rtmb-cookbook/01-introduction.html</loc>
   </url>
   <url>
-    <loc>https://carpentries.github.io/workbench-template-rmd/CODE_OF_CONDUCT.html</loc>
+    <loc>https://Br-Johnson.github.io/rtmb-cookbook/02-quick-start.html</loc>
   </url>
   <url>
-    <loc>https://carpentries.github.io/workbench-template-rmd/LICENSE.html</loc>
+    <loc>https://Br-Johnson.github.io/rtmb-cookbook/03-likelihoods.html</loc>
   </url>
   <url>
-    <loc>https://carpentries.github.io/workbench-template-rmd/aio.html</loc>
+    <loc>https://Br-Johnson.github.io/rtmb-cookbook/04-fit-and-check.html</loc>
   </url>
   <url>
-    <loc>https://carpentries.github.io/workbench-template-rmd/citation.html</loc>
+    <loc>https://Br-Johnson.github.io/rtmb-cookbook/05-uncertainty.html</loc>
   </url>
   <url>
-    <loc>https://carpentries.github.io/workbench-template-rmd/images.html</loc>
+    <loc>https://Br-Johnson.github.io/rtmb-cookbook/06-random-effects.html</loc>
   </url>
   <url>
-    <loc>https://carpentries.github.io/workbench-template-rmd/index.html</loc>
+    <loc>https://Br-Johnson.github.io/rtmb-cookbook/07-residuals.html</loc>
   </url>
   <url>
-    <loc>https://carpentries.github.io/workbench-template-rmd/instructor/404.html</loc>
+    <loc>https://Br-Johnson.github.io/rtmb-cookbook/08-simulation.html</loc>
   </url>
   <url>
-    <loc>https://carpentries.github.io/workbench-template-rmd/instructor/CODE_OF_CONDUCT.html</loc>
+    <loc>https://Br-Johnson.github.io/rtmb-cookbook/09-model-selection.html</loc>
   </url>
   <url>
-    <loc>https://carpentries.github.io/workbench-template-rmd/instructor/LICENSE.html</loc>
+    <loc>https://Br-Johnson.github.io/rtmb-cookbook/10-many-stocks.html</loc>
   </url>
   <url>
-    <loc>https://carpentries.github.io/workbench-template-rmd/instructor/aio.html</loc>
+    <loc>https://Br-Johnson.github.io/rtmb-cookbook/11-forecasting.html</loc>
   </url>
   <url>
-    <loc>https://carpentries.github.io/workbench-template-rmd/instructor/citation.html</loc>
+    <loc>https://Br-Johnson.github.io/rtmb-cookbook/12-capstone.html</loc>
   </url>
   <url>
-    <loc>https://carpentries.github.io/workbench-template-rmd/instructor/images.html</loc>
+    <loc>https://Br-Johnson.github.io/rtmb-cookbook/404.html</loc>
   </url>
   <url>
-    <loc>https://carpentries.github.io/workbench-template-rmd/instructor/index.html</loc>
+    <loc>https://Br-Johnson.github.io/rtmb-cookbook/CODE_OF_CONDUCT.html</loc>
   </url>
   <url>
-    <loc>https://carpentries.github.io/workbench-template-rmd/instructor/instructor-notes.html</loc>
+    <loc>https://Br-Johnson.github.io/rtmb-cookbook/LICENSE.html</loc>
   </url>
   <url>
-    <loc>https://carpentries.github.io/workbench-template-rmd/instructor/introduction.html</loc>
+    <loc>https://Br-Johnson.github.io/rtmb-cookbook/aio.html</loc>
   </url>
   <url>
-    <loc>https://carpentries.github.io/workbench-template-rmd/instructor/key-points.html</loc>
+    <loc>https://Br-Johnson.github.io/rtmb-cookbook/citation.html</loc>
   </url>
   <url>
-    <loc>https://carpentries.github.io/workbench-template-rmd/instructor/profiles.html</loc>
+    <loc>https://Br-Johnson.github.io/rtmb-cookbook/going-further.html</loc>
   </url>
   <url>
-    <loc>https://carpentries.github.io/workbench-template-rmd/instructor/reference.html</loc>
+    <loc>https://Br-Johnson.github.io/rtmb-cookbook/images.html</loc>
   </url>
   <url>
-    <loc>https://carpentries.github.io/workbench-template-rmd/instructor-notes.html</loc>
+    <loc>https://Br-Johnson.github.io/rtmb-cookbook/index.html</loc>
   </url>
   <url>
-    <loc>https://carpentries.github.io/workbench-template-rmd/introduction.html</loc>
+    <loc>https://Br-Johnson.github.io/rtmb-cookbook/instructor/01-introduction.html</loc>
   </url>
   <url>
-    <loc>https://carpentries.github.io/workbench-template-rmd/key-points.html</loc>
+    <loc>https://Br-Johnson.github.io/rtmb-cookbook/instructor/02-quick-start.html</loc>
   </url>
   <url>
-    <loc>https://carpentries.github.io/workbench-template-rmd/profiles.html</loc>
+    <loc>https://Br-Johnson.github.io/rtmb-cookbook/instructor/03-likelihoods.html</loc>
   </url>
   <url>
-    <loc>https://carpentries.github.io/workbench-template-rmd/reference.html</loc>
+    <loc>https://Br-Johnson.github.io/rtmb-cookbook/instructor/04-fit-and-check.html</loc>
+  </url>
+  <url>
+    <loc>https://Br-Johnson.github.io/rtmb-cookbook/instructor/05-uncertainty.html</loc>
+  </url>
+  <url>
+    <loc>https://Br-Johnson.github.io/rtmb-cookbook/instructor/06-random-effects.html</loc>
+  </url>
+  <url>
+    <loc>https://Br-Johnson.github.io/rtmb-cookbook/instructor/07-residuals.html</loc>
+  </url>
+  <url>
+    <loc>https://Br-Johnson.github.io/rtmb-cookbook/instructor/08-simulation.html</loc>
+  </url>
+  <url>
+    <loc>https://Br-Johnson.github.io/rtmb-cookbook/instructor/09-model-selection.html</loc>
+  </url>
+  <url>
+    <loc>https://Br-Johnson.github.io/rtmb-cookbook/instructor/10-many-stocks.html</loc>
+  </url>
+  <url>
+    <loc>https://Br-Johnson.github.io/rtmb-cookbook/instructor/11-forecasting.html</loc>
+  </url>
+  <url>
+    <loc>https://Br-Johnson.github.io/rtmb-cookbook/instructor/12-capstone.html</loc>
+  </url>
+  <url>
+    <loc>https://Br-Johnson.github.io/rtmb-cookbook/instructor/404.html</loc>
+  </url>
+  <url>
+    <loc>https://Br-Johnson.github.io/rtmb-cookbook/instructor/CODE_OF_CONDUCT.html</loc>
+  </url>
+  <url>
+    <loc>https://Br-Johnson.github.io/rtmb-cookbook/instructor/LICENSE.html</loc>
+  </url>
+  <url>
+    <loc>https://Br-Johnson.github.io/rtmb-cookbook/instructor/aio.html</loc>
+  </url>
+  <url>
+    <loc>https://Br-Johnson.github.io/rtmb-cookbook/instructor/citation.html</loc>
+  </url>
+  <url>
+    <loc>https://Br-Johnson.github.io/rtmb-cookbook/instructor/going-further.html</loc>
+  </url>
+  <url>
+    <loc>https://Br-Johnson.github.io/rtmb-cookbook/instructor/images.html</loc>
+  </url>
+  <url>
+    <loc>https://Br-Johnson.github.io/rtmb-cookbook/instructor/index.html</loc>
+  </url>
+  <url>
+    <loc>https://Br-Johnson.github.io/rtmb-cookbook/instructor/instructor-notes.html</loc>
+  </url>
+  <url>
+    <loc>https://Br-Johnson.github.io/rtmb-cookbook/instructor/introduction.html</loc>
+  </url>
+  <url>
+    <loc>https://Br-Johnson.github.io/rtmb-cookbook/instructor/key-points.html</loc>
+  </url>
+  <url>
+    <loc>https://Br-Johnson.github.io/rtmb-cookbook/instructor/lesson-design.html</loc>
+  </url>
+  <url>
+    <loc>https://Br-Johnson.github.io/rtmb-cookbook/instructor/profiles.html</loc>
+  </url>
+  <url>
+    <loc>https://Br-Johnson.github.io/rtmb-cookbook/instructor/recipe-index.html</loc>
+  </url>
+  <url>
+    <loc>https://Br-Johnson.github.io/rtmb-cookbook/instructor/reference.html</loc>
+  </url>
+  <url>
+    <loc>https://Br-Johnson.github.io/rtmb-cookbook/instructor/troubleshooting.html</loc>
+  </url>
+  <url>
+    <loc>https://Br-Johnson.github.io/rtmb-cookbook/instructor-notes.html</loc>
+  </url>
+  <url>
+    <loc>https://Br-Johnson.github.io/rtmb-cookbook/introduction.html</loc>
+  </url>
+  <url>
+    <loc>https://Br-Johnson.github.io/rtmb-cookbook/key-points.html</loc>
+  </url>
+  <url>
+    <loc>https://Br-Johnson.github.io/rtmb-cookbook/lesson-design.html</loc>
+  </url>
+  <url>
+    <loc>https://Br-Johnson.github.io/rtmb-cookbook/profiles.html</loc>
+  </url>
+  <url>
+    <loc>https://Br-Johnson.github.io/rtmb-cookbook/recipe-index.html</loc>
+  </url>
+  <url>
+    <loc>https://Br-Johnson.github.io/rtmb-cookbook/reference.html</loc>
+  </url>
+  <url>
+    <loc>https://Br-Johnson.github.io/rtmb-cookbook/troubleshooting.html</loc>
   </url>
 </urlset>

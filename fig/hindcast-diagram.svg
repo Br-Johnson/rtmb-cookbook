@@ -1,0 +1,104 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 452" width="800" height="452" font-family="sans-serif" font-size="16" role="img" aria-labelledby="hc-title hc-desc">
+  <title id="hc-title">A hindcast: replaying the past one year at a time</title>
+  <desc id="hc-desc">Timeline of brood years from 1948 to 2021. The first row shows a shaded training block from 1948 to 2006 followed by one forecast year, 2007. The next row trains to 2007 and forecasts 2008, and so on, until the last row trains to 2020 and forecasts 2021. Later years in each row are not used.</desc>
+  <defs>
+    <pattern id="hatch" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+      <rect width="6" height="6" fill="#E69F00"/>
+      <line x1="0" y1="0" x2="0" y2="6" stroke="#000000" stroke-width="2"/>
+    </pattern>
+  </defs>
+  <rect x="0" y="0" width="800" height="452" fill="#FFFFFF"/>
+
+  <!-- Year scale: 1948 to 1990 squeezed into x = 140-230 (axis break); from 1991 on, 18 px per year:
+       left edge of year Y = 230 + (Y - 1991) * 18, so 2007 = 518, 2008 = 536, 2009 = 554, 2020 = 752, 2021 = 770 -->
+
+  <!-- Row labels -->
+  <g fill="#000000">
+    <text x="12" y="49">Forecast 2007</text>
+    <text x="12" y="93">Forecast 2008</text>
+    <text x="12" y="137">Forecast 2009</text>
+    <text x="60" y="184" font-size="24">&#8942;</text>
+    <text x="12" y="221">Forecast 2020</text>
+    <text x="12" y="265">Forecast 2021</text>
+  </g>
+
+  <!-- Training blocks: the years used to fit (what we knew then) -->
+  <g fill="#BDBDBD" stroke="#000000" stroke-width="1.5">
+    <rect x="140" y="28"  width="378" height="30"/>
+    <rect x="140" y="72"  width="396" height="30"/>
+    <rect x="140" y="116" width="414" height="30"/>
+    <rect x="140" y="200" width="612" height="30"/>
+    <rect x="140" y="244" width="630" height="30"/>
+  </g>
+  <g fill="#000000">
+    <text x="245" y="49">fit to 1948&#8211;2006</text>
+    <text x="245" y="93">fit to 1948&#8211;2007</text>
+    <text x="245" y="137">fit to 1948&#8211;2008</text>
+    <text x="245" y="221">fit to 1948&#8211;2019</text>
+    <text x="245" y="265">fit to 1948&#8211;2020</text>
+  </g>
+
+  <!-- Later years, not used in that row -->
+  <g fill="#FFFFFF" stroke="#555555" stroke-width="1.5" stroke-dasharray="5 4">
+    <rect x="536" y="28"  width="252" height="30"/>
+    <rect x="554" y="72"  width="234" height="30"/>
+    <rect x="572" y="116" width="216" height="30"/>
+    <rect x="770" y="200" width="18"  height="30"/>
+  </g>
+
+  <!-- The forecast year: taller, hatched, thick outline -->
+  <g fill="url(#hatch)" stroke="#000000" stroke-width="2.5">
+    <rect x="518" y="23"  width="18" height="40"/>
+    <rect x="536" y="67"  width="18" height="40"/>
+    <rect x="554" y="111" width="18" height="40"/>
+    <rect x="752" y="195" width="18" height="40"/>
+    <rect x="770" y="239" width="18" height="40"/>
+  </g>
+
+  <!-- Ellipsis in the timeline -->
+  <text x="640" y="184" font-size="24" fill="#000000">&#8942;</text>
+
+  <!-- Axis -->
+  <line x1="140" y1="295" x2="788" y2="295" stroke="#000000" stroke-width="1.5"/>
+  <g stroke="#000000" stroke-width="1.5">
+    <line x1="140" y1="295" x2="140" y2="302"/>
+    <line x1="401" y1="295" x2="401" y2="302"/>
+    <line x1="527" y1="295" x2="527" y2="302"/>
+    <line x1="653" y1="295" x2="653" y2="302"/>
+    <line x1="779" y1="295" x2="779" y2="302"/>
+  </g>
+  <g fill="#000000" text-anchor="middle">
+    <text x="140" y="321">1948</text>
+    <text x="401" y="321">2000</text>
+    <text x="527" y="321">2007</text>
+    <text x="653" y="321">2014</text>
+    <text x="772" y="321">2021</text>
+    <text x="464" y="347">Brood year</text>
+  </g>
+
+  <!-- Axis break (1948 to 1990 squeezed): white gap with two slanted lines, on every row and the axis -->
+  <g fill="#FFFFFF" stroke="none">
+    <polygon points="183,26 193,26 187,60 177,60"/>
+    <polygon points="183,70 193,70 187,104 177,104"/>
+    <polygon points="183,114 193,114 187,148 177,148"/>
+    <polygon points="183,198 193,198 187,232 177,232"/>
+    <polygon points="183,242 193,242 187,276 177,276"/>
+    <polygon points="183,287 193,287 187,303 177,303"/>
+  </g>
+  <g stroke="#000000" stroke-width="1.5">
+    <line x1="183" y1="26" x2="177" y2="60"/>   <line x1="193" y1="26" x2="187" y2="60"/>
+    <line x1="183" y1="70" x2="177" y2="104"/>  <line x1="193" y1="70" x2="187" y2="104"/>
+    <line x1="183" y1="114" x2="177" y2="148"/> <line x1="193" y1="114" x2="187" y2="148"/>
+    <line x1="183" y1="198" x2="177" y2="232"/> <line x1="193" y1="198" x2="187" y2="232"/>
+    <line x1="183" y1="242" x2="177" y2="276"/> <line x1="193" y1="242" x2="187" y2="276"/>
+    <line x1="183" y1="287" x2="177" y2="303"/> <line x1="193" y1="287" x2="187" y2="303"/>
+  </g>
+
+  <!-- Legend -->
+  <rect x="140" y="366" width="30" height="20" fill="#BDBDBD" stroke="#000000" stroke-width="1.5"/>
+  <text x="182" y="382" fill="#000000">Years used to fit the model: what we knew then</text>
+  <rect x="140" y="395" width="30" height="20" fill="url(#hatch)" stroke="#000000" stroke-width="2.5"/>
+  <text x="182" y="411" fill="#000000">The year forecast, then compared with what happened</text>
+  <rect x="140" y="424" width="30" height="20" fill="#FFFFFF" stroke="#555555" stroke-width="1.5" stroke-dasharray="5 4"/>
+  <text x="182" y="440" fill="#000000">Later years: not used in that row</text>
+</svg>

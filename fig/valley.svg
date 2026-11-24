@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 335" width="800" height="335" font-family="sans-serif" font-size="16" role="img" aria-labelledby="valley-title valley-desc">
+  <title id="valley-title">The four checks as a hiker in a valley</title>
+  <desc id="valley-desc">Three sketches of a valley with a hiker. Left: a round bowl with the hiker at the single lowest point, labelled all four checks TRUE. Middle: the hiker stopped on a slope above the bottom, labelled flat FALSE. Right: a valley with a long flat floor where the hiker could stand anywhere, labelled curved or finite_se FALSE: two parameters do one job.</desc>
+  <defs>
+    <!-- a stick-figure hiker whose feet are at (0, 0) -->
+    <g id="hiker">
+      <circle cx="0" cy="-33" r="6"/>
+      <line x1="0" y1="-27" x2="0" y2="-13"/>
+      <line x1="0" y1="-13" x2="-6" y2="0"/>
+      <line x1="0" y1="-13" x2="6" y2="0"/>
+      <line x1="-8" y1="-23" x2="8" y2="-21"/>
+      <line x1="8" y1="-21" x2="11" y2="0"/>
+    </g>
+    <marker id="arrow-orange" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="13" markerHeight="13" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#E69F00" stroke="#000000" stroke-width="0.8"/>
+    </marker>
+    <marker id="arrow-black" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="12" markerHeight="12" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#000000"/>
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="800" height="335" fill="#FFFFFF"/>
+
+  <!-- Panel separators -->
+  <g stroke="#BDBDBD" stroke-width="1.5">
+    <line x1="267" y1="15" x2="267" y2="322"/>
+    <line x1="533" y1="15" x2="533" y2="322"/>
+  </g>
+
+  <!-- Panel 1: a round bowl, hiker at the single lowest point -->
+  <g transform="translate(0, 0)">
+    <text x="133" y="32" text-anchor="middle" font-size="18" font-weight="bold" fill="#000000">A bowl</text>
+    <path d="M 20 60 Q 133 400 246 60 L 246 260 L 20 260 Z" fill="#E6E6E6"/>
+    <path d="M 20 60 Q 133 400 246 60" fill="none" stroke="#000000" stroke-width="3"/>
+    <use href="#hiker" transform="translate(133, 230)" fill="#0072B2" stroke="#0072B2" stroke-width="3" stroke-linecap="round"/>
+    <text x="133" y="288" text-anchor="middle" font-weight="bold" fill="#000000">All four checks TRUE</text>
+    <text x="133" y="311" text-anchor="middle" fill="#000000">one lowest point</text>
+  </g>
+
+  <!-- Panel 2: the same bowl, hiker stopped on the slope above the bottom -->
+  <g transform="translate(267, 0)">
+    <text x="133" y="32" text-anchor="middle" font-size="18" font-weight="bold" fill="#000000">Stopped on a slope</text>
+    <path d="M 20 60 Q 133 400 246 60 L 246 260 L 20 260 Z" fill="#E6E6E6"/>
+    <path d="M 20 60 Q 133 400 246 60" fill="none" stroke="#000000" stroke-width="3"/>
+    <use href="#hiker" transform="translate(76, 187)" fill="#0072B2" stroke="#0072B2" stroke-width="3" stroke-linecap="round"/>
+    <!-- the way down that the hiker has not taken -->
+    <path d="M 92 197 Q 106 219 122 227" fill="none" stroke="#E69F00" stroke-width="3" stroke-dasharray="6 4" marker-end="url(#arrow-orange)"/>
+    <circle cx="133" cy="230" r="5" fill="#FFFFFF" stroke="#000000" stroke-width="2"/>
+    <text x="133" y="253" text-anchor="middle" fill="#000000" font-size="14">bottom</text>
+    <text x="133" y="288" text-anchor="middle" font-weight="bold" fill="#000000">flat FALSE</text>
+    <text x="133" y="311" text-anchor="middle" fill="#000000">the ground is not level</text>
+  </g>
+
+  <!-- Panel 3: a valley with a long flat floor, the hiker could stand anywhere on it -->
+  <g transform="translate(534, 0)">
+    <text x="133" y="32" text-anchor="middle" font-size="18" font-weight="bold" fill="#000000">A flat-bottomed trough</text>
+    <path d="M 20 60 C 28 170, 46 230, 76 230 L 190 230 C 220 230, 238 170, 246 60 L 246 260 L 20 260 Z" fill="#E6E6E6"/>
+    <path d="M 20 60 C 28 170, 46 230, 76 230 L 190 230 C 220 230, 238 170, 246 60" fill="none" stroke="#000000" stroke-width="3"/>
+    <!-- other places the hiker could equally stand -->
+    <use href="#hiker" transform="translate(92, 230)" fill="#FFFFFF" stroke="#8C8C8C" stroke-width="2" stroke-dasharray="3 3" stroke-linecap="round"/>
+    <use href="#hiker" transform="translate(174, 230)" fill="#FFFFFF" stroke="#8C8C8C" stroke-width="2" stroke-dasharray="3 3" stroke-linecap="round"/>
+    <use href="#hiker" transform="translate(133, 230)" fill="#0072B2" stroke="#0072B2" stroke-width="3" stroke-linecap="round"/>
+    <line x1="86" y1="176" x2="180" y2="176" stroke="#000000" stroke-width="2" marker-start="url(#arrow-black)" marker-end="url(#arrow-black)"/>
+    <text x="133" y="166" text-anchor="middle" fill="#000000" font-size="14">anywhere here</text>
+    <text x="133" y="288" text-anchor="middle" font-weight="bold" fill="#000000">curved or finite_se FALSE</text>
+    <text x="133" y="311" text-anchor="middle" fill="#000000">two parameters do one job</text>
+  </g>
+</svg>
