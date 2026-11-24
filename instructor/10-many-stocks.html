@@ -455,16 +455,17 @@ standard deviations.</li>
 <hr class="half-width"><p>This episode scales up step 7 of the <a href="02-quick-start.html">Quick Start</a>: random effects for groups
 instead of years. It is optional: the episodes after it use only the
 single-stock recipes.</p>
-<div id="run-this-if-you-are-starting-here" class="callout prereq">
+<div id="run-this-only-if-you-are-starting-here" class="callout prereq">
 <div class="callout-square">
 <i class="callout-icon" data-feather="check"></i>
 </div>
 <span class="callout-header">Prerequisite</span>
-<div id="run-this-if-you-are-starting-here" class="callout-inner">
-<h3 class="callout-title">Run This If You Are Starting Here</h3>
+<div id="run-this-only-if-you-are-starting-here" class="callout-inner">
+<h3 class="callout-title">Run This Only If You Are Starting Here</h3>
 <div class="callout-content">
-<p>If you have followed along, you already have these objects. If you
-are starting here or have restarted R, run this chunk first. It needs
+<p>If you have followed along in <code>stellako.R</code>, you already
+have these objects: skip this chunk. If you are starting here or have
+restarted R, run this chunk first. It needs
 <code>data/sockeye.csv</code>, <code>data/npgo.csv</code> and
 <code>files/cookbook.R</code> in your project (see <a href="index.html#setup">Setup</a>).</p>
 <div class="codewrapper sourceCode" id="cb1">
@@ -615,7 +616,7 @@ starts at 0.1, as <code>sd_walk</code> did.</p>
 <h3 class="code-label">OUTPUT<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
 <pre class="output" tabindex="0"><code>mean_log_alpha   log_sd_stock
-     9.4753233      0.1056285 </code></pre>
+     9.4753487      0.1056451 </code></pre>
 </div>
 <p>The four checks pass. The average stock produces 9.48 recruits per
 spawner when spawners are few. sd_stock is 0.106: stock productivities
@@ -636,7 +637,7 @@ interval</a> for sd_stock?</p>
 <h3 class="code-label">OUTPUT<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
 <pre class="output" tabindex="0"><code>  parameter  estimate      lower     upper
-1  sd_stock 0.1056285 0.02429118 0.4593184</code></pre>
+1  sd_stock 0.1056451 0.02430769 0.4591504</code></pre>
 </div>
 <div class="codewrapper sourceCode" id="cb11">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
@@ -648,7 +649,7 @@ interval</a> for sd_stock?</p>
 <h3 class="code-label">OUTPUT<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
 <pre class="output" tabindex="0"><code>  Estimate Std. Error
--2.2478268  0.7499057 </code></pre>
+ -2.247670   0.749639 </code></pre>
 </div>
 <p>Do not report this interval (0.024 to 0.46). The <a href="reference.html#glossary">standard error</a> of
 <code>log_sd_stock</code> is 0.75, so the interval spans a factor of
@@ -679,7 +680,7 @@ profiles, so this chunk hides warnings. It takes about 5 seconds.</p>
 <h3 class="code-label">OUTPUT<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
 <pre class="output" tabindex="0"><code>                    lower     upper
-log_sd_stock 6.277388e-08 0.2522627</code></pre>
+log_sd_stock 6.278372e-08 0.2522632</code></pre>
 </div>
 <p>The profile interval runs from about zero to 0.25: the data are
 consistent with no differences in productivity among stocks at all, once
@@ -814,7 +815,7 @@ productivities, back-transformed, in the same alphabetical order.</p>
      Scotch Creek     6.43   8.71  2.285
      Late Shuswap     6.63   8.55  1.923
            Nadina     7.06   8.70  1.639
-         Harrison     7.34   8.83  1.488
+         Harrison     7.34   8.83  1.487
        Birkenhead    11.36   9.89 -1.470
            Chilko    11.20  10.03 -1.176
      Early Stuart     7.70   8.67  0.962
@@ -1241,7 +1242,7 @@ Discuss in pairs.</p>
 <h3 class="code-label">OUTPUT<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
 <pre class="output" tabindex="0"><code>  Estimate Std. Error
-0.12885135 0.03026176 </code></pre>
+0.12885136 0.03026176 </code></pre>
 </div>
 <div class="codewrapper sourceCode" id="cb47">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>

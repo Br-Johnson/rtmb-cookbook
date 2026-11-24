@@ -452,16 +452,17 @@
 <section><h2 class="section-heading" id="starting-point">Starting Point<a class="anchor" aria-label="anchor" href="#starting-point"></a></h2>
 <hr class="half-width"><p>This episode opens step 8 of the <a href="02-quick-start.html">Quick
 Start</a>: comparing models.</p>
-<div id="run-this-if-you-are-starting-here" class="callout prereq">
+<div id="run-this-only-if-you-are-starting-here" class="callout prereq">
 <div class="callout-square">
 <i class="callout-icon" data-feather="check"></i>
 </div>
 <span class="callout-header">Prerequisite</span>
-<div id="run-this-if-you-are-starting-here" class="callout-inner">
-<h3 class="callout-title">Run This If You Are Starting Here</h3>
+<div id="run-this-only-if-you-are-starting-here" class="callout-inner">
+<h3 class="callout-title">Run This Only If You Are Starting Here</h3>
 <div class="callout-content">
-<p>If you have followed along, you already have these objects. If you
-are starting here or have restarted R, run this chunk first. It needs
+<p>If you have followed along in <code>stellako.R</code>, you already
+have these objects: skip this chunk. If you are starting here or have
+restarted R, run this chunk first. It needs
 <code>data/sockeye.csv</code>, <code>data/npgo.csv</code> and
 <code>files/cookbook.R</code> in your project (see <a href="index.html#setup">Setup</a>).</p>
 <div class="codewrapper sourceCode" id="cb1">
@@ -619,7 +620,7 @@ solution.</p>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution1" aria-expanded="false" aria-controls="collapseSolution1">
   <h4 class="accordion-header" id="headingSolution1"> Show me the solution </h4>
 </button>
-<div id="collapseSolution1" class="accordion-collapse collapse" aria-labelledby="headingSolution1" data-bs-parent="#accordionSolution1">
+<div id="collapseSolution1" class="accordion-collapse collapse" data-bs-parent="#accordionSolution1" aria-labelledby="headingSolution1">
 <div class="accordion-body">
 <div class="codewrapper sourceCode" id="cb9">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
@@ -814,7 +815,7 @@ it with the Ricker. What does <code>b_npgo</code> mean in words?</p>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution2" aria-expanded="false" aria-controls="collapseSolution2">
   <h4 class="accordion-header" id="headingSolution2"> Show me the solution </h4>
 </button>
-<div id="collapseSolution2" class="accordion-collapse collapse" aria-labelledby="headingSolution2" data-bs-parent="#accordionSolution2">
+<div id="collapseSolution2" class="accordion-collapse collapse" data-bs-parent="#accordionSolution2" aria-labelledby="headingSolution2">
 <div class="accordion-body">
 <p>No: AIC rises by 0.79 (199.04 against 198.26 for the Ricker). The
 extra parameter lowers the negative log-likelihood by only 0.6, which
@@ -911,7 +912,7 @@ describe the same rows.</p>
 <button class="accordion-button spoiler-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSpoiler1" aria-expanded="false" aria-controls="collapseSpoiler1">
   <h3 class="accordion-header" id="headingSpoiler1">  <div class="note-square"><i aria-hidden="true" class="callout-icon" data-feather="eye"></i></div> Switch a Term Off Without a New Function: map (optional) </h3>
 </button>
-<div id="collapseSpoiler1" class="accordion-collapse collapse" aria-labelledby="headingSpoiler1" data-bs-parent="#accordionSpoiler1">
+<div id="collapseSpoiler1" class="accordion-collapse collapse" data-bs-parent="#accordionSpoiler1" aria-labelledby="headingSpoiler1">
 <div class="accordion-body">
 <p><code>MakeADFun()</code> has a <code>map</code> argument that holds a
 parameter fixed at its starting value. With <code>b_npgo</code> held at
@@ -971,7 +972,7 @@ the Ricker’s plus 2 (266.36 against 264.36).</p>
 <button class="accordion-button spoiler-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSpoiler2" aria-expanded="false" aria-controls="collapseSpoiler2">
   <h3 class="accordion-header" id="headingSpoiler2">  <div class="note-square"><i aria-hidden="true" class="callout-icon" data-feather="eye"></i></div> Why No p-Values? (optional) </h3>
 </button>
-<div id="collapseSpoiler2" class="accordion-collapse collapse" aria-labelledby="headingSpoiler2" data-bs-parent="#accordionSpoiler2">
+<div id="collapseSpoiler2" class="accordion-collapse collapse" data-bs-parent="#accordionSpoiler2" aria-labelledby="headingSpoiler2">
 <div class="accordion-body">
 <p>Testing whether an SD is zero puts the tested value at the edge of
 what is allowed, because an SD cannot be negative. The usual
@@ -1025,7 +1026,7 @@ sd_walk is 0.13, well away from zero.</li>
 <button class="accordion-button spoiler-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSpoiler3" aria-expanded="false" aria-controls="collapseSpoiler3">
   <h3 class="accordion-header" id="headingSpoiler3">  <div class="note-square"><i aria-hidden="true" class="callout-icon" data-feather="eye"></i></div> Akaike Weights (optional) </h3>
 </button>
-<div id="collapseSpoiler3" class="accordion-collapse collapse" aria-labelledby="headingSpoiler3" data-bs-parent="#accordionSpoiler3">
+<div id="collapseSpoiler3" class="accordion-collapse collapse" data-bs-parent="#accordionSpoiler3" aria-labelledby="headingSpoiler3">
 <div class="accordion-body">
 <p>An <a href="reference.html#glossary">Akaike weight</a> turns the AIC
 differences into a share of support for each model:</p>
@@ -1058,7 +1059,7 @@ model, and every weight changes.</p>
 <button class="accordion-button instructor-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseInstructor1" aria-expanded="false" aria-controls="collapseInstructor1">
   <h3 class="accordion-header" id="headingInstructor1">  <div class="note-square"><i aria-hidden="true" class="callout-icon" data-feather="edit-2"></i></div> Instructor Note </h3>
 </button>
-<div id="collapseInstructor1" class="accordion-collapse collapse" aria-labelledby="headingInstructor1" data-bs-parent="#accordionInstructor1">
+<div id="collapseInstructor1" class="accordion-collapse collapse" data-bs-parent="#accordionInstructor1" aria-labelledby="headingInstructor1">
 <div class="accordion-body">
 <p>Ask for sticky notes when the full table prints, about 40 minutes
 into the episode. Misconceptions to listen for: “the model with more
@@ -1116,7 +1117,7 @@ and compares it with your random walk:</p>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution3" aria-expanded="false" aria-controls="collapseSolution3">
   <h4 class="accordion-header" id="headingSolution3"> Show me the solution </h4>
 </button>
-<div id="collapseSolution3" class="accordion-collapse collapse" aria-labelledby="headingSolution3" data-bs-parent="#accordionSolution3">
+<div id="collapseSolution3" class="accordion-collapse collapse" data-bs-parent="#accordionSolution3" aria-labelledby="headingSolution3">
 <div class="accordion-body">
 <p><strong>1. What is wrong?</strong> The two models were fitted to
 different years: 64 for <code>ricker_recent</code> (1958 to 2021), 74
@@ -1160,7 +1161,7 @@ model you fit, and the two AIC values cannot be compared.
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution4" aria-expanded="false" aria-controls="collapseSolution4">
   <h4 class="accordion-header" id="headingSolution4"> Show me the solution </h4>
 </button>
-<div id="collapseSolution4" class="accordion-collapse collapse" aria-labelledby="headingSolution4" data-bs-parent="#accordionSolution4">
+<div id="collapseSolution4" class="accordion-collapse collapse" data-bs-parent="#accordionSolution4" aria-labelledby="headingSolution4">
 <div class="accordion-body">
 <p><strong>2. Fix it.</strong> Fit the random walk to the same 64 years,
 then compare:</p>
@@ -1194,9 +1195,9 @@ with <code>aic_table()</code>: it checks the rows for you.</p>
 7 (12 minutes)</h3>
 <div class="callout-content">
 <p>Fit the four candidate models to Upper Pitt River, make the AIC
-table, and write row 7 of your report card in
-<code>report-card.R</code>, using the four rules. Add the new models’
-checks to row 2.</p>
+table, and write row 7 of your report card under the code in
+<code>upper-pitt-river.R</code>, using the four rules. Add the new
+models’ checks to row 2.</p>
 </div>
 </div>
 </div>
@@ -1205,7 +1206,7 @@ checks to row 2.</p>
 <button class="accordion-button hint-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseHint1" aria-expanded="false" aria-controls="collapseHint1">
   <h4 class="accordion-header" id="headingHint1"> Give me a hint </h4>
 </button>
-<div id="collapseHint1" class="accordion-collapse collapse" aria-labelledby="headingHint1" data-bs-parent="#accordionHint1">
+<div id="collapseHint1" class="accordion-collapse collapse" data-bs-parent="#accordionHint1" aria-labelledby="headingHint1">
 <div class="accordion-body">
 <p>Start from the covariate recipe, with <code>pitt</code> in place of
 <code>my_stock</code>: <code>npgo_by_brood</code> and <code>npgo</code>
@@ -1222,7 +1223,7 @@ named list, as in the full table.</p>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution5" aria-expanded="false" aria-controls="collapseSolution5">
   <h4 class="accordion-header" id="headingSolution5"> Show me the solution </h4>
 </button>
-<div id="collapseSolution5" class="accordion-collapse collapse" aria-labelledby="headingSolution5" data-bs-parent="#accordionSolution5">
+<div id="collapseSolution5" class="accordion-collapse collapse" data-bs-parent="#accordionSolution5" aria-labelledby="headingSolution5">
 <div class="accordion-body">
 <div class="codewrapper sourceCode" id="cb41">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
@@ -1273,6 +1274,10 @@ the forecasts (row 8). Unlike Stellako, NPGO helps here: it lowers AIC
 by 5.6 against the Ricker, and its effect, 0.28 (95% confidence interval
 0.09 to 0.48), excludes zero. AIC cannot tell us whether the random walk
 also forecasts better (row 8).”</p>
+<p>In <code>upper-pitt-river.R</code>, add this chunk as it is: it
+refits <code>ricker_pitt</code> and <code>walk_pitt</code> inside
+<code>models_pitt</code>, the named list that the capstone template uses
+too, and the two row comments go under it.</p>
 </div>
 </div>
 </div>
@@ -1306,7 +1311,7 @@ likelihoods are on different scales.</li>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution6" aria-expanded="false" aria-controls="collapseSolution6">
   <h4 class="accordion-header" id="headingSolution6"> Show me the solution </h4>
 </button>
-<div id="collapseSolution6" class="accordion-collapse collapse" aria-labelledby="headingSolution6" data-bs-parent="#accordionSolution6">
+<div id="collapseSolution6" class="accordion-collapse collapse" data-bs-parent="#accordionSolution6" aria-labelledby="headingSolution6">
 <div class="accordion-body">
 <p><strong>(b).</strong> A likelihood measures how probable the observed
 values are, so it depends on what the values are and on their units.
@@ -1348,7 +1353,7 @@ differences, so they inherit the problem.</li>
 <button class="accordion-button instructor-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseInstructor2" aria-expanded="false" aria-controls="collapseInstructor2">
   <h3 class="accordion-header" id="headingInstructor2">  <div class="note-square"><i aria-hidden="true" class="callout-icon" data-feather="edit-2"></i></div> Instructor Note </h3>
 </button>
-<div id="collapseInstructor2" class="accordion-collapse collapse" aria-labelledby="headingInstructor2" data-bs-parent="#accordionInstructor2">
+<div id="collapseInstructor2" class="accordion-collapse collapse" data-bs-parent="#accordionInstructor2" aria-labelledby="headingInstructor2">
 <div class="accordion-body">
 <p>Challenge 3 targets misconception M9: if learners accept the
 colleague’s claim, point at the row counts (64 against 74) and run

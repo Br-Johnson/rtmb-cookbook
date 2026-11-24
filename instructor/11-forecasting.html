@@ -453,16 +453,17 @@ and interpret the scores.</li>
 Start</a>: forecasting, and testing whether the forecasts can be
 trusted. It answers the Quick Start’s question: which forecast would you
 trust?</p>
-<div id="run-this-if-you-are-starting-here" class="callout prereq">
+<div id="run-this-only-if-you-are-starting-here" class="callout prereq">
 <div class="callout-square">
 <i class="callout-icon" data-feather="check"></i>
 </div>
 <span class="callout-header">Prerequisite</span>
-<div id="run-this-if-you-are-starting-here" class="callout-inner">
-<h3 class="callout-title">Run This If You Are Starting Here</h3>
+<div id="run-this-only-if-you-are-starting-here" class="callout-inner">
+<h3 class="callout-title">Run This Only If You Are Starting Here</h3>
 <div class="callout-content">
-<p>If you have followed along, you already have these objects. If you
-are starting here or have restarted R, run this chunk first. It needs
+<p>If you have followed along in <code>stellako.R</code>, you already
+have these objects: skip this chunk. If you are starting here or have
+restarted R, run this chunk first. It needs
 <code>data/sockeye.csv</code> and <code>files/cookbook.R</code> in your
 project (see <a href="index.html#setup">Setup</a>).</p>
 <div class="codewrapper sourceCode" id="cb1">
@@ -1252,8 +1253,8 @@ time.</p>
 <p>For Upper Pitt River, run the hindcast from 2007 for the Ricker, the
 random walk and the benchmark, and score it. Then forecast from the
 random walk, with <code>S_new</code> set to the average spawners of the
-last four brood years. Write rows 8 and 9 of your report card in
-<code>report-card.R</code>:</p>
+last four brood years. Add the code to <code>upper-pitt-river.R</code>
+and write rows 8 and 9 of your report card under it:</p>
 <ul><li>row 8: the bias, MAE, skill and 80% coverage of each model and the
 benchmark, in one or two sentences;</li>
 <li>row 9: the median and 80% prediction interval from the random walk,
@@ -1269,9 +1270,9 @@ with units and the word “median”.</li>
 </button>
 <div id="collapseHint1" class="accordion-collapse collapse" data-bs-parent="#accordionHint1" aria-labelledby="headingHint1">
 <div class="accordion-body">
-<p>Start from the Upper Pitt River code of <a href="07-residuals.html">Checking a Model with Residuals</a>, Challenge
-2: it makes <code>pitt</code>, <code>dat_pitt</code>,
-<code>ricker_pitt</code> and <code>walk_pitt</code>. Then copy the
+<p><code>pitt</code>, <code>dat_pitt</code>, <code>ricker_pitt</code>
+and <code>walk_pitt</code> are in <code>upper-pitt-river.R</code>; run
+it from the top if they are not in your workspace. Then copy the
 <code>hc &lt;- bind_rows(...)</code> chunk that ran the hindcast from
 2007 and change the names: <code>pitt</code> for <code>my_stock</code>,
 <code>ricker_pitt</code> and <code>walk_pitt</code> for
@@ -1362,6 +1363,10 @@ far too low.”</p>
 <p>Row 9: “From 5.3 thousand spawners, the random walk forecasts a
 median of 12 thousand recruits (80% prediction interval 4.4 to 35
 thousand).”</p>
+<p>In <code>upper-pitt-river.R</code>, add the lines from
+<code>hc_pitt &lt;- bind_rows(</code> on, then the two row comments.
+Your script now runs Upper Pitt River from the data to a tested
+forecast, which is what the capstone asks you to do for a new stock.</p>
 <p>Rows 7 and 8 agree only in part. AIC (row 7) prefers the random walk
 by 11.8, but the Ricker’s forecast errors were slightly smaller (mean
 absolute error 0.88 against 0.92): a lower AIC did not bring smaller

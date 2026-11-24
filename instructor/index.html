@@ -454,6 +454,9 @@ or any introductory R course, is enough.</p>
 </section><section><h2 class="section-heading" id="what-you-will-leave-with">What You Will Leave With<a class="anchor" aria-label="anchor" href="#what-you-will-leave-with"></a></h2>
 <hr class="half-width"><ul><li>Your own recipe box, <code>my-recipes.R</code>: every function the
 lesson teaches, typed by you.</li>
+<li>Your own analysis script, <code>upper-pitt-river.R</code>, built one
+step per episode from the data to a tested forecast, with the report
+card as its comment lines.</li>
 <li>A completed model report card for a stock you chose: data, fits,
 estimates, checks, model comparison and a tested forecast.</li>
 <li>A template for your next analysis: <a href="../files/capstone-template.R">the capstone template
@@ -651,11 +654,14 @@ or longer if R has to compile the packages, as it may on Linux. At the
 end, a short script tells you whether everything works.</p>
 <section><h2 class="section-heading" id="data-sets-and-files">Data Sets and Files<a class="anchor" aria-label="anchor" href="#data-sets-and-files"></a></h2>
 <hr class="half-width"><p>Make a project folder (an RStudio or Positron project) with two
-subfolders, <code>data/</code> and <code>files/</code>, and two empty
-scripts, <code>my-recipes.R</code> (your recipe box) and
-<code>report-card.R</code> (your report card). In RStudio, use File &gt;
-New Project &gt; New Directory &gt; New Project. In Positron, make a new
-folder and open it with File &gt; Open Folder.</p>
+subfolders, <code>data/</code> and <code>files/</code>, and three empty
+scripts: <code>my-recipes.R</code> (your recipe box, the functions you
+write), <code>stellako.R</code> (the code you type along with the
+instructor) and <code>upper-pitt-river.R</code> (your own work from the
+“Your Turn” challenges, with the report card as comment lines). In
+RStudio, use File &gt; New Project &gt; New Directory &gt; New Project.
+In Positron, make a new folder and open it with File &gt; Open
+Folder.</p>
 <p>To download a file, right-click its link and choose Save Link As (in
 Safari, Download Linked File), save it in the folder shown, and check
 that its name has not gained a <code>.txt</code> ending.</p>
@@ -687,7 +693,8 @@ episode;</li>
 |   |-- cookbook.R
 |   `-- quick-start.R
 |-- my-recipes.R
-`-- report-card.R</code></pre>
+|-- stellako.R
+`-- upper-pitt-river.R</code></pre>
 <p>Every path in the lesson, such as
 <code>read.csv("data/sockeye.csv")</code>, assumes that R is running in
 this project folder.</p>
@@ -765,7 +772,7 @@ the Linux section below first):</p>
   Windows
   </h3>
 </button>
-<div id="collapseSpoiler1" class="accordion-collapse collapse" aria-labelledby="headingSpoiler1" data-bs-parent="#accordionSpoiler1">
+<div id="collapseSpoiler1" class="accordion-collapse collapse" data-bs-parent="#accordionSpoiler1" aria-labelledby="headingSpoiler1">
 <div class="accordion-body">
 <p>R installs ready-made (binary) versions of RTMB, dplyr and ggplot2,
 so you do not need a compiler. If R asks “Do you want to install from
@@ -784,7 +791,7 @@ installing a compiler.</p>
   macOS
   </h3>
 </button>
-<div id="collapseSpoiler2" class="accordion-collapse collapse" aria-labelledby="headingSpoiler2" data-bs-parent="#accordionSpoiler2">
+<div id="collapseSpoiler2" class="accordion-collapse collapse" data-bs-parent="#accordionSpoiler2" aria-labelledby="headingSpoiler2">
 <div class="accordion-body">
 <p>R installs ready-made (binary) versions of RTMB, dplyr and ggplot2,
 so you do not need a compiler. If R asks “Do you want to install from
@@ -803,7 +810,7 @@ installing a compiler.</p>
   Linux
   </h3>
 </button>
-<div id="collapseSpoiler3" class="accordion-collapse collapse" aria-labelledby="headingSpoiler3" data-bs-parent="#accordionSpoiler3">
+<div id="collapseSpoiler3" class="accordion-collapse collapse" data-bs-parent="#accordionSpoiler3" aria-labelledby="headingSpoiler3">
 <div class="accordion-body">
 <p>CRAN has no ready-made packages for Linux, so by default R compiles
 RTMB and the other packages from their source code. Use Posit Package
@@ -907,7 +914,7 @@ best reading?
   Answers
   </h3>
 </button>
-<div id="collapseSpoiler4" class="accordion-collapse collapse" aria-labelledby="headingSpoiler4" data-bs-parent="#accordionSpoiler4">
+<div id="collapseSpoiler4" class="accordion-collapse collapse" data-bs-parent="#accordionSpoiler4" aria-labelledby="headingSpoiler4">
 <div class="accordion-body">
 <ol style="list-style-type: decimal"><li><ol style="list-style-type: lower-alpha"><li>
 <code>2 6</code>. <code>k</code> takes its default value, 2, and

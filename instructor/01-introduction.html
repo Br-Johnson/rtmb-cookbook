@@ -549,15 +549,15 @@ report a number: “122 thousand spawners”, not “122”.</p>
 <button class="accordion-button instructor-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseInstructor1" aria-expanded="false" aria-controls="collapseInstructor1">
   <h3 class="accordion-header" id="headingInstructor1">  <div class="note-square"><i aria-hidden="true" class="callout-icon" data-feather="edit-2"></i></div> Instructor Note </h3>
 </button>
-<div id="collapseInstructor1" class="accordion-collapse collapse" aria-labelledby="headingInstructor1" data-bs-parent="#accordionInstructor1">
+<div id="collapseInstructor1" class="accordion-collapse collapse" data-bs-parent="#accordionInstructor1" aria-labelledby="headingInstructor1">
 <div class="accordion-body">
 <p>Before the first chunk, check that every learner has a project with
-<code>data/</code> and <code>files/</code> folders and two empty
-scripts, <code>my-recipes.R</code> and <code>report-card.R</code>. Show
-where the code handout is (<code>files/code-handout.R</code> on the
-lesson website): it collects the recipe code of every episode. Keep this
-episode to 25 minutes and do not introduce models yet; the Quick Start
-does that next.</p>
+<code>data/</code> and <code>files/</code> folders and three empty
+scripts: <code>my-recipes.R</code>, <code>stellako.R</code> and
+<code>upper-pitt-river.R</code>. Show where the code handout is
+(<code>files/code-handout.R</code> on the lesson website): it collects
+the recipe code of every episode. Keep this episode to 25 minutes and do
+not introduce models yet; the Quick Start does that next.</p>
 </div>
 </div>
 </div>
@@ -719,7 +719,7 @@ exactly replaced itself.</li>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution1" aria-expanded="false" aria-controls="collapseSolution1">
   <h4 class="accordion-header" id="headingSolution1"> Show me the solution </h4>
 </button>
-<div id="collapseSolution1" class="accordion-collapse collapse" aria-labelledby="headingSolution1" data-bs-parent="#accordionSolution1">
+<div id="collapseSolution1" class="accordion-collapse collapse" data-bs-parent="#accordionSolution1" aria-labelledby="headingSolution1">
 <div class="accordion-body">
 <p>The answer is (b). <code>log(1)</code> is 0, so log(R/S) = 0 means
 R/S = 1: recruits equalled spawners.</p>
@@ -745,7 +745,7 @@ recruits to spawners, not about the number of recruits.</li>
 <button class="accordion-button instructor-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseInstructor2" aria-expanded="false" aria-controls="collapseInstructor2">
   <h3 class="accordion-header" id="headingInstructor2">  <div class="note-square"><i aria-hidden="true" class="callout-icon" data-feather="edit-2"></i></div> Instructor Note </h3>
 </button>
-<div id="collapseInstructor2" class="accordion-collapse collapse" aria-labelledby="headingInstructor2" data-bs-parent="#accordionInstructor2">
+<div id="collapseInstructor2" class="accordion-collapse collapse" data-bs-parent="#accordionInstructor2" aria-labelledby="headingInstructor2">
 <div class="accordion-body">
 <p>This question takes 3 minutes; ask for answers by a show of fingers
 (one to four for a to d). If most learners choose (a), type
@@ -934,10 +934,13 @@ its interval suggests.”</td>
 a tie), skill 0.76</td>
 </tr></tbody></table><p>In the capstone, the same table becomes a checklist that says when
 each row is done.</p>
-<p>Open <code>report-card.R</code> in your project now (create an empty
-R script with that name if you do not have one). You will write one row
-in it for Upper Pitt River in each episode, starting with Challenge
-2.</p>
+<p>Open <code>upper-pitt-river.R</code> in your project now (create an
+empty R script with that name if you do not have one). It is your own
+analysis script: in each episode, a “Your Turn” challenge adds the code
+for one step and a comment line that records the report-card row it
+produces, starting with Challenge 2. By Episode 11 it runs Upper Pitt
+River from the data to a tested forecast, and the capstone asks you to
+do the same for a new stock.</p>
 <div id="challenge-2-your-turn-upper-pitt-river-row-1-7-minutes" class="callout challenge">
 <div class="callout-square">
 <i class="callout-icon" data-feather="zap"></i>
@@ -950,10 +953,10 @@ in it for Upper Pitt River in each episode, starting with Challenge
 <p>Make the log(R/S) against brood year plot for Upper Pitt River. Call
 its data frame <code>pitt</code>, so that <code>my_stock</code> stays
 Stellako. Describe in one sentence how log(R/S) changed after 2000.</p>
-<p>Then start your report card. In <code>report-card.R</code>, write row
-1 as a comment line (starting with <code>#</code>): the first and last
-brood year, the number of years, and the range of spawners with
-units.</p>
+<p>Then start your report card. In <code>upper-pitt-river.R</code>, keep
+the code you ran, then write row 1 under it as a comment line (starting
+with <code>#</code>): the first and last brood year, the number of
+years, and the range of spawners with units.</p>
 </div>
 </div>
 </div>
@@ -962,7 +965,7 @@ units.</p>
 <button class="accordion-button hint-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseHint1" aria-expanded="false" aria-controls="collapseHint1">
   <h4 class="accordion-header" id="headingHint1"> Give me a hint </h4>
 </button>
-<div id="collapseHint1" class="accordion-collapse collapse" aria-labelledby="headingHint1" data-bs-parent="#accordionHint1">
+<div id="collapseHint1" class="accordion-collapse collapse" data-bs-parent="#accordionHint1" aria-labelledby="headingHint1">
 <div class="accordion-body">
 <p>Copy the recipe and the second plot, then change
 <code>"Stellako"</code> to <code>"Upper Pitt River"</code> and
@@ -977,7 +980,7 @@ units.</p>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution2" aria-expanded="false" aria-controls="collapseSolution2">
   <h4 class="accordion-header" id="headingSolution2"> Show me the solution </h4>
 </button>
-<div id="collapseSolution2" class="accordion-collapse collapse" aria-labelledby="headingSolution2" data-bs-parent="#accordionSolution2">
+<div id="collapseSolution2" class="accordion-collapse collapse" data-bs-parent="#accordionSolution2" aria-labelledby="headingSolution2">
 <div class="accordion-body">
 <div class="codewrapper sourceCode" id="cb17">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
@@ -1054,7 +1057,8 @@ years below zero:</p>
 spawner) before 2000 and 0.52 (1.7) since, and nine of the 22 years
 since 2000 are below zero, meaning fewer recruits than spawners.</p>
 <p>Row 1: “Upper Pitt River, brood years 1948-2021, 74 years, spawners
-2.1 to 74.6 thousand.” In <code>report-card.R</code> it reads
+2.1 to 74.6 thousand.” In <code>upper-pitt-river.R</code>, below the
+code above, it reads
 <code># Row 1 (data): Upper Pitt River, brood years 1948-2021, 74 years, spawners 2.1 to 74.6 thousand.</code>
 Episode 3 adds the spawner count for the forecast to this row.</p>
 </div>
@@ -1066,7 +1070,7 @@ Episode 3 adds the spawner count for the forecast to this row.</p>
 <button class="accordion-button instructor-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseInstructor3" aria-expanded="false" aria-controls="collapseInstructor3">
   <h3 class="accordion-header" id="headingInstructor3">  <div class="note-square"><i aria-hidden="true" class="callout-icon" data-feather="edit-2"></i></div> Instructor Note </h3>
 </button>
-<div id="collapseInstructor3" class="accordion-collapse collapse" aria-labelledby="headingInstructor3" data-bs-parent="#accordionInstructor3">
+<div id="collapseInstructor3" class="accordion-collapse collapse" data-bs-parent="#accordionInstructor3" aria-labelledby="headingInstructor3">
 <div class="accordion-body">
 <p>This challenge takes 7 minutes. Watch for learners who overwrite
 <code>my_stock</code> with Upper Pitt River: the next episode starts

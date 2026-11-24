@@ -452,16 +452,17 @@ of single years.</li>
 <section><h2 class="section-heading" id="starting-point">Starting Point<a class="anchor" aria-label="anchor" href="#starting-point"></a></h2>
 <hr class="half-width"><p>This episode opens step 5 of the <a href="02-quick-start.html">Quick
 Start</a>: estimates with uncertainty.</p>
-<div id="run-this-if-you-are-starting-here" class="callout prereq">
+<div id="run-this-only-if-you-are-starting-here" class="callout prereq">
 <div class="callout-square">
 <i class="callout-icon" data-feather="check"></i>
 </div>
 <span class="callout-header">Prerequisite</span>
-<div id="run-this-if-you-are-starting-here" class="callout-inner">
-<h3 class="callout-title">Run This If You Are Starting Here</h3>
+<div id="run-this-only-if-you-are-starting-here" class="callout-inner">
+<h3 class="callout-title">Run This Only If You Are Starting Here</h3>
 <div class="callout-content">
-<p>If you have followed along, you already have these objects. If you
-are starting here or have restarted R, run this chunk first. It needs
+<p>If you have followed along in <code>stellako.R</code>, you already
+have these objects: skip this chunk. If you are starting here or have
+restarted R, run this chunk first. It needs
 <code>data/sockeye.csv</code> and <code>files/cookbook.R</code> in your
 project (see <a href="index.html#setup">Setup</a>).</p>
 <div class="codewrapper sourceCode" id="cb1">
@@ -1175,7 +1176,8 @@ of the years cannot all be outliers.</li>
 <div class="callout-content">
 <p>Make the interval table for the Upper Pitt River Ricker model,
 <code>ricker_pitt</code>, and write two sentences for row 3 of your
-report card (<code>report-card.R</code>), with units.</p>
+report card, with units, as a comment under the code in
+<code>upper-pitt-river.R</code>.</p>
 </div>
 </div>
 </div>
@@ -1186,9 +1188,10 @@ report card (<code>report-card.R</code>), with units.</p>
 </button>
 <div id="collapseHint2" class="accordion-collapse collapse" data-bs-parent="#accordionHint2" aria-labelledby="headingHint2">
 <div class="accordion-body">
-<p>If you still have <code>ricker_pitt</code> from Episode 4 (Challenge
-4), use it. If not, for example after restarting R, fit it again with
-these three lines:</p>
+<p><code>ricker_pitt</code> is in <code>upper-pitt-river.R</code> from
+Episode 4 (Challenge 4); if it is not in your workspace, run the script
+from the top. Without the script, fit it again with these three
+lines:</p>
 <ul><li><code>pitt &lt;- filter(sockeye, stock == "Upper Pitt River")</code></li>
 <li>
 <code>dat_pitt &lt;- make_dat(pitt, S_new = mean(tail(pitt$spawners, 4)))</code>,
@@ -1231,7 +1234,8 @@ CI 15 to 28 thousand), well inside the range of spawner counts observed
 <p>Like Stellako’s S_max, this S_max lies inside the observed spawner
 counts, so it is not an extrapolation (Stellako’s S_rep in Challenge 2
 was).</p>
-<p>In <code>report-card.R</code> it reads
+<p>In <code>upper-pitt-river.R</code>, add the
+<code>ci_table(ricker_pitt)</code> line, then the row comment
 <code># Row 3 (estimates): alpha 8.9 recruits per spawner when spawners are few (95% CI 6.5 to 12); S_max 20 thousand spawners (95% CI 15 to 28 thousand), inside the observed 2 to 75 thousand.</code></p>
 </div>
 </div>

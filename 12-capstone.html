@@ -451,13 +451,13 @@ and forecast skill.</li>
 <section><h2 class="section-heading" id="starting-point">Starting Point<a class="anchor" aria-label="anchor" href="#starting-point"></a></h2>
 <hr class="half-width"><p>This episode runs all nine steps of the <a href="02-quick-start.html">Quick Start</a> again, on a stock you have
 not seen, with the recipes from every episode.</p>
-<div id="run-this-if-you-are-starting-here" class="callout prereq">
+<div id="download-the-template" class="callout prereq">
 <div class="callout-square">
 <i class="callout-icon" data-feather="check"></i>
 </div>
 <span class="callout-header">Prerequisite</span>
-<div id="run-this-if-you-are-starting-here" class="callout-inner">
-<h3 class="callout-title">Run This If You Are Starting Here</h3>
+<div id="download-the-template" class="callout-inner">
+<h3 class="callout-title">Download the Template</h3>
 <div class="callout-content">
 <p>Download <a href="files/capstone-template.R">the capstone template
 (capstone-template.R)</a> into your project’s <code>files/</code> folder
@@ -472,7 +472,10 @@ and <code>files/cookbook.R</code> (see <a href="index.html#setup">Setup</a>).</p
 <hr class="half-width"><p>In pairs, choose a stock you have not seen in class and complete rows
 1 to 10 of the report card with the template. This is your third pass
 over the workflow: the instructor showed it on Stellako, you repeated it
-on Upper Pitt River, and now you run it on your own.</p>
+on Upper Pitt River, and now you run it on your own. Your
+<code>upper-pitt-river.R</code> is a worked example of the template: the
+same steps in the same order, with the row comments as the report
+card.</p>
 <p>Choose one of these stocks, or use your own data:</p>
 <ul><li>
 <strong>Quesnel</strong>: one of the largest Fraser River sockeye
@@ -741,7 +744,7 @@ recipe to use.</p>
 <button class="accordion-button hint-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseHint1" aria-expanded="false" aria-controls="collapseHint1">
   <h4 class="accordion-header" id="headingHint1"> Give me a hint </h4>
 </button>
-<div id="collapseHint1" class="accordion-collapse collapse" data-bs-parent="#accordionHint1" aria-labelledby="headingHint1">
+<div id="collapseHint1" class="accordion-collapse collapse" aria-labelledby="headingHint1" data-bs-parent="#accordionHint1">
 <div class="accordion-body">
 <ul><li>The order of the template is the order of the episodes.</li>
 <li>If a check fails, work through <a href="troubleshooting.html">Troubleshooting</a>.</li>
@@ -758,7 +761,7 @@ recipe to use.</p>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution1" aria-expanded="false" aria-controls="collapseSolution1">
   <h4 class="accordion-header" id="headingSolution1"> Show me the solution </h4>
 </button>
-<div id="collapseSolution1" class="accordion-collapse collapse" data-bs-parent="#accordionSolution1" aria-labelledby="headingSolution1">
+<div id="collapseSolution1" class="accordion-collapse collapse" aria-labelledby="headingSolution1" data-bs-parent="#accordionSolution1">
 <div class="accordion-body">
 <p>Here is the template filled in for Late Stuart. The blanks, in the
 order they appear, are <code>"Late Stuart"</code>,
@@ -892,7 +895,7 @@ add it to your AIC table and hindcast.</p>
 <button class="accordion-button hint-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseHint2" aria-expanded="false" aria-controls="collapseHint2">
   <h4 class="accordion-header" id="headingHint2"> Give me a hint </h4>
 </button>
-<div id="collapseHint2" class="accordion-collapse collapse" data-bs-parent="#accordionHint2" aria-labelledby="headingHint2">
+<div id="collapseHint2" class="accordion-collapse collapse" aria-labelledby="headingHint2" data-bs-parent="#accordionHint2">
 <div class="accordion-body">
 <p>Start from <code>nll_walk</code> in <a href="files/cookbook.R">the
 finished recipe box (cookbook.R)</a>. Only the two lines that compute
@@ -910,7 +913,7 @@ random-walk entries of <code>start_walk()</code>.</p>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution2" aria-expanded="false" aria-controls="collapseSolution2">
   <h4 class="accordion-header" id="headingSolution2"> Show me the solution </h4>
 </button>
-<div id="collapseSolution2" class="accordion-collapse collapse" data-bs-parent="#accordionSolution2" aria-labelledby="headingSolution2">
+<div id="collapseSolution2" class="accordion-collapse collapse" aria-labelledby="headingSolution2" data-bs-parent="#accordionSolution2">
 <div class="accordion-body">
 <p>Add the new model to the list <code>models</code>, then rebuild the
 AIC table:</p>
@@ -1014,7 +1017,7 @@ AIC and the hindcast disagree, and why?</p>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution3" aria-expanded="false" aria-controls="collapseSolution3">
   <h4 class="accordion-header" id="headingSolution3"> Show me the solution </h4>
 </button>
-<div id="collapseSolution3" class="accordion-collapse collapse" data-bs-parent="#accordionSolution3" aria-labelledby="headingSolution3">
+<div id="collapseSolution3" class="accordion-collapse collapse" aria-labelledby="headingSolution3" data-bs-parent="#accordionSolution3">
 <div class="accordion-body">
 <p>The share-out table for the five menu stocks:</p>
 <table style="width:99%;" class="table"><caption>Share-out answers for the five menu stocks.</caption>
@@ -1091,9 +1094,12 @@ a check fails or an error appears;</li>
 <li>
 <a href="going-further.html">Going Further</a>: the methods this
 lesson left out, and where to learn them.</li>
-</ul><p>Your <code>my-recipes.R</code> and report card are a template for
-your next analysis: copy the capstone template, change C1, and work down
-the rows.</p>
+</ul><p>Your <code>my-recipes.R</code> and <code>upper-pitt-river.R</code>
+are a template for your next analysis: copy the capstone template,
+change C1, and work down the rows. If you use Quarto, the same script
+works as a <code>.qmd</code> document: each section becomes a code chunk
+and each row comment becomes a paragraph, and rendering it gives a
+report with the code, the output and the plots in one file.</p>
 
 <div id="add-to-your-recipe-box" class="callout">
 <div class="callout-square">
@@ -1104,9 +1110,9 @@ the rows.</p>
 <h3 class="callout-title">Add to Your Recipe Box</h3>
 <div class="callout-content">
 <p>Your recipe box is complete. Keep <code>my-recipes.R</code>,
-<code>report-card.R</code> and the template for your next analysis. If
-you wrote <code>nll_bh_walk()</code> in Challenge 2, add it too. The
-finished box is <a href="files/cookbook.R">cookbook.R</a>.</p>
+<code>upper-pitt-river.R</code> and the filled template for your next
+analysis. If you wrote <code>nll_bh_walk()</code> in Challenge 2, add it
+too. The finished box is <a href="files/cookbook.R">cookbook.R</a>.</p>
 </div>
 </div>
 </div>

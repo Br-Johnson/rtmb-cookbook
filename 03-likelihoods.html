@@ -452,16 +452,25 @@ log-likelihood.</li>
 <section><h2 class="section-heading" id="starting-point">Starting Point<a class="anchor" aria-label="anchor" href="#starting-point"></a></h2>
 <hr class="half-width"><p>This episode opens steps 1 and 2 of the <a href="02-quick-start.html">Quick Start</a>: the data list and the
 model.</p>
-<div id="run-this-if-you-are-starting-here" class="callout prereq">
+<p>From here on, keep two scripts of your own beside
+<code>my-recipes.R</code>. Type the Stellako code into
+<code>stellako.R</code> and add each recipe’s lines to it as you go, so
+that the script grows with the lesson. Put your “Your Turn” work into
+<code>upper-pitt-river.R</code>, which you opened in the Introduction.
+The functions you write go into <code>my-recipes.R</code>, and the
+Starting Point chunk below is only for anyone who starts here or
+restarts R.</p>
+<div id="run-this-only-if-you-are-starting-here" class="callout prereq">
 <div class="callout-square">
 <i class="callout-icon" data-feather="check"></i>
 </div>
 <span class="callout-header">Prerequisite</span>
-<div id="run-this-if-you-are-starting-here" class="callout-inner">
-<h3 class="callout-title">Run This If You Are Starting Here</h3>
+<div id="run-this-only-if-you-are-starting-here" class="callout-inner">
+<h3 class="callout-title">Run This Only If You Are Starting Here</h3>
 <div class="callout-content">
-<p>If you have followed along, you already have these objects. If you
-are starting here or have restarted R, run this chunk first. It needs
+<p>If you have followed along in <code>stellako.R</code>, you already
+have these objects: skip this chunk. If you are starting here or have
+restarted R, run this chunk first. It needs
 <code>data/sockeye.csv</code> in your project (see <a href="index.html#setup">Setup</a>). This episode writes the first recipes of
 your recipe box, so it does not load <code>files/cookbook.R</code>.</p>
 <div class="codewrapper sourceCode" id="cb1">
@@ -1158,9 +1167,10 @@ deviation itself, which is why the model passes it
 <p>Make the data list for Upper Pitt River with <code>S_new</code> set
 to the average spawner count of its last four brood years. Check that
 the Ricker model returns a finite number at the starting values. Then
-add <code>S_new</code> to row 1 of your report card. Use the names
-<code>pitt</code>, <code>dat_pitt</code> and <code>obj_pitt</code>, so
-that the Stellako objects stay as they are.</p>
+add <code>S_new</code> to row 1 of your report card, in
+<code>upper-pitt-river.R</code>. Use the names <code>pitt</code>,
+<code>dat_pitt</code> and <code>obj_pitt</code>, so that the Stellako
+objects stay as they are.</p>
 </div>
 </div>
 </div>
@@ -1203,7 +1213,8 @@ to 2021) is 5.3 thousand, much lower than the 50 thousand used for
 Stellako.</p>
 <p>Row 1: “Upper Pitt River, brood years 1948-2021, 74 years, spawners
 2.1 to 74.6 thousand; S_new = 5.3 thousand spawners (the average of
-brood years 2018-2021).” In <code>report-card.R</code> it reads
+brood years 2018-2021).” In <code>upper-pitt-river.R</code>, below the
+code above, row 1 now reads
 <code># Row 1 (data): Upper Pitt River, brood years 1948-2021, 74 years, spawners 2.1 to 74.6 thousand; S_new = 5.3 thousand spawners.</code></p>
 </div>
 </div>

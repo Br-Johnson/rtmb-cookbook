@@ -445,16 +445,17 @@
 <section><h2 class="section-heading" id="starting-point">Starting Point<a class="anchor" aria-label="anchor" href="#starting-point"></a></h2>
 <hr class="half-width"><p>This episode opens step 6 of the <a href="02-quick-start.html">Quick
 Start</a>: checking the model against the data.</p>
-<div id="run-this-if-you-are-starting-here" class="callout prereq">
+<div id="run-this-only-if-you-are-starting-here" class="callout prereq">
 <div class="callout-square">
 <i class="callout-icon" data-feather="check"></i>
 </div>
 <span class="callout-header">Prerequisite</span>
-<div id="run-this-if-you-are-starting-here" class="callout-inner">
-<h3 class="callout-title">Run This If You Are Starting Here</h3>
+<div id="run-this-only-if-you-are-starting-here" class="callout-inner">
+<h3 class="callout-title">Run This Only If You Are Starting Here</h3>
 <div class="callout-content">
-<p>If you have followed along, you already have these objects. If you
-are starting here or have restarted R, run this chunk first. It needs
+<p>If you have followed along in <code>stellako.R</code>, you already
+have these objects: skip this chunk. If you are starting here or have
+restarted R, run this chunk first. It needs
 <code>data/sockeye.csv</code> and <code>files/cookbook.R</code> in your
 project (see <a href="index.html#setup">Setup</a>).</p>
 <div class="codewrapper sourceCode" id="cb1">
@@ -610,7 +611,7 @@ no warning.</p>
 <button class="accordion-button spoiler-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSpoiler1" aria-expanded="false" aria-controls="collapseSpoiler1">
   <h3 class="accordion-header" id="headingSpoiler1">  <div class="note-square"><i aria-hidden="true" class="callout-icon" data-feather="eye"></i></div> Why Not Observed Minus Fitted? (optional) </h3>
 </button>
-<div id="collapseSpoiler1" class="accordion-collapse collapse" aria-labelledby="headingSpoiler1" data-bs-parent="#accordionSpoiler1">
+<div id="collapseSpoiler1" class="accordion-collapse collapse" data-bs-parent="#accordionSpoiler1" aria-labelledby="headingSpoiler1">
 <div class="accordion-body">
 <p>For a model with random effects, the fitted yearly values have
 already used each year’s observation, so ordinary residuals are too
@@ -775,7 +776,7 @@ values.</li>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution1" aria-expanded="false" aria-controls="collapseSolution1">
   <h4 class="accordion-header" id="headingSolution1"> Show me the solution </h4>
 </button>
-<div id="collapseSolution1" class="accordion-collapse collapse" aria-labelledby="headingSolution1" data-bs-parent="#accordionSolution1">
+<div id="collapseSolution1" class="accordion-collapse collapse" data-bs-parent="#accordionSolution1" aria-labelledby="headingSolution1">
 <div class="accordion-body">
 <p><strong>(a).</strong> A positive lag-1 correlation means that a year
 above zero tends to be followed by another year above zero, and a year
@@ -885,9 +886,9 @@ do not remove it.</p>
 <div class="callout-content">
 <p>Run the three checks (shape, pattern over time and independence) for
 the Upper Pitt River Ricker and random-walk models. Which checks does
-each model pass? Write row 5 of your report card in
-<code>report-card.R</code>. Row 5 records these three checks; the plot
-against spawners is optional.</p>
+each model pass? Add the code to <code>upper-pitt-river.R</code> and
+write row 5 of your report card under it. Row 5 records these three
+checks; the plot against spawners is optional.</p>
 </div>
 </div>
 </div>
@@ -896,7 +897,7 @@ against spawners is optional.</p>
 <button class="accordion-button hint-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseHint1" aria-expanded="false" aria-controls="collapseHint1">
   <h4 class="accordion-header" id="headingHint1"> Give me a hint </h4>
 </button>
-<div id="collapseHint1" class="accordion-collapse collapse" aria-labelledby="headingHint1" data-bs-parent="#accordionHint1">
+<div id="collapseHint1" class="accordion-collapse collapse" data-bs-parent="#accordionHint1" aria-labelledby="headingHint1">
 <div class="accordion-body">
 <p>Copy the recipe chunks in order and change three names:
 <code>my_stock</code> to <code>pitt</code>, <code>res_long</code> to
@@ -904,8 +905,9 @@ against spawners is optional.</p>
 <code>osa_residuals(ricker)</code> and <code>osa_residuals(walk)</code>
 to <code>ricker_pitt</code> and <code>walk_pitt</code>. If
 <code>ricker_pitt</code> and <code>walk_pitt</code> are not in your
-workspace, fit them first, as in Episodes 5 and 6. For the random walk’s
-QQ plot, change <code>res_ricker</code> to <code>res_walk</code> and
+workspace, run <code>upper-pitt-river.R</code> from the top: it has them
+from Episodes 4 and 6. For the random walk’s QQ plot, change
+<code>res_ricker</code> to <code>res_walk</code> and
 <code>(Ricker)</code> to <code>(random walk)</code>, as you did for
 Stellako.</p>
 </div>
@@ -917,7 +919,7 @@ Stellako.</p>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution2" aria-expanded="false" aria-controls="collapseSolution2">
   <h4 class="accordion-header" id="headingSolution2"> Show me the solution </h4>
 </button>
-<div id="collapseSolution2" class="accordion-collapse collapse" aria-labelledby="headingSolution2" data-bs-parent="#accordionSolution2">
+<div id="collapseSolution2" class="accordion-collapse collapse" data-bs-parent="#accordionSolution2" aria-labelledby="headingSolution2">
 <div class="accordion-body">
 <p>Fit both models, check the fits, and compute the residuals and the
 lag-1 correlations:</p>
@@ -1006,7 +1008,8 @@ correlation 0.47 (limit 0.23), long waves over time (above zero in the
 1960s and 1990s, below zero around 1980 and after 2010) and a QQ plot
 that bends below the line at both ends. Random walk: passes all three,
 with lag-1 correlation 0.13, no long runs and a QQ plot close to the
-line.” In <code>report-card.R</code> it reads
+line.” In <code>upper-pitt-river.R</code>, add the residual and plot
+lines (the four fitting lines are already there), then the row comment
 <code># Row 5 (residuals): Ricker fails all three checks (lag-1 0.47, limit 0.23; long waves over time; QQ plot bends at both ends); random walk passes all three (lag-1 0.13).</code></p>
 <p>As for Stellako, the Ricker misses productivity that changes over
 time, and the random walk captures it. The random walk also straightens
@@ -1046,7 +1049,7 @@ error, and report it.</li>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution3" aria-expanded="false" aria-controls="collapseSolution3">
   <h4 class="accordion-header" id="headingSolution3"> Show me the solution </h4>
 </button>
-<div id="collapseSolution3" class="accordion-collapse collapse" aria-labelledby="headingSolution3" data-bs-parent="#accordionSolution3">
+<div id="collapseSolution3" class="accordion-collapse collapse" data-bs-parent="#accordionSolution3" aria-labelledby="headingSolution3">
 <div class="accordion-body">
 <p><strong>(b).</strong> The 2005 brood year returned mainly in 2009,
 one of the poorest Fraser River sockeye returns on record, so it is a

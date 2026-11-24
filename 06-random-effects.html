@@ -452,16 +452,17 @@ estimate of zero.</li>
 <section><h2 class="section-heading" id="starting-point">Starting Point<a class="anchor" aria-label="anchor" href="#starting-point"></a></h2>
 <hr class="half-width"><p>This episode opens step 7 of the <a href="02-quick-start.html">Quick
 Start</a>: a random effect.</p>
-<div id="run-this-if-you-are-starting-here" class="callout prereq">
+<div id="run-this-only-if-you-are-starting-here" class="callout prereq">
 <div class="callout-square">
 <i class="callout-icon" data-feather="check"></i>
 </div>
 <span class="callout-header">Prerequisite</span>
-<div id="run-this-if-you-are-starting-here" class="callout-inner">
-<h3 class="callout-title">Run This If You Are Starting Here</h3>
+<div id="run-this-only-if-you-are-starting-here" class="callout-inner">
+<h3 class="callout-title">Run This Only If You Are Starting Here</h3>
 <div class="callout-content">
-<p>If you have followed along, you already have these objects. If you
-are starting here or have restarted R, run this chunk first. It needs
+<p>If you have followed along in <code>stellako.R</code>, you already
+have these objects: skip this chunk. If you are starting here or have
+restarted R, run this chunk first. It needs
 <code>data/sockeye.csv</code> and <code>files/cookbook.R</code> in your
 project (see <a href="index.html#setup">Setup</a>).</p>
 <div class="codewrapper sourceCode" id="cb1">
@@ -524,7 +525,7 @@ the random walk, and its spread is sd_walk.</p>
 <button class="accordion-button spoiler-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSpoiler1" aria-expanded="false" aria-controls="collapseSpoiler1">
   <h3 class="accordion-header" id="headingSpoiler1">  <div class="note-square"><i aria-hidden="true" class="callout-icon" data-feather="eye"></i></div> Other Ways a Quantity Can Vary (optional) </h3>
 </button>
-<div id="collapseSpoiler1" class="accordion-collapse collapse" aria-labelledby="headingSpoiler1" data-bs-parent="#accordionSpoiler1">
+<div id="collapseSpoiler1" class="accordion-collapse collapse" data-bs-parent="#accordionSpoiler1" aria-labelledby="headingSpoiler1">
 <div class="accordion-body">
 <p>A random walk is one way to let a quantity change over time. Two
 others are independent year effects, where each year is its own draw
@@ -717,7 +718,7 @@ standard deviation.</li>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution1" aria-expanded="false" aria-controls="collapseSolution1">
   <h4 class="accordion-header" id="headingSolution1"> Show me the solution </h4>
 </button>
-<div id="collapseSolution1" class="accordion-collapse collapse" aria-labelledby="headingSolution1" data-bs-parent="#accordionSolution1">
+<div id="collapseSolution1" class="accordion-collapse collapse" data-bs-parent="#accordionSolution1" aria-labelledby="headingSolution1">
 <div class="accordion-body">
 <p><strong>(c).</strong> RTMB averages over every possible path of the
 yearly values and estimates the SD of their distribution, sd_walk, as a
@@ -849,7 +850,7 @@ it:</p>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution2" aria-expanded="false" aria-controls="collapseSolution2">
   <h4 class="accordion-header" id="headingSolution2"> Show me the solution </h4>
 </button>
-<div id="collapseSolution2" class="accordion-collapse collapse" aria-labelledby="headingSolution2" data-bs-parent="#accordionSolution2">
+<div id="collapseSolution2" class="accordion-collapse collapse" data-bs-parent="#accordionSolution2" aria-labelledby="headingSolution2">
 <div class="accordion-body">
 <p><code>log_alpha_year</code> has one value too few.
 <code>nll_walk</code> uses <code>log_alpha_year[max(year) + 1]</code>
@@ -909,10 +910,10 @@ the recipe above passed all four checks.</p>
 <h3 class="callout-title">Challenge 3: Your Turn: Upper Pitt River, Row
 4 (10 minutes)</h3>
 <div class="callout-content">
-<p>Fit the random walk to Upper Pitt River. Record its checks in row 2
-of your report card (<code>report-card.R</code>). In row 4, write
-sd_walk in words, and productivity in 1948, 1965, 1980, 2000 and
-2021.</p>
+<p>Fit the random walk to Upper Pitt River. Add the code to
+<code>upper-pitt-river.R</code>, and record its checks in row 2 of your
+report card. In row 4, write sd_walk in words, and productivity in 1948,
+1965, 1980, 2000 and 2021.</p>
 </div>
 </div>
 </div>
@@ -921,15 +922,16 @@ sd_walk in words, and productivity in 1948, 1965, 1980, 2000 and
 <button class="accordion-button hint-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseHint1" aria-expanded="false" aria-controls="collapseHint1">
   <h4 class="accordion-header" id="headingHint1"> Give me a hint </h4>
 </button>
-<div id="collapseHint1" class="accordion-collapse collapse" aria-labelledby="headingHint1" data-bs-parent="#accordionHint1">
+<div id="collapseHint1" class="accordion-collapse collapse" data-bs-parent="#accordionHint1" aria-labelledby="headingHint1">
 <div class="accordion-body">
-<p>Make <code>pitt</code> and <code>dat_pitt</code> as in Episode 4,
-with <code>S_new</code> set to the average spawner count of the last
-four brood years. Then copy the three lines that fitted
-<code>walk</code> and the plot recipe, and change <code>dat</code> to
-<code>dat_pitt</code>, <code>walk</code> to <code>walk_pitt</code>,
-<code>prod</code> to <code>prod_pitt</code> and <code>my_stock</code> to
-<code>pitt</code>. Leave out the dashed line.</p>
+<p><code>pitt</code> and <code>dat_pitt</code> are in
+<code>upper-pitt-river.R</code> from Episode 3; if they are not in your
+workspace, run the script from the top. Then copy the three lines that
+fitted <code>walk</code> and the plot recipe, and change
+<code>dat</code> to <code>dat_pitt</code>, <code>walk</code> to
+<code>walk_pitt</code>, <code>prod</code> to <code>prod_pitt</code> and
+<code>my_stock</code> to <code>pitt</code>. Leave out the dashed
+line.</p>
 </div>
 </div>
 </div>
@@ -939,7 +941,7 @@ four brood years. Then copy the three lines that fitted
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution3" aria-expanded="false" aria-controls="collapseSolution3">
   <h4 class="accordion-header" id="headingSolution3"> Show me the solution </h4>
 </button>
-<div id="collapseSolution3" class="accordion-collapse collapse" aria-labelledby="headingSolution3" data-bs-parent="#accordionSolution3">
+<div id="collapseSolution3" class="accordion-collapse collapse" data-bs-parent="#accordionSolution3" aria-labelledby="headingSolution3">
 <div class="accordion-body">
 <div class="codewrapper sourceCode" id="cb25">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
@@ -1008,6 +1010,9 @@ changes by about a third from year to year. In recruits per spawner, it
 was 10.4 in 1948, rose to 16.3 in 1965, fell to 4.7 in 1980, rose again
 to 10.9 in 2000, and has been at its lowest since about 2012: 2.9 in
 2021 (95% CI 1.3 to 6.6).”</p>
+<p>In <code>upper-pitt-river.R</code>, add the lines from
+<code>walk_pitt &lt;- fit_model(</code> on (the first two lines are
+already there), then the two row comments.</p>
 </div>
 </div>
 </div>
@@ -1100,7 +1105,7 @@ is the lowest point;</li>
 <button class="accordion-button spoiler-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSpoiler2" aria-expanded="false" aria-controls="collapseSpoiler2">
   <h3 class="accordion-header" id="headingSpoiler2">  <div class="note-square"><i aria-hidden="true" class="callout-icon" data-feather="eye"></i></div> Going Further: A Profile Interval for an SD (optional) </h3>
 </button>
-<div id="collapseSpoiler2" class="accordion-collapse collapse" aria-labelledby="headingSpoiler2" data-bs-parent="#accordionSpoiler2">
+<div id="collapseSpoiler2" class="accordion-collapse collapse" data-bs-parent="#accordionSpoiler2" aria-labelledby="headingSpoiler2">
 <div class="accordion-body">
 <p>A profile interval refits the model with <code>log_sd_walk</code>
 held at many values in turn, and keeps the values whose negative
@@ -1162,7 +1167,7 @@ constant since 1948.</li>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution4" aria-expanded="false" aria-controls="collapseSolution4">
   <h4 class="accordion-header" id="headingSolution4"> Show me the solution </h4>
 </button>
-<div id="collapseSolution4" class="accordion-collapse collapse" aria-labelledby="headingSolution4" data-bs-parent="#accordionSolution4">
+<div id="collapseSolution4" class="accordion-collapse collapse" data-bs-parent="#accordionSolution4" aria-labelledby="headingSolution4">
 <div class="accordion-body">
 <p><strong>(b).</strong> The model works, and its answer is that these
 data show no drift that the model can detect.</p>

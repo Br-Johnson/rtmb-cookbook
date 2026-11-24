@@ -450,16 +450,17 @@ refits that pass.</li>
 <section><h2 class="section-heading" id="starting-point">Starting Point<a class="anchor" aria-label="anchor" href="#starting-point"></a></h2>
 <hr class="half-width"><p>This episode extends step 6 of the <a href="02-quick-start.html">Quick Start</a>: a second way to check a
 model, by simulation.</p>
-<div id="run-this-if-you-are-starting-here" class="callout prereq">
+<div id="run-this-only-if-you-are-starting-here" class="callout prereq">
 <div class="callout-square">
 <i class="callout-icon" data-feather="check"></i>
 </div>
 <span class="callout-header">Prerequisite</span>
-<div id="run-this-if-you-are-starting-here" class="callout-inner">
-<h3 class="callout-title">Run This If You Are Starting Here</h3>
+<div id="run-this-only-if-you-are-starting-here" class="callout-inner">
+<h3 class="callout-title">Run This Only If You Are Starting Here</h3>
 <div class="callout-content">
-<p>If you have followed along, you already have these objects. If you
-are starting here or have restarted R, run this chunk first. It needs
+<p>If you have followed along in <code>stellako.R</code>, you already
+have these objects: skip this chunk. If you are starting here or have
+restarted R, run this chunk first. It needs
 <code>data/sockeye.csv</code> and <code>files/cookbook.R</code> in your
 project (see <a href="index.html#setup">Setup</a>).</p>
 <div class="codewrapper sourceCode" id="cb1">
@@ -1215,8 +1216,9 @@ detect.</p>
 6 (10 minutes)</h3>
 <div class="callout-content">
 <p>Run the simulated-data check (lag-1) for both Upper Pitt River models
-and a self-test of the random walk with <code>n_sim = 30</code>. Write
-row 6 of your report card in <code>report-card.R</code>:</p>
+and a self-test of the random walk with <code>n_sim = 30</code>. Add the
+code to <code>upper-pitt-river.R</code> and write row 6 of your report
+card under it:</p>
 <ul><li>for each model, the share of simulations with a lag-1 correlation at
 least as large as the data’s;</li>
 <li>for the self-test, the median estimates against the truth, the
@@ -1233,14 +1235,11 @@ collapse to zero.</li>
 <div id="collapseHint2" class="accordion-collapse collapse" aria-labelledby="headingHint2" data-bs-parent="#accordionHint2">
 <div class="accordion-body">
 <p>If <code>walk_pitt</code> is not in your workspace (for example, in a
-new R session), make the Upper Pitt River objects as in <a href="07-residuals.html">Episode 7</a>, Challenge 2:
-<code>pitt &lt;- filter(sockeye, stock == "Upper Pitt River")</code>,
-then
-<code>dat_pitt &lt;- make_dat(pitt, S_new = mean(tail(pitt$spawners, 4)))</code>,
-then fit <code>ricker_pitt</code> and <code>walk_pitt</code> with
-<code>fit_model()</code> as in the warm-up. Then use
-<code>simulate_stat()</code> and <code>self_test()</code> as in this
-episode: call <code>set.seed(2026)</code> once before the two
+new R session), run <code>upper-pitt-river.R</code> from the top: it
+makes <code>pitt</code>, <code>dat_pitt</code>, <code>ricker_pitt</code>
+and <code>walk_pitt</code>. Then use <code>simulate_stat()</code> and
+<code>self_test()</code> as in this episode: call
+<code>set.seed(2026)</code> once before the two
 <code>simulate_stat()</code> calls, and again before
 <code>self_test()</code>.</p>
 </div>
@@ -1331,6 +1330,9 @@ the random walk, all 30 refits pass and every parameter is recovered:
 the medians are close to the true values, and no sd_walk estimate
 collapses to zero. The yearly steps here are large (sd_walk 0.33), so 74
 years are enough to detect them.”</p>
+<p>In <code>upper-pitt-river.R</code>, add the lines from
+<code>lag1(dat_pitt$logRS)</code> on (the four fitting lines are already
+there), then the row comment.</p>
 </div>
 </div>
 </div>

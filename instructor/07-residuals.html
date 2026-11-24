@@ -447,16 +447,17 @@
 <section><h2 class="section-heading" id="starting-point">Starting Point<a class="anchor" aria-label="anchor" href="#starting-point"></a></h2>
 <hr class="half-width"><p>This episode opens step 6 of the <a href="02-quick-start.html">Quick
 Start</a>: checking the model against the data.</p>
-<div id="run-this-if-you-are-starting-here" class="callout prereq">
+<div id="run-this-only-if-you-are-starting-here" class="callout prereq">
 <div class="callout-square">
 <i class="callout-icon" data-feather="check"></i>
 </div>
 <span class="callout-header">Prerequisite</span>
-<div id="run-this-if-you-are-starting-here" class="callout-inner">
-<h3 class="callout-title">Run This If You Are Starting Here</h3>
+<div id="run-this-only-if-you-are-starting-here" class="callout-inner">
+<h3 class="callout-title">Run This Only If You Are Starting Here</h3>
 <div class="callout-content">
-<p>If you have followed along, you already have these objects. If you
-are starting here or have restarted R, run this chunk first. It needs
+<p>If you have followed along in <code>stellako.R</code>, you already
+have these objects: skip this chunk. If you are starting here or have
+restarted R, run this chunk first. It needs
 <code>data/sockeye.csv</code> and <code>files/cookbook.R</code> in your
 project (see <a href="index.html#setup">Setup</a>).</p>
 <div class="codewrapper sourceCode" id="cb1">
@@ -530,7 +531,7 @@ without random effects.</p>
 <button class="accordion-button instructor-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseInstructor1" aria-expanded="false" aria-controls="collapseInstructor1">
   <h3 class="accordion-header" id="headingInstructor1">  <div class="note-square"><i aria-hidden="true" class="callout-icon" data-feather="edit-2"></i></div> Instructor Note </h3>
 </button>
-<div id="collapseInstructor1" class="accordion-collapse collapse" aria-labelledby="headingInstructor1" data-bs-parent="#accordionInstructor1">
+<div id="collapseInstructor1" class="accordion-collapse collapse" data-bs-parent="#accordionInstructor1" aria-labelledby="headingInstructor1">
 <div class="accordion-body">
 <p>Open with the contrast: the four checks test the fit, residuals test
 the model. Learners who know <code>lm()</code> expect residuals to be
@@ -630,7 +631,7 @@ no warning.</p>
 <button class="accordion-button spoiler-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSpoiler1" aria-expanded="false" aria-controls="collapseSpoiler1">
   <h3 class="accordion-header" id="headingSpoiler1">  <div class="note-square"><i aria-hidden="true" class="callout-icon" data-feather="eye"></i></div> Why Not Observed Minus Fitted? (optional) </h3>
 </button>
-<div id="collapseSpoiler1" class="accordion-collapse collapse" aria-labelledby="headingSpoiler1" data-bs-parent="#accordionSpoiler1">
+<div id="collapseSpoiler1" class="accordion-collapse collapse" data-bs-parent="#accordionSpoiler1" aria-labelledby="headingSpoiler1">
 <div class="accordion-body">
 <p>For a model with random effects, the fitted yearly values have
 already used each year’s observation, so ordinary residuals are too
@@ -699,7 +700,7 @@ one sudden poor year.</p>
 <button class="accordion-button instructor-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseInstructor2" aria-expanded="false" aria-controls="collapseInstructor2">
   <h3 class="accordion-header" id="headingInstructor2">  <div class="note-square"><i aria-hidden="true" class="callout-icon" data-feather="edit-2"></i></div> Instructor Note </h3>
 </button>
-<div id="collapseInstructor2" class="accordion-collapse collapse" aria-labelledby="headingInstructor2" data-bs-parent="#accordionInstructor2">
+<div id="collapseInstructor2" class="accordion-collapse collapse" data-bs-parent="#accordionInstructor2" aria-labelledby="headingInstructor2">
 <div class="accordion-body">
 <p>Give learners a minute to write down their prediction before you run
 the random walk’s QQ plot. Many expect the random walk to remove 2005;
@@ -786,7 +787,7 @@ and the three numbers 0.25, -0.10 and 0.23.</p>
 <button class="accordion-button instructor-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseInstructor3" aria-expanded="false" aria-controls="collapseInstructor3">
   <h3 class="accordion-header" id="headingInstructor3">  <div class="note-square"><i aria-hidden="true" class="callout-icon" data-feather="edit-2"></i></div> Instructor Note </h3>
 </button>
-<div id="collapseInstructor3" class="accordion-collapse collapse" aria-labelledby="headingInstructor3" data-bs-parent="#accordionInstructor3">
+<div id="collapseInstructor3" class="accordion-collapse collapse" data-bs-parent="#accordionInstructor3" aria-labelledby="headingInstructor3">
 <div class="accordion-body">
 <p>Ask for sticky notes after the lag-1 numbers print; this recipe takes
 about 12 minutes. Type the three checks as three separate chunks and
@@ -830,7 +831,7 @@ values.</li>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution1" aria-expanded="false" aria-controls="collapseSolution1">
   <h4 class="accordion-header" id="headingSolution1"> Show me the solution </h4>
 </button>
-<div id="collapseSolution1" class="accordion-collapse collapse" aria-labelledby="headingSolution1" data-bs-parent="#accordionSolution1">
+<div id="collapseSolution1" class="accordion-collapse collapse" data-bs-parent="#accordionSolution1" aria-labelledby="headingSolution1">
 <div class="accordion-body">
 <p><strong>(a).</strong> A positive lag-1 correlation means that a year
 above zero tends to be followed by another year above zero, and a year
@@ -858,7 +859,7 @@ years alike across the whole series.</li>
 <button class="accordion-button instructor-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseInstructor4" aria-expanded="false" aria-controls="collapseInstructor4">
   <h3 class="accordion-header" id="headingInstructor4">  <div class="note-square"><i aria-hidden="true" class="callout-icon" data-feather="edit-2"></i></div> Instructor Note </h3>
 </button>
-<div id="collapseInstructor4" class="accordion-collapse collapse" aria-labelledby="headingInstructor4" data-bs-parent="#accordionInstructor4">
+<div id="collapseInstructor4" class="accordion-collapse collapse" data-bs-parent="#accordionInstructor4" aria-labelledby="headingInstructor4">
 <div class="accordion-body">
 <p>If many learners choose (b), point at the QQ plot (shape) and the
 lag-1 number (independence) side by side, and say that each check
@@ -950,7 +951,7 @@ do not remove it.</p>
 <button class="accordion-button instructor-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseInstructor5" aria-expanded="false" aria-controls="collapseInstructor5">
   <h3 class="accordion-header" id="headingInstructor5">  <div class="note-square"><i aria-hidden="true" class="callout-icon" data-feather="edit-2"></i></div> Instructor Note </h3>
 </button>
-<div id="collapseInstructor5" class="accordion-collapse collapse" aria-labelledby="headingInstructor5" data-bs-parent="#accordionInstructor5">
+<div id="collapseInstructor5" class="accordion-collapse collapse" data-bs-parent="#accordionInstructor5" aria-labelledby="headingInstructor5">
 <div class="accordion-body">
 <p>For your information only, not for the learners: Shapiro-Wilk
 p-values for the Stellako residuals are 0.0009 (Ricker) and 0.003
@@ -972,9 +973,9 @@ plot shows the same thing and also shows which year causes it.</p>
 <div class="callout-content">
 <p>Run the three checks (shape, pattern over time and independence) for
 the Upper Pitt River Ricker and random-walk models. Which checks does
-each model pass? Write row 5 of your report card in
-<code>report-card.R</code>. Row 5 records these three checks; the plot
-against spawners is optional.</p>
+each model pass? Add the code to <code>upper-pitt-river.R</code> and
+write row 5 of your report card under it. Row 5 records these three
+checks; the plot against spawners is optional.</p>
 </div>
 </div>
 </div>
@@ -983,7 +984,7 @@ against spawners is optional.</p>
 <button class="accordion-button hint-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseHint1" aria-expanded="false" aria-controls="collapseHint1">
   <h4 class="accordion-header" id="headingHint1"> Give me a hint </h4>
 </button>
-<div id="collapseHint1" class="accordion-collapse collapse" aria-labelledby="headingHint1" data-bs-parent="#accordionHint1">
+<div id="collapseHint1" class="accordion-collapse collapse" data-bs-parent="#accordionHint1" aria-labelledby="headingHint1">
 <div class="accordion-body">
 <p>Copy the recipe chunks in order and change three names:
 <code>my_stock</code> to <code>pitt</code>, <code>res_long</code> to
@@ -991,8 +992,9 @@ against spawners is optional.</p>
 <code>osa_residuals(ricker)</code> and <code>osa_residuals(walk)</code>
 to <code>ricker_pitt</code> and <code>walk_pitt</code>. If
 <code>ricker_pitt</code> and <code>walk_pitt</code> are not in your
-workspace, fit them first, as in Episodes 5 and 6. For the random walk’s
-QQ plot, change <code>res_ricker</code> to <code>res_walk</code> and
+workspace, run <code>upper-pitt-river.R</code> from the top: it has them
+from Episodes 4 and 6. For the random walk’s QQ plot, change
+<code>res_ricker</code> to <code>res_walk</code> and
 <code>(Ricker)</code> to <code>(random walk)</code>, as you did for
 Stellako.</p>
 </div>
@@ -1004,7 +1006,7 @@ Stellako.</p>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution2" aria-expanded="false" aria-controls="collapseSolution2">
   <h4 class="accordion-header" id="headingSolution2"> Show me the solution </h4>
 </button>
-<div id="collapseSolution2" class="accordion-collapse collapse" aria-labelledby="headingSolution2" data-bs-parent="#accordionSolution2">
+<div id="collapseSolution2" class="accordion-collapse collapse" data-bs-parent="#accordionSolution2" aria-labelledby="headingSolution2">
 <div class="accordion-body">
 <p>Fit both models, check the fits, and compute the residuals and the
 lag-1 correlations:</p>
@@ -1093,7 +1095,8 @@ correlation 0.47 (limit 0.23), long waves over time (above zero in the
 1960s and 1990s, below zero around 1980 and after 2010) and a QQ plot
 that bends below the line at both ends. Random walk: passes all three,
 with lag-1 correlation 0.13, no long runs and a QQ plot close to the
-line.” In <code>report-card.R</code> it reads
+line.” In <code>upper-pitt-river.R</code>, add the residual and plot
+lines (the four fitting lines are already there), then the row comment
 <code># Row 5 (residuals): Ricker fails all three checks (lag-1 0.47, limit 0.23; long waves over time; QQ plot bends at both ends); random walk passes all three (lag-1 0.13).</code></p>
 <p>As for Stellako, the Ricker misses productivity that changes over
 time, and the random walk captures it. The random walk also straightens
@@ -1109,12 +1112,13 @@ later, when productivity was falling to its lowest.</p>
 <button class="accordion-button instructor-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseInstructor6" aria-expanded="false" aria-controls="collapseInstructor6">
   <h3 class="accordion-header" id="headingInstructor6">  <div class="note-square"><i aria-hidden="true" class="callout-icon" data-feather="edit-2"></i></div> Instructor Note </h3>
 </button>
-<div id="collapseInstructor6" class="accordion-collapse collapse" aria-labelledby="headingInstructor6" data-bs-parent="#accordionInstructor6">
+<div id="collapseInstructor6" class="accordion-collapse collapse" data-bs-parent="#accordionInstructor6" aria-labelledby="headingInstructor6">
 <div class="accordion-body">
-<p>Challenge 2 takes about 14 minutes. Learners who restarted R need
+<p>Challenge 2 takes about 14 minutes. Learners who restarted R get
 <code>pitt</code>, <code>dat_pitt</code>, <code>ricker_pitt</code> and
-<code>walk_pitt</code>: paste the first four lines of the solution into
-the shared notes document for them. Watch for
+<code>walk_pitt</code> back by running <code>upper-pitt-river.R</code>
+from the top; paste the first four lines of the solution into the shared
+notes document for anyone whose script is incomplete. Watch for
 <code>object 'res_long_pitt' not found</code>: the renamed
 <code>bind_rows()</code> lines must run before the plot. Ask for a green
 sticky note when the three lag-1 numbers print and row 5 is written. If
@@ -1152,7 +1156,7 @@ error, and report it.</li>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution3" aria-expanded="false" aria-controls="collapseSolution3">
   <h4 class="accordion-header" id="headingSolution3"> Show me the solution </h4>
 </button>
-<div id="collapseSolution3" class="accordion-collapse collapse" aria-labelledby="headingSolution3" data-bs-parent="#accordionSolution3">
+<div id="collapseSolution3" class="accordion-collapse collapse" data-bs-parent="#accordionSolution3" aria-labelledby="headingSolution3">
 <div class="accordion-body">
 <p><strong>(b).</strong> The 2005 brood year returned mainly in 2009,
 one of the poorest Fraser River sockeye returns on record, so it is a
@@ -1181,7 +1185,7 @@ forecast.</li>
 <button class="accordion-button instructor-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseInstructor7" aria-expanded="false" aria-controls="collapseInstructor7">
   <h3 class="accordion-header" id="headingInstructor7">  <div class="note-square"><i aria-hidden="true" class="callout-icon" data-feather="edit-2"></i></div> Instructor Note </h3>
 </button>
-<div id="collapseInstructor7" class="accordion-collapse collapse" aria-labelledby="headingInstructor7" data-bs-parent="#accordionInstructor7">
+<div id="collapseInstructor7" class="accordion-collapse collapse" data-bs-parent="#accordionInstructor7" aria-labelledby="headingInstructor7">
 <div class="accordion-body">
 <p>Challenge 3: if many learners choose (a), say that deleting a year
 because the model does not like it makes the model seem better than it

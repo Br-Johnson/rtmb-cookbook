@@ -799,7 +799,7 @@ exactly replaced itself.</li>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution1" aria-expanded="false" aria-controls="collapseSolution1">
   <h4 class="accordion-header" id="headingSolution1"> Show me the solution </h4>
 </button>
-<div id="collapseSolution1" class="accordion-collapse collapse" aria-labelledby="headingSolution1" data-bs-parent="#accordionSolution1">
+<div id="collapseSolution1" class="accordion-collapse collapse" data-bs-parent="#accordionSolution1" aria-labelledby="headingSolution1">
 <div class="accordion-body">
 <p>The answer is (b). <code>log(1)</code> is 0, so log(R/S) = 0 means
 R/S = 1: recruits equalled spawners.</p>
@@ -1041,10 +1041,13 @@ a tie), skill 0.76</td>
 </table>
 <p>In the capstone, the same table becomes a checklist that says when
 each row is done.</p>
-<p>Open <code>report-card.R</code> in your project now (create an empty
-R script with that name if you do not have one). You will write one row
-in it for Upper Pitt River in each episode, starting with Challenge
-2.</p>
+<p>Open <code>upper-pitt-river.R</code> in your project now (create an
+empty R script with that name if you do not have one). It is your own
+analysis script: in each episode, a “Your Turn” challenge adds the code
+for one step and a comment line that records the report-card row it
+produces, starting with Challenge 2. By Episode 11 it runs Upper Pitt
+River from the data to a tested forecast, and the capstone asks you to
+do the same for a new stock.</p>
 <div id="challenge-2-your-turn-upper-pitt-river-row-1-7-minutes" class="callout challenge">
 <div class="callout-square">
 <i class="callout-icon" data-feather="zap"></i>
@@ -1057,10 +1060,10 @@ in it for Upper Pitt River in each episode, starting with Challenge
 <p>Make the log(R/S) against brood year plot for Upper Pitt River. Call
 its data frame <code>pitt</code>, so that <code>my_stock</code> stays
 Stellako. Describe in one sentence how log(R/S) changed after 2000.</p>
-<p>Then start your report card. In <code>report-card.R</code>, write row
-1 as a comment line (starting with <code>#</code>): the first and last
-brood year, the number of years, and the range of spawners with
-units.</p>
+<p>Then start your report card. In <code>upper-pitt-river.R</code>, keep
+the code you ran, then write row 1 under it as a comment line (starting
+with <code>#</code>): the first and last brood year, the number of
+years, and the range of spawners with units.</p>
 </div>
 </div>
 </div>
@@ -1069,7 +1072,7 @@ units.</p>
 <button class="accordion-button hint-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseHint1" aria-expanded="false" aria-controls="collapseHint1">
   <h4 class="accordion-header" id="headingHint1"> Give me a hint </h4>
 </button>
-<div id="collapseHint1" class="accordion-collapse collapse" aria-labelledby="headingHint1" data-bs-parent="#accordionHint1">
+<div id="collapseHint1" class="accordion-collapse collapse" data-bs-parent="#accordionHint1" aria-labelledby="headingHint1">
 <div class="accordion-body">
 <p>Copy the recipe and the second plot, then change
 <code>"Stellako"</code> to <code>"Upper Pitt River"</code> and
@@ -1084,7 +1087,7 @@ units.</p>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution2" aria-expanded="false" aria-controls="collapseSolution2">
   <h4 class="accordion-header" id="headingSolution2"> Show me the solution </h4>
 </button>
-<div id="collapseSolution2" class="accordion-collapse collapse" aria-labelledby="headingSolution2" data-bs-parent="#accordionSolution2">
+<div id="collapseSolution2" class="accordion-collapse collapse" data-bs-parent="#accordionSolution2" aria-labelledby="headingSolution2">
 <div class="accordion-body">
 <div class="codewrapper sourceCode" id="cb17">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
@@ -1161,7 +1164,8 @@ years below zero:</p>
 spawner) before 2000 and 0.52 (1.7) since, and nine of the 22 years
 since 2000 are below zero, meaning fewer recruits than spawners.</p>
 <p>Row 1: “Upper Pitt River, brood years 1948-2021, 74 years, spawners
-2.1 to 74.6 thousand.” In <code>report-card.R</code> it reads
+2.1 to 74.6 thousand.” In <code>upper-pitt-river.R</code>, below the
+code above, it reads
 <code># Row 1 (data): Upper Pitt River, brood years 1948-2021, 74 years, spawners 2.1 to 74.6 thousand.</code>
 Episode 3 adds the spawner count for the forecast to this row.</p>
 </div>
@@ -2190,9 +2194,9 @@ series ranges from 2.1 to 74.6 thousand. Fifty thousand spawners is not
 a realistic scenario for this stock. From <a href="03-likelihoods.html">Episode 3</a> on, <code>S_new</code> is set
 from the average spawner count of the stock’s last four brood years
 (rounded to 50 for Stellako, 5.3 for Upper Pitt River). Nothing from
-this challenge goes into <code>report-card.R</code>: later episodes fill
-the rows for Upper Pitt River one at a time, with <code>S_new</code> set
-for this stock.</p>
+this challenge goes into <code>upper-pitt-river.R</code>: later episodes
+fill the rows for Upper Pitt River one at a time, with
+<code>S_new</code> set for this stock.</p>
 </div>
 </div>
 </div>
@@ -2307,16 +2311,25 @@ log-likelihood.</li>
 <hr class="half-width">
 <p>This episode opens steps 1 and 2 of the <a href="02-quick-start.html">Quick Start</a>: the data list and the
 model.</p>
-<div id="run-this-if-you-are-starting-here" class="callout prereq">
+<p>From here on, keep two scripts of your own beside
+<code>my-recipes.R</code>. Type the Stellako code into
+<code>stellako.R</code> and add each recipe’s lines to it as you go, so
+that the script grows with the lesson. Put your “Your Turn” work into
+<code>upper-pitt-river.R</code>, which you opened in the Introduction.
+The functions you write go into <code>my-recipes.R</code>, and the
+Starting Point chunk below is only for anyone who starts here or
+restarts R.</p>
+<div id="run-this-only-if-you-are-starting-here" class="callout prereq">
 <div class="callout-square">
 <i class="callout-icon" data-feather="check"></i>
 </div>
 <span class="callout-header">Prerequisite</span>
-<div id="run-this-if-you-are-starting-here" class="callout-inner">
-<h3 class="callout-title">Run This If You Are Starting Here</h3>
+<div id="run-this-only-if-you-are-starting-here" class="callout-inner">
+<h3 class="callout-title">Run This Only If You Are Starting Here</h3>
 <div class="callout-content">
-<p>If you have followed along, you already have these objects. If you
-are starting here or have restarted R, run this chunk first. It needs
+<p>If you have followed along in <code>stellako.R</code>, you already
+have these objects: skip this chunk. If you are starting here or have
+restarted R, run this chunk first. It needs
 <code>data/sockeye.csv</code> in your project (see <a href="index.html#setup">Setup</a>). This episode writes the first recipes of
 your recipe box, so it does not load <code>files/cookbook.R</code>.</p>
 <div class="codewrapper sourceCode" id="cb1">
@@ -3075,9 +3088,10 @@ deviation itself, which is why the model passes it
 <p>Make the data list for Upper Pitt River with <code>S_new</code> set
 to the average spawner count of its last four brood years. Check that
 the Ricker model returns a finite number at the starting values. Then
-add <code>S_new</code> to row 1 of your report card. Use the names
-<code>pitt</code>, <code>dat_pitt</code> and <code>obj_pitt</code>, so
-that the Stellako objects stay as they are.</p>
+add <code>S_new</code> to row 1 of your report card, in
+<code>upper-pitt-river.R</code>. Use the names <code>pitt</code>,
+<code>dat_pitt</code> and <code>obj_pitt</code>, so that the Stellako
+objects stay as they are.</p>
 </div>
 </div>
 </div>
@@ -3120,7 +3134,8 @@ to 2021) is 5.3 thousand, much lower than the 50 thousand used for
 Stellako.</p>
 <p>Row 1: “Upper Pitt River, brood years 1948-2021, 74 years, spawners
 2.1 to 74.6 thousand; S_new = 5.3 thousand spawners (the average of
-brood years 2018-2021).” In <code>report-card.R</code> it reads
+brood years 2018-2021).” In <code>upper-pitt-river.R</code>, below the
+code above, row 1 now reads
 <code># Row 1 (data): Upper Pitt River, brood years 1948-2021, 74 years, spawners 2.1 to 74.6 thousand; S_new = 5.3 thousand spawners.</code></p>
 </div>
 </div>
@@ -3224,16 +3239,17 @@ using the troubleshooting table.</li>
 </h2>
 <hr class="half-width">
 <p>This episode opens steps 3 and 4 of the <a href="02-quick-start.html">Quick Start</a>: fitting and checking.</p>
-<div id="run-this-if-you-are-starting-here" class="callout prereq">
+<div id="run-this-only-if-you-are-starting-here" class="callout prereq">
 <div class="callout-square">
 <i class="callout-icon" data-feather="check"></i>
 </div>
 <span class="callout-header">Prerequisite</span>
-<div id="run-this-if-you-are-starting-here" class="callout-inner">
-<h3 class="callout-title">Run This If You Are Starting Here</h3>
+<div id="run-this-only-if-you-are-starting-here" class="callout-inner">
+<h3 class="callout-title">Run This Only If You Are Starting Here</h3>
 <div class="callout-content">
-<p>If you have followed along, you already have these objects. If you
-are starting here or have restarted R, run this chunk first. It needs
+<p>If you have followed along in <code>stellako.R</code>, you already
+have these objects: skip this chunk. If you are starting here or have
+restarted R, run this chunk first. It needs
 <code>data/sockeye.csv</code> and <code>files/cookbook.R</code> in your
 project (see <a href="index.html#setup">Setup</a>).</p>
 <div class="codewrapper sourceCode" id="cb1">
@@ -3324,7 +3340,7 @@ errors</a>; a wide, shallow bowl gives large ones.</p>
 <button class="accordion-button spoiler-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSpoiler1" aria-expanded="false" aria-controls="collapseSpoiler1">
   <h3 class="accordion-header" id="headingSpoiler1">  <div class="note-square"><i aria-hidden="true" class="callout-icon" data-feather="eye"></i></div> How RTMB Gets Exact Slopes (optional) </h3>
 </button>
-<div id="collapseSpoiler1" class="accordion-collapse collapse" data-bs-parent="#accordionSpoiler1" aria-labelledby="headingSpoiler1">
+<div id="collapseSpoiler1" class="accordion-collapse collapse" aria-labelledby="headingSpoiler1" data-bs-parent="#accordionSpoiler1">
 <div class="accordion-body">
 <p>RTMB records your calculation once and works out exact slopes from
 the recording. This is called <a href="reference.html#glossary">automatic differentiation</a>. It is why
@@ -3451,7 +3467,7 @@ nothing to improve.</p>
 <button class="accordion-button spoiler-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSpoiler2" aria-expanded="false" aria-controls="collapseSpoiler2">
   <h3 class="accordion-header" id="headingSpoiler2">  <div class="note-square"><i aria-hidden="true" class="callout-icon" data-feather="eye"></i></div> Why Restart Once? (optional) </h3>
 </button>
-<div id="collapseSpoiler2" class="accordion-collapse collapse" data-bs-parent="#accordionSpoiler2" aria-labelledby="headingSpoiler2">
+<div id="collapseSpoiler2" class="accordion-collapse collapse" aria-labelledby="headingSpoiler2" data-bs-parent="#accordionSpoiler2">
 <div class="accordion-body">
 <p><code>nlminb()</code> sometimes stops a little short of the bottom in
 larger models. Starting it again from where it stopped costs little: a
@@ -3466,7 +3482,7 @@ fit in this lesson, one run was already enough.</p>
 <button class="accordion-button spoiler-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSpoiler3" aria-expanded="false" aria-controls="collapseSpoiler3">
   <h3 class="accordion-header" id="headingSpoiler3">  <div class="note-square"><i aria-hidden="true" class="callout-icon" data-feather="eye"></i></div> Why fit_model() Keeps Its Own Copy of the Data (optional) </h3>
 </button>
-<div id="collapseSpoiler3" class="accordion-collapse collapse" data-bs-parent="#accordionSpoiler3" aria-labelledby="headingSpoiler3">
+<div id="collapseSpoiler3" class="accordion-collapse collapse" aria-labelledby="headingSpoiler3" data-bs-parent="#accordionSpoiler3">
 <div class="accordion-body">
 <p>RTMB reruns your R function after fitting when it computes reported
 quantities such as <code>mu_new</code> (and their standard errors),
@@ -3656,7 +3672,7 @@ convergence”.</li>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution1" aria-expanded="false" aria-controls="collapseSolution1">
   <h4 class="accordion-header" id="headingSolution1"> Show me the solution </h4>
 </button>
-<div id="collapseSolution1" class="accordion-collapse collapse" data-bs-parent="#accordionSolution1" aria-labelledby="headingSolution1">
+<div id="collapseSolution1" class="accordion-collapse collapse" aria-labelledby="headingSolution1" data-bs-parent="#accordionSolution1">
 <div class="accordion-body">
 <p>The answer is (b).</p>
 <div class="codewrapper sourceCode" id="cb19">
@@ -3865,7 +3881,7 @@ log_extra  0.2221058        NaN</code></pre>
 <button class="accordion-button hint-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseHint1" aria-expanded="false" aria-controls="collapseHint1">
   <h4 class="accordion-header" id="headingHint1"> Give me a hint </h4>
 </button>
-<div id="collapseHint1" class="accordion-collapse collapse" data-bs-parent="#accordionHint1" aria-labelledby="headingHint1">
+<div id="collapseHint1" class="accordion-collapse collapse" aria-labelledby="headingHint1" data-bs-parent="#accordionHint1">
 <div class="accordion-body">
 <p>Count the parameters in Output A. The Ricker has three. The random
 walk from step 7 of the Quick Start has four fixed parameters; its 75
@@ -3880,7 +3896,7 @@ they are named in <code>random =</code>.</p>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution2" aria-expanded="false" aria-controls="collapseSolution2">
   <h4 class="accordion-header" id="headingSolution2"> Show me the solution </h4>
 </button>
-<div id="collapseSolution2" class="accordion-collapse collapse" data-bs-parent="#accordionSolution2" aria-labelledby="headingSolution2">
+<div id="collapseSolution2" class="accordion-collapse collapse" aria-labelledby="headingSolution2" data-bs-parent="#accordionSolution2">
 <div class="accordion-body">
 <p>A matches 2, B matches 3 and C matches 4.</p>
 <p><strong>A: <code>random =</code> missing.</strong> The random-walk
@@ -3936,7 +3952,7 @@ load <code>cookbook.R</code>, so if R cannot find
 <div class="codewrapper">
 <h3 class="code-label">OUTPUT<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
-<pre class="output" tabindex="0"><code>[1] 2.089195 2.089195</code></pre>
+<pre class="output" tabindex="0"><code>[1] 2.114435 2.114435</code></pre>
 </div>
 <div class="codewrapper sourceCode" id="cb42">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
@@ -3947,7 +3963,7 @@ load <code>cookbook.R</code>, so if R cannot find
 <div class="codewrapper">
 <h3 class="code-label">OUTPUT<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
-<pre class="output" tabindex="0"><code>[1] 4.510447e-13</code></pre>
+<pre class="output" tabindex="0"><code>[1] 6.231478e-15</code></pre>
 </div>
 <div class="codewrapper sourceCode" id="cb44">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
@@ -3958,13 +3974,13 @@ load <code>cookbook.R</code>, so if R cannot find
 <div class="codewrapper">
 <h3 class="code-label">OUTPUT<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
-<pre class="output" tabindex="0"><code>[1] -1943.498</code></pre>
+<pre class="output" tabindex="0"><code>[1] -1950.661</code></pre>
 </div>
 <p>Without <code>random =</code>, the optimiser chooses every yearly
 value itself. It makes all 75 of them the same (about 2.1 on the log
 scale), so every yearly step is zero, and then shrinks the size of the
-steps towards zero: sd_walk collapses to about 5e-13 and the score runs
-down to -1943. The score has no bottom, so all four checks fail; the
+steps towards zero: sd_walk collapses to about 6e-15 and the score runs
+down to -1951. The score has no bottom, so all four checks fail; the
 exact numbers depend on your computer, because the optimiser stops
 wherever it gives up. The 79 parameters are the clue: the random walk
 has four fixed parameters, so a correct fit reports four. The fix is to
@@ -4181,7 +4197,7 @@ and then:</p>
 <h3 class="code-label">OUTPUT<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
 <pre class="output" tabindex="0"><code>  log_alpha    log_Smax   log_sigma
-   2.422631    5.360880 -611.189597 </code></pre>
+   2.398421    5.466528 -666.201828 </code></pre>
 </div>
 <div class="codewrapper">
 <h3 class="code-label">OUTPUT<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
@@ -4200,7 +4216,7 @@ function and refit.</p>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution3" aria-expanded="false" aria-controls="collapseSolution3">
   <h4 class="accordion-header" id="headingSolution3"> Show me the solution </h4>
 </button>
-<div id="collapseSolution3" class="accordion-collapse collapse" data-bs-parent="#accordionSolution3" aria-labelledby="headingSolution3">
+<div id="collapseSolution3" class="accordion-collapse collapse" aria-labelledby="headingSolution3" data-bs-parent="#accordionSolution3">
 <div class="accordion-body">
 <p>The last line is wrong: <code>log = TRUE</code> is missing in
 <code>dnorm()</code>. This chunk reruns the broken fit;
@@ -4235,7 +4251,7 @@ keep this page short; in your own work, read them.</p>
 <h3 class="code-label">OUTPUT<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
 <pre class="output" tabindex="0"><code>  log_alpha    log_Smax   log_sigma
-   2.422631    5.360880 -611.189597 </code></pre>
+   2.398421    5.466528 -666.201828 </code></pre>
 </div>
 <div class="codewrapper sourceCode" id="cb64">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
@@ -4254,7 +4270,7 @@ densities, and the function adds them up instead of adding
 log-densities. When the curve passes through one point exactly, that
 point’s density grows without limit as sigma shrinks towards zero, so
 the score has no bottom. The first run of <code>nlminb()</code> walked
-downhill until <code>log_sigma</code> reached -611 (the exact value
+downhill until <code>log_sigma</code> reached -666 (the exact value
 depends on your computer), and stopped there. The restart then tried 10
 000 times to take one more step, but the score could not be computed at
 any of the new values it tried, so nearly every try printed a warning.
@@ -4310,8 +4326,9 @@ It stopped at its limit of 10 000 evaluations without moving, so
 <p>Fit the Ricker model to Upper Pitt River with
 <code>fit_model()</code>. Use the names <code>pitt</code>,
 <code>dat_pitt</code> and <code>ricker_pitt</code>, so that the Stellako
-objects stay as they are. Record its checks in row 2 of your report card
-(<code>report-card.R</code>). Put up a green sticky note when
+objects stay as they are. Add the code to
+<code>upper-pitt-river.R</code> and record its checks in row 2 of your
+report card, as a comment line under it. Put up a green sticky note when
 <code>ricker_pitt$checks</code> shows four TRUE.</p>
 </div>
 </div>
@@ -4321,12 +4338,12 @@ objects stay as they are. Record its checks in row 2 of your report card
 <button class="accordion-button hint-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseHint2" aria-expanded="false" aria-controls="collapseHint2">
   <h4 class="accordion-header" id="headingHint2"> Give me a hint </h4>
 </button>
-<div id="collapseHint2" class="accordion-collapse collapse" data-bs-parent="#accordionHint2" aria-labelledby="headingHint2">
+<div id="collapseHint2" class="accordion-collapse collapse" aria-labelledby="headingHint2" data-bs-parent="#accordionHint2">
 <div class="accordion-body">
-<p>If you still have <code>pitt</code> and <code>dat_pitt</code> from
-Episode 3 (Challenge 5), use them; otherwise make them as there, with
-<code>S_new</code> set to the average spawner count of the last four
-brood years. Then copy the line that fitted <code>ricker</code> above,
+<p><code>pitt</code> and <code>dat_pitt</code> are in
+<code>upper-pitt-river.R</code> from Episode 3 (Challenge 5); if they
+are not in your workspace, run the script from the top. Then copy the
+line that fitted <code>ricker</code> above,
 <code>ricker &lt;- fit_model(nll_ricker, start_ricker(dat), dat)</code>,
 and change <code>ricker</code> to <code>ricker_pitt</code> and each
 <code>dat</code> to <code>dat_pitt</code>.</p>
@@ -4339,7 +4356,7 @@ and change <code>ricker</code> to <code>ricker_pitt</code> and each
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution4" aria-expanded="false" aria-controls="collapseSolution4">
   <h4 class="accordion-header" id="headingSolution4"> Show me the solution </h4>
 </button>
-<div id="collapseSolution4" class="accordion-collapse collapse" data-bs-parent="#accordionSolution4" aria-labelledby="headingSolution4">
+<div id="collapseSolution4" class="accordion-collapse collapse" aria-labelledby="headingSolution4" data-bs-parent="#accordionSolution4">
 <div class="accordion-body">
 <div class="codewrapper sourceCode" id="cb70">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
@@ -4358,7 +4375,9 @@ and change <code>ricker</code> to <code>ricker_pitt</code> and each
 </div>
 <p>All four checks are TRUE, so the fit can be used.</p>
 <p>Row 2: “Ricker: all four checks TRUE.” (Other models are added in
-Episodes 6 and 9.) In <code>report-card.R</code> it reads
+Episodes 6 and 9.) In <code>upper-pitt-river.R</code>, add the two
+<code>ricker_pitt</code> lines (the first two lines of the chunk are
+already there from Episode 3), then the row comment
 <code># Row 2 (fits usable): Ricker: all four checks TRUE.</code></p>
 </div>
 </div>
@@ -4469,16 +4488,17 @@ of single years.</li>
 <hr class="half-width">
 <p>This episode opens step 5 of the <a href="02-quick-start.html">Quick
 Start</a>: estimates with uncertainty.</p>
-<div id="run-this-if-you-are-starting-here" class="callout prereq">
+<div id="run-this-only-if-you-are-starting-here" class="callout prereq">
 <div class="callout-square">
 <i class="callout-icon" data-feather="check"></i>
 </div>
 <span class="callout-header">Prerequisite</span>
-<div id="run-this-if-you-are-starting-here" class="callout-inner">
-<h3 class="callout-title">Run This If You Are Starting Here</h3>
+<div id="run-this-only-if-you-are-starting-here" class="callout-inner">
+<h3 class="callout-title">Run This Only If You Are Starting Here</h3>
 <div class="callout-content">
-<p>If you have followed along, you already have these objects. If you
-are starting here or have restarted R, run this chunk first. It needs
+<p>If you have followed along in <code>stellako.R</code>, you already
+have these objects: skip this chunk. If you are starting here or have
+restarted R, run this chunk first. It needs
 <code>data/sockeye.csv</code> and <code>files/cookbook.R</code> in your
 project (see <a href="index.html#setup">Setup</a>).</p>
 <div class="codewrapper sourceCode" id="cb1">
@@ -5125,7 +5145,8 @@ of the years cannot all be outliers.</li>
 <div class="callout-content">
 <p>Make the interval table for the Upper Pitt River Ricker model,
 <code>ricker_pitt</code>, and write two sentences for row 3 of your
-report card (<code>report-card.R</code>), with units.</p>
+report card, with units, as a comment under the code in
+<code>upper-pitt-river.R</code>.</p>
 </div>
 </div>
 </div>
@@ -5136,9 +5157,10 @@ report card (<code>report-card.R</code>), with units.</p>
 </button>
 <div id="collapseHint2" class="accordion-collapse collapse" data-bs-parent="#accordionHint2" aria-labelledby="headingHint2">
 <div class="accordion-body">
-<p>If you still have <code>ricker_pitt</code> from Episode 4 (Challenge
-4), use it. If not, for example after restarting R, fit it again with
-these three lines:</p>
+<p><code>ricker_pitt</code> is in <code>upper-pitt-river.R</code> from
+Episode 4 (Challenge 4); if it is not in your workspace, run the script
+from the top. Without the script, fit it again with these three
+lines:</p>
 <ul>
 <li><code>pitt &lt;- filter(sockeye, stock == "Upper Pitt River")</code></li>
 <li>
@@ -5183,7 +5205,8 @@ CI 15 to 28 thousand), well inside the range of spawner counts observed
 <p>Like Stellako’s S_max, this S_max lies inside the observed spawner
 counts, so it is not an extrapolation (Stellako’s S_rep in Challenge 2
 was).</p>
-<p>In <code>report-card.R</code> it reads
+<p>In <code>upper-pitt-river.R</code>, add the
+<code>ci_table(ricker_pitt)</code> line, then the row comment
 <code># Row 3 (estimates): alpha 8.9 recruits per spawner when spawners are few (95% CI 6.5 to 12); S_max 20 thousand spawners (95% CI 15 to 28 thousand), inside the observed 2 to 75 thousand.</code></p>
 </div>
 </div>
@@ -5391,16 +5414,17 @@ estimate of zero.</li>
 <hr class="half-width">
 <p>This episode opens step 7 of the <a href="02-quick-start.html">Quick
 Start</a>: a random effect.</p>
-<div id="run-this-if-you-are-starting-here" class="callout prereq">
+<div id="run-this-only-if-you-are-starting-here" class="callout prereq">
 <div class="callout-square">
 <i class="callout-icon" data-feather="check"></i>
 </div>
 <span class="callout-header">Prerequisite</span>
-<div id="run-this-if-you-are-starting-here" class="callout-inner">
-<h3 class="callout-title">Run This If You Are Starting Here</h3>
+<div id="run-this-only-if-you-are-starting-here" class="callout-inner">
+<h3 class="callout-title">Run This Only If You Are Starting Here</h3>
 <div class="callout-content">
-<p>If you have followed along, you already have these objects. If you
-are starting here or have restarted R, run this chunk first. It needs
+<p>If you have followed along in <code>stellako.R</code>, you already
+have these objects: skip this chunk. If you are starting here or have
+restarted R, run this chunk first. It needs
 <code>data/sockeye.csv</code> and <code>files/cookbook.R</code> in your
 project (see <a href="index.html#setup">Setup</a>).</p>
 <div class="codewrapper sourceCode" id="cb1">
@@ -5467,7 +5491,7 @@ the random walk, and its spread is sd_walk.</p>
 <button class="accordion-button spoiler-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSpoiler1" aria-expanded="false" aria-controls="collapseSpoiler1">
   <h3 class="accordion-header" id="headingSpoiler1">  <div class="note-square"><i aria-hidden="true" class="callout-icon" data-feather="eye"></i></div> Other Ways a Quantity Can Vary (optional) </h3>
 </button>
-<div id="collapseSpoiler1" class="accordion-collapse collapse" aria-labelledby="headingSpoiler1" data-bs-parent="#accordionSpoiler1">
+<div id="collapseSpoiler1" class="accordion-collapse collapse" data-bs-parent="#accordionSpoiler1" aria-labelledby="headingSpoiler1">
 <div class="accordion-body">
 <p>A random walk is one way to let a quantity change over time. Two
 others are independent year effects, where each year is its own draw
@@ -5670,7 +5694,7 @@ standard deviation.</li>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution1" aria-expanded="false" aria-controls="collapseSolution1">
   <h4 class="accordion-header" id="headingSolution1"> Show me the solution </h4>
 </button>
-<div id="collapseSolution1" class="accordion-collapse collapse" aria-labelledby="headingSolution1" data-bs-parent="#accordionSolution1">
+<div id="collapseSolution1" class="accordion-collapse collapse" data-bs-parent="#accordionSolution1" aria-labelledby="headingSolution1">
 <div class="accordion-body">
 <p><strong>(c).</strong> RTMB averages over every possible path of the
 yearly values and estimates the SD of their distribution, sd_walk, as a
@@ -5808,7 +5832,7 @@ it:</p>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution2" aria-expanded="false" aria-controls="collapseSolution2">
   <h4 class="accordion-header" id="headingSolution2"> Show me the solution </h4>
 </button>
-<div id="collapseSolution2" class="accordion-collapse collapse" aria-labelledby="headingSolution2" data-bs-parent="#accordionSolution2">
+<div id="collapseSolution2" class="accordion-collapse collapse" data-bs-parent="#accordionSolution2" aria-labelledby="headingSolution2">
 <div class="accordion-body">
 <p><code>log_alpha_year</code> has one value too few.
 <code>nll_walk</code> uses <code>log_alpha_year[max(year) + 1]</code>
@@ -5868,10 +5892,10 @@ the recipe above passed all four checks.</p>
 <h3 class="callout-title">Challenge 3: Your Turn: Upper Pitt River, Row
 4 (10 minutes)</h3>
 <div class="callout-content">
-<p>Fit the random walk to Upper Pitt River. Record its checks in row 2
-of your report card (<code>report-card.R</code>). In row 4, write
-sd_walk in words, and productivity in 1948, 1965, 1980, 2000 and
-2021.</p>
+<p>Fit the random walk to Upper Pitt River. Add the code to
+<code>upper-pitt-river.R</code>, and record its checks in row 2 of your
+report card. In row 4, write sd_walk in words, and productivity in 1948,
+1965, 1980, 2000 and 2021.</p>
 </div>
 </div>
 </div>
@@ -5880,15 +5904,16 @@ sd_walk in words, and productivity in 1948, 1965, 1980, 2000 and
 <button class="accordion-button hint-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseHint1" aria-expanded="false" aria-controls="collapseHint1">
   <h4 class="accordion-header" id="headingHint1"> Give me a hint </h4>
 </button>
-<div id="collapseHint1" class="accordion-collapse collapse" aria-labelledby="headingHint1" data-bs-parent="#accordionHint1">
+<div id="collapseHint1" class="accordion-collapse collapse" data-bs-parent="#accordionHint1" aria-labelledby="headingHint1">
 <div class="accordion-body">
-<p>Make <code>pitt</code> and <code>dat_pitt</code> as in Episode 4,
-with <code>S_new</code> set to the average spawner count of the last
-four brood years. Then copy the three lines that fitted
-<code>walk</code> and the plot recipe, and change <code>dat</code> to
-<code>dat_pitt</code>, <code>walk</code> to <code>walk_pitt</code>,
-<code>prod</code> to <code>prod_pitt</code> and <code>my_stock</code> to
-<code>pitt</code>. Leave out the dashed line.</p>
+<p><code>pitt</code> and <code>dat_pitt</code> are in
+<code>upper-pitt-river.R</code> from Episode 3; if they are not in your
+workspace, run the script from the top. Then copy the three lines that
+fitted <code>walk</code> and the plot recipe, and change
+<code>dat</code> to <code>dat_pitt</code>, <code>walk</code> to
+<code>walk_pitt</code>, <code>prod</code> to <code>prod_pitt</code> and
+<code>my_stock</code> to <code>pitt</code>. Leave out the dashed
+line.</p>
 </div>
 </div>
 </div>
@@ -5898,7 +5923,7 @@ four brood years. Then copy the three lines that fitted
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution3" aria-expanded="false" aria-controls="collapseSolution3">
   <h4 class="accordion-header" id="headingSolution3"> Show me the solution </h4>
 </button>
-<div id="collapseSolution3" class="accordion-collapse collapse" aria-labelledby="headingSolution3" data-bs-parent="#accordionSolution3">
+<div id="collapseSolution3" class="accordion-collapse collapse" data-bs-parent="#accordionSolution3" aria-labelledby="headingSolution3">
 <div class="accordion-body">
 <div class="codewrapper sourceCode" id="cb25">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
@@ -5967,6 +5992,9 @@ changes by about a third from year to year. In recruits per spawner, it
 was 10.4 in 1948, rose to 16.3 in 1965, fell to 4.7 in 1980, rose again
 to 10.9 in 2000, and has been at its lowest since about 2012: 2.9 in
 2021 (95% CI 1.3 to 6.6).”</p>
+<p>In <code>upper-pitt-river.R</code>, add the lines from
+<code>walk_pitt &lt;- fit_model(</code> on (the first two lines are
+already there), then the two row comments.</p>
 </div>
 </div>
 </div>
@@ -6063,7 +6091,7 @@ is the lowest point;</li>
 <button class="accordion-button spoiler-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSpoiler2" aria-expanded="false" aria-controls="collapseSpoiler2">
   <h3 class="accordion-header" id="headingSpoiler2">  <div class="note-square"><i aria-hidden="true" class="callout-icon" data-feather="eye"></i></div> Going Further: A Profile Interval for an SD (optional) </h3>
 </button>
-<div id="collapseSpoiler2" class="accordion-collapse collapse" aria-labelledby="headingSpoiler2" data-bs-parent="#accordionSpoiler2">
+<div id="collapseSpoiler2" class="accordion-collapse collapse" data-bs-parent="#accordionSpoiler2" aria-labelledby="headingSpoiler2">
 <div class="accordion-body">
 <p>A profile interval refits the model with <code>log_sd_walk</code>
 held at many values in turn, and keeps the values whose negative
@@ -6127,7 +6155,7 @@ constant since 1948.</li>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution4" aria-expanded="false" aria-controls="collapseSolution4">
   <h4 class="accordion-header" id="headingSolution4"> Show me the solution </h4>
 </button>
-<div id="collapseSolution4" class="accordion-collapse collapse" aria-labelledby="headingSolution4" data-bs-parent="#accordionSolution4">
+<div id="collapseSolution4" class="accordion-collapse collapse" data-bs-parent="#accordionSolution4" aria-labelledby="headingSolution4">
 <div class="accordion-body">
 <p><strong>(b).</strong> The model works, and its answer is that these
 data show no drift that the model can detect.</p>
@@ -6246,16 +6274,17 @@ Links used on more than one page. Any page of the lesson can refer to these labe
 <hr class="half-width">
 <p>This episode opens step 6 of the <a href="02-quick-start.html">Quick
 Start</a>: checking the model against the data.</p>
-<div id="run-this-if-you-are-starting-here" class="callout prereq">
+<div id="run-this-only-if-you-are-starting-here" class="callout prereq">
 <div class="callout-square">
 <i class="callout-icon" data-feather="check"></i>
 </div>
 <span class="callout-header">Prerequisite</span>
-<div id="run-this-if-you-are-starting-here" class="callout-inner">
-<h3 class="callout-title">Run This If You Are Starting Here</h3>
+<div id="run-this-only-if-you-are-starting-here" class="callout-inner">
+<h3 class="callout-title">Run This Only If You Are Starting Here</h3>
 <div class="callout-content">
-<p>If you have followed along, you already have these objects. If you
-are starting here or have restarted R, run this chunk first. It needs
+<p>If you have followed along in <code>stellako.R</code>, you already
+have these objects: skip this chunk. If you are starting here or have
+restarted R, run this chunk first. It needs
 <code>data/sockeye.csv</code> and <code>files/cookbook.R</code> in your
 project (see <a href="index.html#setup">Setup</a>).</p>
 <div class="codewrapper sourceCode" id="cb1">
@@ -6421,7 +6450,7 @@ no warning.</p>
 <button class="accordion-button spoiler-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSpoiler1" aria-expanded="false" aria-controls="collapseSpoiler1">
   <h3 class="accordion-header" id="headingSpoiler1">  <div class="note-square"><i aria-hidden="true" class="callout-icon" data-feather="eye"></i></div> Why Not Observed Minus Fitted? (optional) </h3>
 </button>
-<div id="collapseSpoiler1" class="accordion-collapse collapse" aria-labelledby="headingSpoiler1" data-bs-parent="#accordionSpoiler1">
+<div id="collapseSpoiler1" class="accordion-collapse collapse" data-bs-parent="#accordionSpoiler1" aria-labelledby="headingSpoiler1">
 <div class="accordion-body">
 <p>For a model with random effects, the fitted yearly values have
 already used each year’s observation, so ordinary residuals are too
@@ -6590,7 +6619,7 @@ values.</li>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution1" aria-expanded="false" aria-controls="collapseSolution1">
   <h4 class="accordion-header" id="headingSolution1"> Show me the solution </h4>
 </button>
-<div id="collapseSolution1" class="accordion-collapse collapse" aria-labelledby="headingSolution1" data-bs-parent="#accordionSolution1">
+<div id="collapseSolution1" class="accordion-collapse collapse" data-bs-parent="#accordionSolution1" aria-labelledby="headingSolution1">
 <div class="accordion-body">
 <p><strong>(a).</strong> A positive lag-1 correlation means that a year
 above zero tends to be followed by another year above zero, and a year
@@ -6743,9 +6772,9 @@ do not remove it.</p>
 <div class="callout-content">
 <p>Run the three checks (shape, pattern over time and independence) for
 the Upper Pitt River Ricker and random-walk models. Which checks does
-each model pass? Write row 5 of your report card in
-<code>report-card.R</code>. Row 5 records these three checks; the plot
-against spawners is optional.</p>
+each model pass? Add the code to <code>upper-pitt-river.R</code> and
+write row 5 of your report card under it. Row 5 records these three
+checks; the plot against spawners is optional.</p>
 </div>
 </div>
 </div>
@@ -6754,7 +6783,7 @@ against spawners is optional.</p>
 <button class="accordion-button hint-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseHint1" aria-expanded="false" aria-controls="collapseHint1">
   <h4 class="accordion-header" id="headingHint1"> Give me a hint </h4>
 </button>
-<div id="collapseHint1" class="accordion-collapse collapse" aria-labelledby="headingHint1" data-bs-parent="#accordionHint1">
+<div id="collapseHint1" class="accordion-collapse collapse" data-bs-parent="#accordionHint1" aria-labelledby="headingHint1">
 <div class="accordion-body">
 <p>Copy the recipe chunks in order and change three names:
 <code>my_stock</code> to <code>pitt</code>, <code>res_long</code> to
@@ -6762,8 +6791,9 @@ against spawners is optional.</p>
 <code>osa_residuals(ricker)</code> and <code>osa_residuals(walk)</code>
 to <code>ricker_pitt</code> and <code>walk_pitt</code>. If
 <code>ricker_pitt</code> and <code>walk_pitt</code> are not in your
-workspace, fit them first, as in Episodes 5 and 6. For the random walk’s
-QQ plot, change <code>res_ricker</code> to <code>res_walk</code> and
+workspace, run <code>upper-pitt-river.R</code> from the top: it has them
+from Episodes 4 and 6. For the random walk’s QQ plot, change
+<code>res_ricker</code> to <code>res_walk</code> and
 <code>(Ricker)</code> to <code>(random walk)</code>, as you did for
 Stellako.</p>
 </div>
@@ -6775,7 +6805,7 @@ Stellako.</p>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution2" aria-expanded="false" aria-controls="collapseSolution2">
   <h4 class="accordion-header" id="headingSolution2"> Show me the solution </h4>
 </button>
-<div id="collapseSolution2" class="accordion-collapse collapse" aria-labelledby="headingSolution2" data-bs-parent="#accordionSolution2">
+<div id="collapseSolution2" class="accordion-collapse collapse" data-bs-parent="#accordionSolution2" aria-labelledby="headingSolution2">
 <div class="accordion-body">
 <p>Fit both models, check the fits, and compute the residuals and the
 lag-1 correlations:</p>
@@ -6881,7 +6911,8 @@ correlation 0.47 (limit 0.23), long waves over time (above zero in the
 1960s and 1990s, below zero around 1980 and after 2010) and a QQ plot
 that bends below the line at both ends. Random walk: passes all three,
 with lag-1 correlation 0.13, no long runs and a QQ plot close to the
-line.” In <code>report-card.R</code> it reads
+line.” In <code>upper-pitt-river.R</code>, add the residual and plot
+lines (the four fitting lines are already there), then the row comment
 <code># Row 5 (residuals): Ricker fails all three checks (lag-1 0.47, limit 0.23; long waves over time; QQ plot bends at both ends); random walk passes all three (lag-1 0.13).</code></p>
 <p>As for Stellako, the Ricker misses productivity that changes over
 time, and the random walk captures it. The random walk also straightens
@@ -6923,7 +6954,7 @@ error, and report it.</li>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution3" aria-expanded="false" aria-controls="collapseSolution3">
   <h4 class="accordion-header" id="headingSolution3"> Show me the solution </h4>
 </button>
-<div id="collapseSolution3" class="accordion-collapse collapse" aria-labelledby="headingSolution3" data-bs-parent="#accordionSolution3">
+<div id="collapseSolution3" class="accordion-collapse collapse" data-bs-parent="#accordionSolution3" aria-labelledby="headingSolution3">
 <div class="accordion-body">
 <p><strong>(b).</strong> The 2005 brood year returned mainly in 2009,
 one of the poorest Fraser River sockeye returns on record, so it is a
@@ -7054,16 +7085,17 @@ refits that pass.</li>
 <hr class="half-width">
 <p>This episode extends step 6 of the <a href="02-quick-start.html">Quick Start</a>: a second way to check a
 model, by simulation.</p>
-<div id="run-this-if-you-are-starting-here" class="callout prereq">
+<div id="run-this-only-if-you-are-starting-here" class="callout prereq">
 <div class="callout-square">
 <i class="callout-icon" data-feather="check"></i>
 </div>
 <span class="callout-header">Prerequisite</span>
-<div id="run-this-if-you-are-starting-here" class="callout-inner">
-<h3 class="callout-title">Run This If You Are Starting Here</h3>
+<div id="run-this-only-if-you-are-starting-here" class="callout-inner">
+<h3 class="callout-title">Run This Only If You Are Starting Here</h3>
 <div class="callout-content">
-<p>If you have followed along, you already have these objects. If you
-are starting here or have restarted R, run this chunk first. It needs
+<p>If you have followed along in <code>stellako.R</code>, you already
+have these objects: skip this chunk. If you are starting here or have
+restarted R, run this chunk first. It needs
 <code>data/sockeye.csv</code> and <code>files/cookbook.R</code> in your
 project (see <a href="index.html#setup">Setup</a>).</p>
 <div class="codewrapper sourceCode" id="cb1">
@@ -7858,8 +7890,9 @@ detect.</p>
 6 (10 minutes)</h3>
 <div class="callout-content">
 <p>Run the simulated-data check (lag-1) for both Upper Pitt River models
-and a self-test of the random walk with <code>n_sim = 30</code>. Write
-row 6 of your report card in <code>report-card.R</code>:</p>
+and a self-test of the random walk with <code>n_sim = 30</code>. Add the
+code to <code>upper-pitt-river.R</code> and write row 6 of your report
+card under it:</p>
 <ul>
 <li>for each model, the share of simulations with a lag-1 correlation at
 least as large as the data’s;</li>
@@ -7878,14 +7911,11 @@ collapse to zero.</li>
 <div id="collapseHint2" class="accordion-collapse collapse" aria-labelledby="headingHint2" data-bs-parent="#accordionHint2">
 <div class="accordion-body">
 <p>If <code>walk_pitt</code> is not in your workspace (for example, in a
-new R session), make the Upper Pitt River objects as in <a href="07-residuals.html">Episode 7</a>, Challenge 2:
-<code>pitt &lt;- filter(sockeye, stock == "Upper Pitt River")</code>,
-then
-<code>dat_pitt &lt;- make_dat(pitt, S_new = mean(tail(pitt$spawners, 4)))</code>,
-then fit <code>ricker_pitt</code> and <code>walk_pitt</code> with
-<code>fit_model()</code> as in the warm-up. Then use
-<code>simulate_stat()</code> and <code>self_test()</code> as in this
-episode: call <code>set.seed(2026)</code> once before the two
+new R session), run <code>upper-pitt-river.R</code> from the top: it
+makes <code>pitt</code>, <code>dat_pitt</code>, <code>ricker_pitt</code>
+and <code>walk_pitt</code>. Then use <code>simulate_stat()</code> and
+<code>self_test()</code> as in this episode: call
+<code>set.seed(2026)</code> once before the two
 <code>simulate_stat()</code> calls, and again before
 <code>self_test()</code>.</p>
 </div>
@@ -7976,6 +8006,9 @@ the random walk, all 30 refits pass and every parameter is recovered:
 the medians are close to the true values, and no sd_walk estimate
 collapses to zero. The yearly steps here are large (sd_walk 0.33), so 74
 years are enough to detect them.”</p>
+<p>In <code>upper-pitt-river.R</code>, add the lines from
+<code>lag1(dat_pitt$logRS)</code> on (the four fitting lines are already
+there), then the row comment.</p>
 </div>
 </div>
 </div>
@@ -8121,16 +8154,17 @@ Links used on more than one page. Any page of the lesson can refer to these labe
 <hr class="half-width">
 <p>This episode opens step 8 of the <a href="02-quick-start.html">Quick
 Start</a>: comparing models.</p>
-<div id="run-this-if-you-are-starting-here" class="callout prereq">
+<div id="run-this-only-if-you-are-starting-here" class="callout prereq">
 <div class="callout-square">
 <i class="callout-icon" data-feather="check"></i>
 </div>
 <span class="callout-header">Prerequisite</span>
-<div id="run-this-if-you-are-starting-here" class="callout-inner">
-<h3 class="callout-title">Run This If You Are Starting Here</h3>
+<div id="run-this-only-if-you-are-starting-here" class="callout-inner">
+<h3 class="callout-title">Run This Only If You Are Starting Here</h3>
 <div class="callout-content">
-<p>If you have followed along, you already have these objects. If you
-are starting here or have restarted R, run this chunk first. It needs
+<p>If you have followed along in <code>stellako.R</code>, you already
+have these objects: skip this chunk. If you are starting here or have
+restarted R, run this chunk first. It needs
 <code>data/sockeye.csv</code>, <code>data/npgo.csv</code> and
 <code>files/cookbook.R</code> in your project (see <a href="index.html#setup">Setup</a>).</p>
 <div class="codewrapper sourceCode" id="cb1">
@@ -8296,7 +8330,7 @@ solution.</p>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution1" aria-expanded="false" aria-controls="collapseSolution1">
   <h4 class="accordion-header" id="headingSolution1"> Show me the solution </h4>
 </button>
-<div id="collapseSolution1" class="accordion-collapse collapse" aria-labelledby="headingSolution1" data-bs-parent="#accordionSolution1">
+<div id="collapseSolution1" class="accordion-collapse collapse" data-bs-parent="#accordionSolution1" aria-labelledby="headingSolution1">
 <div class="accordion-body">
 <div class="codewrapper sourceCode" id="cb9">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
@@ -8495,7 +8529,7 @@ it with the Ricker. What does <code>b_npgo</code> mean in words?</p>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution2" aria-expanded="false" aria-controls="collapseSolution2">
   <h4 class="accordion-header" id="headingSolution2"> Show me the solution </h4>
 </button>
-<div id="collapseSolution2" class="accordion-collapse collapse" aria-labelledby="headingSolution2" data-bs-parent="#accordionSolution2">
+<div id="collapseSolution2" class="accordion-collapse collapse" data-bs-parent="#accordionSolution2" aria-labelledby="headingSolution2">
 <div class="accordion-body">
 <p>No: AIC rises by 0.79 (199.04 against 198.26 for the Ricker). The
 extra parameter lowers the negative log-likelihood by only 0.6, which
@@ -8592,7 +8626,7 @@ describe the same rows.</p>
 <button class="accordion-button spoiler-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSpoiler1" aria-expanded="false" aria-controls="collapseSpoiler1">
   <h3 class="accordion-header" id="headingSpoiler1">  <div class="note-square"><i aria-hidden="true" class="callout-icon" data-feather="eye"></i></div> Switch a Term Off Without a New Function: map (optional) </h3>
 </button>
-<div id="collapseSpoiler1" class="accordion-collapse collapse" aria-labelledby="headingSpoiler1" data-bs-parent="#accordionSpoiler1">
+<div id="collapseSpoiler1" class="accordion-collapse collapse" data-bs-parent="#accordionSpoiler1" aria-labelledby="headingSpoiler1">
 <div class="accordion-body">
 <p><code>MakeADFun()</code> has a <code>map</code> argument that holds a
 parameter fixed at its starting value. With <code>b_npgo</code> held at
@@ -8656,7 +8690,7 @@ the Ricker’s plus 2 (266.36 against 264.36).</p>
 <button class="accordion-button spoiler-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSpoiler2" aria-expanded="false" aria-controls="collapseSpoiler2">
   <h3 class="accordion-header" id="headingSpoiler2">  <div class="note-square"><i aria-hidden="true" class="callout-icon" data-feather="eye"></i></div> Why No p-Values? (optional) </h3>
 </button>
-<div id="collapseSpoiler2" class="accordion-collapse collapse" aria-labelledby="headingSpoiler2" data-bs-parent="#accordionSpoiler2">
+<div id="collapseSpoiler2" class="accordion-collapse collapse" data-bs-parent="#accordionSpoiler2" aria-labelledby="headingSpoiler2">
 <div class="accordion-body">
 <p>Testing whether an SD is zero puts the tested value at the edge of
 what is allowed, because an SD cannot be negative. The usual
@@ -8714,7 +8748,7 @@ sd_walk is 0.13, well away from zero.</li>
 <button class="accordion-button spoiler-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSpoiler3" aria-expanded="false" aria-controls="collapseSpoiler3">
   <h3 class="accordion-header" id="headingSpoiler3">  <div class="note-square"><i aria-hidden="true" class="callout-icon" data-feather="eye"></i></div> Akaike Weights (optional) </h3>
 </button>
-<div id="collapseSpoiler3" class="accordion-collapse collapse" aria-labelledby="headingSpoiler3" data-bs-parent="#accordionSpoiler3">
+<div id="collapseSpoiler3" class="accordion-collapse collapse" data-bs-parent="#accordionSpoiler3" aria-labelledby="headingSpoiler3">
 <div class="accordion-body">
 <p>An <a href="reference.html#glossary">Akaike weight</a> turns the AIC
 differences into a share of support for each model:</p>
@@ -8791,7 +8825,7 @@ and compares it with your random walk:</p>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution3" aria-expanded="false" aria-controls="collapseSolution3">
   <h4 class="accordion-header" id="headingSolution3"> Show me the solution </h4>
 </button>
-<div id="collapseSolution3" class="accordion-collapse collapse" aria-labelledby="headingSolution3" data-bs-parent="#accordionSolution3">
+<div id="collapseSolution3" class="accordion-collapse collapse" data-bs-parent="#accordionSolution3" aria-labelledby="headingSolution3">
 <div class="accordion-body">
 <p><strong>1. What is wrong?</strong> The two models were fitted to
 different years: 64 for <code>ricker_recent</code> (1958 to 2021), 74
@@ -8835,7 +8869,7 @@ model you fit, and the two AIC values cannot be compared.
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution4" aria-expanded="false" aria-controls="collapseSolution4">
   <h4 class="accordion-header" id="headingSolution4"> Show me the solution </h4>
 </button>
-<div id="collapseSolution4" class="accordion-collapse collapse" aria-labelledby="headingSolution4" data-bs-parent="#accordionSolution4">
+<div id="collapseSolution4" class="accordion-collapse collapse" data-bs-parent="#accordionSolution4" aria-labelledby="headingSolution4">
 <div class="accordion-body">
 <p><strong>2. Fix it.</strong> Fit the random walk to the same 64 years,
 then compare:</p>
@@ -8869,9 +8903,9 @@ with <code>aic_table()</code>: it checks the rows for you.</p>
 7 (12 minutes)</h3>
 <div class="callout-content">
 <p>Fit the four candidate models to Upper Pitt River, make the AIC
-table, and write row 7 of your report card in
-<code>report-card.R</code>, using the four rules. Add the new models’
-checks to row 2.</p>
+table, and write row 7 of your report card under the code in
+<code>upper-pitt-river.R</code>, using the four rules. Add the new
+models’ checks to row 2.</p>
 </div>
 </div>
 </div>
@@ -8880,7 +8914,7 @@ checks to row 2.</p>
 <button class="accordion-button hint-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseHint1" aria-expanded="false" aria-controls="collapseHint1">
   <h4 class="accordion-header" id="headingHint1"> Give me a hint </h4>
 </button>
-<div id="collapseHint1" class="accordion-collapse collapse" aria-labelledby="headingHint1" data-bs-parent="#accordionHint1">
+<div id="collapseHint1" class="accordion-collapse collapse" data-bs-parent="#accordionHint1" aria-labelledby="headingHint1">
 <div class="accordion-body">
 <p>Start from the covariate recipe, with <code>pitt</code> in place of
 <code>my_stock</code>: <code>npgo_by_brood</code> and <code>npgo</code>
@@ -8897,7 +8931,7 @@ named list, as in the full table.</p>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution5" aria-expanded="false" aria-controls="collapseSolution5">
   <h4 class="accordion-header" id="headingSolution5"> Show me the solution </h4>
 </button>
-<div id="collapseSolution5" class="accordion-collapse collapse" aria-labelledby="headingSolution5" data-bs-parent="#accordionSolution5">
+<div id="collapseSolution5" class="accordion-collapse collapse" data-bs-parent="#accordionSolution5" aria-labelledby="headingSolution5">
 <div class="accordion-body">
 <div class="codewrapper sourceCode" id="cb41">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
@@ -8948,6 +8982,10 @@ the forecasts (row 8). Unlike Stellako, NPGO helps here: it lowers AIC
 by 5.6 against the Ricker, and its effect, 0.28 (95% confidence interval
 0.09 to 0.48), excludes zero. AIC cannot tell us whether the random walk
 also forecasts better (row 8).”</p>
+<p>In <code>upper-pitt-river.R</code>, add this chunk as it is: it
+refits <code>ricker_pitt</code> and <code>walk_pitt</code> inside
+<code>models_pitt</code>, the named list that the capstone template uses
+too, and the two row comments go under it.</p>
 </div>
 </div>
 </div>
@@ -8983,7 +9021,7 @@ likelihoods are on different scales.</li>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution6" aria-expanded="false" aria-controls="collapseSolution6">
   <h4 class="accordion-header" id="headingSolution6"> Show me the solution </h4>
 </button>
-<div id="collapseSolution6" class="accordion-collapse collapse" aria-labelledby="headingSolution6" data-bs-parent="#accordionSolution6">
+<div id="collapseSolution6" class="accordion-collapse collapse" data-bs-parent="#accordionSolution6" aria-labelledby="headingSolution6">
 <div class="accordion-body">
 <p><strong>(b).</strong> A likelihood measures how probable the observed
 values are, so it depends on what the values are and on their units.
@@ -9125,16 +9163,17 @@ standard deviations.</li>
 <p>This episode scales up step 7 of the <a href="02-quick-start.html">Quick Start</a>: random effects for groups
 instead of years. It is optional: the episodes after it use only the
 single-stock recipes.</p>
-<div id="run-this-if-you-are-starting-here" class="callout prereq">
+<div id="run-this-only-if-you-are-starting-here" class="callout prereq">
 <div class="callout-square">
 <i class="callout-icon" data-feather="check"></i>
 </div>
 <span class="callout-header">Prerequisite</span>
-<div id="run-this-if-you-are-starting-here" class="callout-inner">
-<h3 class="callout-title">Run This If You Are Starting Here</h3>
+<div id="run-this-only-if-you-are-starting-here" class="callout-inner">
+<h3 class="callout-title">Run This Only If You Are Starting Here</h3>
 <div class="callout-content">
-<p>If you have followed along, you already have these objects. If you
-are starting here or have restarted R, run this chunk first. It needs
+<p>If you have followed along in <code>stellako.R</code>, you already
+have these objects: skip this chunk. If you are starting here or have
+restarted R, run this chunk first. It needs
 <code>data/sockeye.csv</code>, <code>data/npgo.csv</code> and
 <code>files/cookbook.R</code> in your project (see <a href="index.html#setup">Setup</a>).</p>
 <div class="codewrapper sourceCode" id="cb1">
@@ -9277,7 +9316,7 @@ starts at 0.1, as <code>sd_walk</code> did.</p>
 <h3 class="code-label">OUTPUT<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
 <pre class="output" tabindex="0"><code>mean_log_alpha   log_sd_stock
-     9.4753233      0.1056285 </code></pre>
+     9.4753487      0.1056451 </code></pre>
 </div>
 <p>The four checks pass. The average stock produces 9.48 recruits per
 spawner when spawners are few. sd_stock is 0.106: stock productivities
@@ -9298,7 +9337,7 @@ interval</a> for sd_stock?</p>
 <h3 class="code-label">OUTPUT<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
 <pre class="output" tabindex="0"><code>  parameter  estimate      lower     upper
-1  sd_stock 0.1056285 0.02429118 0.4593184</code></pre>
+1  sd_stock 0.1056451 0.02430769 0.4591504</code></pre>
 </div>
 <div class="codewrapper sourceCode" id="cb11">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
@@ -9310,7 +9349,7 @@ interval</a> for sd_stock?</p>
 <h3 class="code-label">OUTPUT<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
 <pre class="output" tabindex="0"><code>  Estimate Std. Error
--2.2478268  0.7499057 </code></pre>
+ -2.247670   0.749639 </code></pre>
 </div>
 <p>Do not report this interval (0.024 to 0.46). The <a href="reference.html#glossary">standard error</a> of
 <code>log_sd_stock</code> is 0.75, so the interval spans a factor of
@@ -9341,7 +9380,7 @@ profiles, so this chunk hides warnings. It takes about 5 seconds.</p>
 <h3 class="code-label">OUTPUT<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
 <pre class="output" tabindex="0"><code>                    lower     upper
-log_sd_stock 6.277388e-08 0.2522627</code></pre>
+log_sd_stock 6.278372e-08 0.2522632</code></pre>
 </div>
 <p>The profile interval runs from about zero to 0.25: the data are
 consistent with no differences in productivity among stocks at all, once
@@ -9465,7 +9504,7 @@ productivities, back-transformed, in the same alphabetical order.</p>
      Scotch Creek     6.43   8.71  2.285
      Late Shuswap     6.63   8.55  1.923
            Nadina     7.06   8.70  1.639
-         Harrison     7.34   8.83  1.488
+         Harrison     7.34   8.83  1.487
        Birkenhead    11.36   9.89 -1.470
            Chilko    11.20  10.03 -1.176
      Early Stuart     7.70   8.67  0.962
@@ -9883,7 +9922,7 @@ Discuss in pairs.</p>
 <h3 class="code-label">OUTPUT<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
 <pre class="output" tabindex="0"><code>  Estimate Std. Error
-0.12885135 0.03026176 </code></pre>
+0.12885136 0.03026176 </code></pre>
 </div>
 <div class="codewrapper sourceCode" id="cb47">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
@@ -10050,16 +10089,17 @@ and interpret the scores.</li>
 Start</a>: forecasting, and testing whether the forecasts can be
 trusted. It answers the Quick Start’s question: which forecast would you
 trust?</p>
-<div id="run-this-if-you-are-starting-here" class="callout prereq">
+<div id="run-this-only-if-you-are-starting-here" class="callout prereq">
 <div class="callout-square">
 <i class="callout-icon" data-feather="check"></i>
 </div>
 <span class="callout-header">Prerequisite</span>
-<div id="run-this-if-you-are-starting-here" class="callout-inner">
-<h3 class="callout-title">Run This If You Are Starting Here</h3>
+<div id="run-this-only-if-you-are-starting-here" class="callout-inner">
+<h3 class="callout-title">Run This Only If You Are Starting Here</h3>
 <div class="callout-content">
-<p>If you have followed along, you already have these objects. If you
-are starting here or have restarted R, run this chunk first. It needs
+<p>If you have followed along in <code>stellako.R</code>, you already
+have these objects: skip this chunk. If you are starting here or have
+restarted R, run this chunk first. It needs
 <code>data/sockeye.csv</code> and <code>files/cookbook.R</code> in your
 project (see <a href="index.html#setup">Setup</a>).</p>
 <div class="codewrapper sourceCode" id="cb1">
@@ -10849,8 +10889,8 @@ time.</p>
 <p>For Upper Pitt River, run the hindcast from 2007 for the Ricker, the
 random walk and the benchmark, and score it. Then forecast from the
 random walk, with <code>S_new</code> set to the average spawners of the
-last four brood years. Write rows 8 and 9 of your report card in
-<code>report-card.R</code>:</p>
+last four brood years. Add the code to <code>upper-pitt-river.R</code>
+and write rows 8 and 9 of your report card under it:</p>
 <ul>
 <li>row 8: the bias, MAE, skill and 80% coverage of each model and the
 benchmark, in one or two sentences;</li>
@@ -10868,9 +10908,9 @@ with units and the word “median”.</li>
 </button>
 <div id="collapseHint1" class="accordion-collapse collapse" data-bs-parent="#accordionHint1" aria-labelledby="headingHint1">
 <div class="accordion-body">
-<p>Start from the Upper Pitt River code of <a href="07-residuals.html">Checking a Model with Residuals</a>, Challenge
-2: it makes <code>pitt</code>, <code>dat_pitt</code>,
-<code>ricker_pitt</code> and <code>walk_pitt</code>. Then copy the
+<p><code>pitt</code>, <code>dat_pitt</code>, <code>ricker_pitt</code>
+and <code>walk_pitt</code> are in <code>upper-pitt-river.R</code>; run
+it from the top if they are not in your workspace. Then copy the
 <code>hc &lt;- bind_rows(...)</code> chunk that ran the hindcast from
 2007 and change the names: <code>pitt</code> for <code>my_stock</code>,
 <code>ricker_pitt</code> and <code>walk_pitt</code> for
@@ -10961,6 +11001,10 @@ far too low.”</p>
 <p>Row 9: “From 5.3 thousand spawners, the random walk forecasts a
 median of 12 thousand recruits (80% prediction interval 4.4 to 35
 thousand).”</p>
+<p>In <code>upper-pitt-river.R</code>, add the lines from
+<code>hc_pitt &lt;- bind_rows(</code> on, then the two row comments.
+Your script now runs Upper Pitt River from the data to a tested
+forecast, which is what the capstone asks you to do for a new stock.</p>
 <p>Rows 7 and 8 agree only in part. AIC (row 7) prefers the random walk
 by 11.8, but the Ricker’s forecast errors were slightly smaller (mean
 absolute error 0.88 against 0.92): a lower AIC did not bring smaller
@@ -11222,13 +11266,13 @@ and forecast skill.</li>
 <hr class="half-width">
 <p>This episode runs all nine steps of the <a href="02-quick-start.html">Quick Start</a> again, on a stock you have
 not seen, with the recipes from every episode.</p>
-<div id="run-this-if-you-are-starting-here" class="callout prereq">
+<div id="download-the-template" class="callout prereq">
 <div class="callout-square">
 <i class="callout-icon" data-feather="check"></i>
 </div>
 <span class="callout-header">Prerequisite</span>
-<div id="run-this-if-you-are-starting-here" class="callout-inner">
-<h3 class="callout-title">Run This If You Are Starting Here</h3>
+<div id="download-the-template" class="callout-inner">
+<h3 class="callout-title">Download the Template</h3>
 <div class="callout-content">
 <p>Download <a href="files/capstone-template.R">the capstone template
 (capstone-template.R)</a> into your project’s <code>files/</code> folder
@@ -11245,7 +11289,10 @@ and <code>files/cookbook.R</code> (see <a href="index.html#setup">Setup</a>).</p
 <p>In pairs, choose a stock you have not seen in class and complete rows
 1 to 10 of the report card with the template. This is your third pass
 over the workflow: the instructor showed it on Stellako, you repeated it
-on Upper Pitt River, and now you run it on your own.</p>
+on Upper Pitt River, and now you run it on your own. Your
+<code>upper-pitt-river.R</code> is a worked example of the template: the
+same steps in the same order, with the row comments as the report
+card.</p>
 <p>Choose one of these stocks, or use your own data:</p>
 <ul>
 <li>
@@ -11527,7 +11574,7 @@ recipe to use.</p>
 <button class="accordion-button hint-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseHint1" aria-expanded="false" aria-controls="collapseHint1">
   <h4 class="accordion-header" id="headingHint1"> Give me a hint </h4>
 </button>
-<div id="collapseHint1" class="accordion-collapse collapse" data-bs-parent="#accordionHint1" aria-labelledby="headingHint1">
+<div id="collapseHint1" class="accordion-collapse collapse" aria-labelledby="headingHint1" data-bs-parent="#accordionHint1">
 <div class="accordion-body">
 <ul>
 <li>The order of the template is the order of the episodes.</li>
@@ -11546,7 +11593,7 @@ recipe to use.</p>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution1" aria-expanded="false" aria-controls="collapseSolution1">
   <h4 class="accordion-header" id="headingSolution1"> Show me the solution </h4>
 </button>
-<div id="collapseSolution1" class="accordion-collapse collapse" data-bs-parent="#accordionSolution1" aria-labelledby="headingSolution1">
+<div id="collapseSolution1" class="accordion-collapse collapse" aria-labelledby="headingSolution1" data-bs-parent="#accordionSolution1">
 <div class="accordion-body">
 <p>Here is the template filled in for Late Stuart. The blanks, in the
 order they appear, are <code>"Late Stuart"</code>,
@@ -11682,7 +11729,7 @@ add it to your AIC table and hindcast.</p>
 <button class="accordion-button hint-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseHint2" aria-expanded="false" aria-controls="collapseHint2">
   <h4 class="accordion-header" id="headingHint2"> Give me a hint </h4>
 </button>
-<div id="collapseHint2" class="accordion-collapse collapse" data-bs-parent="#accordionHint2" aria-labelledby="headingHint2">
+<div id="collapseHint2" class="accordion-collapse collapse" aria-labelledby="headingHint2" data-bs-parent="#accordionHint2">
 <div class="accordion-body">
 <p>Start from <code>nll_walk</code> in <a href="files/cookbook.R">the
 finished recipe box (cookbook.R)</a>. Only the two lines that compute
@@ -11700,7 +11747,7 @@ random-walk entries of <code>start_walk()</code>.</p>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution2" aria-expanded="false" aria-controls="collapseSolution2">
   <h4 class="accordion-header" id="headingSolution2"> Show me the solution </h4>
 </button>
-<div id="collapseSolution2" class="accordion-collapse collapse" data-bs-parent="#accordionSolution2" aria-labelledby="headingSolution2">
+<div id="collapseSolution2" class="accordion-collapse collapse" aria-labelledby="headingSolution2" data-bs-parent="#accordionSolution2">
 <div class="accordion-body">
 <p>Add the new model to the list <code>models</code>, then rebuild the
 AIC table:</p>
@@ -11826,7 +11873,7 @@ AIC and the hindcast disagree, and why?</p>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution3" aria-expanded="false" aria-controls="collapseSolution3">
   <h4 class="accordion-header" id="headingSolution3"> Show me the solution </h4>
 </button>
-<div id="collapseSolution3" class="accordion-collapse collapse" data-bs-parent="#accordionSolution3" aria-labelledby="headingSolution3">
+<div id="collapseSolution3" class="accordion-collapse collapse" aria-labelledby="headingSolution3" data-bs-parent="#accordionSolution3">
 <div class="accordion-body">
 <p>The share-out table for the five menu stocks:</p>
 <table style="width:99%;" class="table">
@@ -11933,9 +11980,12 @@ a check fails or an error appears;</li>
 <a href="going-further.html">Going Further</a>: the methods this
 lesson left out, and where to learn them.</li>
 </ul>
-<p>Your <code>my-recipes.R</code> and report card are a template for
-your next analysis: copy the capstone template, change C1, and work down
-the rows.</p>
+<p>Your <code>my-recipes.R</code> and <code>upper-pitt-river.R</code>
+are a template for your next analysis: copy the capstone template,
+change C1, and work down the rows. If you use Quarto, the same script
+works as a <code>.qmd</code> document: each section becomes a code chunk
+and each row comment becomes a paragraph, and rendering it gives a
+report with the code, the output and the plots in one file.</p>
 
 <div id="add-to-your-recipe-box" class="callout">
 <div class="callout-square">
@@ -11946,9 +11996,9 @@ the rows.</p>
 <h3 class="callout-title">Add to Your Recipe Box</h3>
 <div class="callout-content">
 <p>Your recipe box is complete. Keep <code>my-recipes.R</code>,
-<code>report-card.R</code> and the template for your next analysis. If
-you wrote <code>nll_bh_walk()</code> in Challenge 2, add it too. The
-finished box is <a href="files/cookbook.R">cookbook.R</a>.</p>
+<code>upper-pitt-river.R</code> and the filled template for your next
+analysis. If you wrote <code>nll_bh_walk()</code> in Challenge 2, add it
+too. The finished box is <a href="files/cookbook.R">cookbook.R</a>.</p>
 </div>
 </div>
 </div>

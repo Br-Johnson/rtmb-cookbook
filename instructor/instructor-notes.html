@@ -1217,8 +1217,10 @@ them without thinking.</p>
 <li>Read an error message from the bottom up, then find it on the <a href="troubleshooting.html">Troubleshooting</a> page.</li>
 <li>Call <code>set.seed()</code> before anything that simulates, so the
 numbers can be reproduced.</li>
-<li>Save <code>report-card.R</code> as you go: each row is written as
-soon as its challenge runs.</li>
+<li>Save <code>upper-pitt-river.R</code> as you go: each “Your Turn”
+challenge adds its code and its row comment as soon as it runs, and by
+Episode 11 the script runs the stock from the data to a tested
+forecast.</li>
 <li>Use new object names in your own experiments
 (<code>ricker_test</code>, not <code>ricker</code>), so you do not
 overwrite the demonstration objects that later steps use.</li>
@@ -1357,12 +1359,12 @@ Links used on more than one page. Any page of the lesson can refer to these labe
 <a href="01-introduction.html#headingInstructor1">Instructor Note</a><a class="anchor" aria-label="anchor" href="#01-introduction-headingInstructor1"></a>
 </h3>
 <p>Before the first chunk, check that every learner has a project with
-<code>data/</code> and <code>files/</code> folders and two empty
-scripts, <code>my-recipes.R</code> and <code>report-card.R</code>. Show
-where the code handout is (<code>files/code-handout.R</code> on the
-lesson website): it collects the recipe code of every episode. Keep this
-episode to 25 minutes and do not introduce models yet; the Quick Start
-does that next.</p>
+<code>data/</code> and <code>files/</code> folders and three empty
+scripts: <code>my-recipes.R</code>, <code>stellako.R</code> and
+<code>upper-pitt-river.R</code>. Show where the code handout is
+(<code>files/code-handout.R</code> on the lesson website): it collects
+the recipe code of every episode. Keep this episode to 25 minutes and do
+not introduce models yet; the Quick Start does that next.</p>
 <hr>
 <br><h3 id="01-introduction-headingInstructor2">
 <a href="01-introduction.html#headingInstructor2">Instructor Note</a><a class="anchor" aria-label="anchor" href="#01-introduction-headingInstructor2"></a>
@@ -1739,10 +1741,11 @@ plot shows the same thing and also shows which year causes it.</p>
 <br><h3 id="07-residuals-headingInstructor6">
 <a href="07-residuals.html#headingInstructor6">Instructor Note</a><a class="anchor" aria-label="anchor" href="#07-residuals-headingInstructor6"></a>
 </h3>
-<p>Challenge 2 takes about 14 minutes. Learners who restarted R need
+<p>Challenge 2 takes about 14 minutes. Learners who restarted R get
 <code>pitt</code>, <code>dat_pitt</code>, <code>ricker_pitt</code> and
-<code>walk_pitt</code>: paste the first four lines of the solution into
-the shared notes document for them. Watch for
+<code>walk_pitt</code> back by running <code>upper-pitt-river.R</code>
+from the top; paste the first four lines of the solution into the shared
+notes document for anyone whose script is incomplete. Watch for
 <code>object 'res_long_pitt' not found</code>: the renamed
 <code>bind_rows()</code> lines must run before the plot. Ask for a green
 sticky note when the three lag-1 numbers print and row 5 is written. If
@@ -2100,8 +2103,8 @@ the data”, not as a number.</p>
 <p>After the share-out, close the workshop outside the counted minutes:
 minute cards, the post-workshop survey, and one-up/one-down. Point
 learners to the Going Further page and the Recipe Index, and remind them
-to keep <code>my-recipes.R</code>, <code>report-card.R</code> and the
-filled template.</p>
+to keep <code>my-recipes.R</code>, <code>stellako.R</code>,
+<code>upper-pitt-river.R</code> and the filled template.</p>
 <hr>
 <br></section></section>
 </div>

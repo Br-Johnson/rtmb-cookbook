@@ -33,7 +33,7 @@ range(my_stock$logRS)
 #' Describe in one sentence how log(R/S) changed after 2000.
 #' 
 #' Then start your report card.
-#' In `report-card.R`, write row 1 as a comment line (starting with `#`): the first and last brood year, the number of years, and the range of spawners with units.
+#' In `upper-pitt-river.R`, keep the code you ran, then write row 1 under it as a comment line (starting with `#`): the first and last brood year, the number of years, and the range of spawners with units.
 #' 
 #' :::::::::::::::::::::::: hint
 #' 
@@ -310,7 +310,7 @@ obj$gr(obj$par)
 #' 
 #' Make the data list for Upper Pitt River with `S_new` set to the average spawner count of its last four brood years.
 #' Check that the Ricker model returns a finite number at the starting values.
-#' Then add `S_new` to row 1 of your report card.
+#' Then add `S_new` to row 1 of your report card, in `upper-pitt-river.R`.
 #' Use the names `pitt`, `dat_pitt` and `obj_pitt`, so that the Stellako objects stay as they are.
 #' 
 #' ## Fitting a Model and Checking the Fit
@@ -474,12 +474,12 @@ m_nolog$checks
 #' 
 #' Fit the Ricker model to Upper Pitt River with `fit_model()`.
 #' Use the names `pitt`, `dat_pitt` and `ricker_pitt`, so that the Stellako objects stay as they are.
-#' Record its checks in row 2 of your report card (`report-card.R`).
+#' Add the code to `upper-pitt-river.R` and record its checks in row 2 of your report card, as a comment line under it.
 #' Put up a green sticky note when `ricker_pitt$checks` shows four TRUE.
 #' 
 #' :::::::::::::::::::::::: hint
 #' 
-#' If you still have `pitt` and `dat_pitt` from Episode 3 (Challenge 5), use them; otherwise make them as there, with `S_new` set to the average spawner count of the last four brood years.
+#' `pitt` and `dat_pitt` are in `upper-pitt-river.R` from Episode 3 (Challenge 5); if they are not in your workspace, run the script from the top.
 #' Then copy the line that fitted `ricker` above, `ricker <- fit_model(nll_ricker, start_ricker(dat), dat)`, and change `ricker` to `ricker_pitt` and each `dat` to `dat_pitt`.
 #' 
 #' :::::::::::::::::::::::::
@@ -596,12 +596,12 @@ ggplot(band, aes(x = S_new, y = median)) +
 #' 
 #' ### Challenge 4: Your Turn: Upper Pitt River, Row 3 (7 minutes)
 #' 
-#' Make the interval table for the Upper Pitt River Ricker model, `ricker_pitt`, and write two sentences for row 3 of your report card (`report-card.R`), with units.
+#' Make the interval table for the Upper Pitt River Ricker model, `ricker_pitt`, and write two sentences for row 3 of your report card, with units, as a comment under the code in `upper-pitt-river.R`.
 #' 
 #' :::::::::::::::::::::::: hint
 #' 
-#' If you still have `ricker_pitt` from Episode 4 (Challenge 4), use it.
-#' If not, for example after restarting R, fit it again with these three lines:
+#' `ricker_pitt` is in `upper-pitt-river.R` from Episode 4 (Challenge 4); if it is not in your workspace, run the script from the top.
+#' Without the script, fit it again with these three lines:
 #' 
 #' - `pitt <- filter(sockeye, stock == "Upper Pitt River")`
 #' - `dat_pitt <- make_dat(pitt, S_new = mean(tail(pitt$spawners, 4)))`, where `S_new` is the average spawner count of the last four brood years
@@ -698,12 +698,12 @@ ggplot(prod, aes(x = brood_year, y = estimate)) +
 #' ### Challenge 3: Your Turn: Upper Pitt River, Row 4 (10 minutes)
 #' 
 #' Fit the random walk to Upper Pitt River.
-#' Record its checks in row 2 of your report card (`report-card.R`).
+#' Add the code to `upper-pitt-river.R`, and record its checks in row 2 of your report card.
 #' In row 4, write sd\_walk in words, and productivity in 1948, 1965, 1980, 2000 and 2021.
 #' 
 #' :::::::::::::::::::::::: hint
 #' 
-#' Make `pitt` and `dat_pitt` as in Episode 4, with `S_new` set to the average spawner count of the last four brood years.
+#' `pitt` and `dat_pitt` are in `upper-pitt-river.R` from Episode 3; if they are not in your workspace, run the script from the top.
 #' Then copy the three lines that fitted `walk` and the plot recipe, and change `dat` to `dat_pitt`, `walk` to `walk_pitt`, `prod` to `prod_pitt` and `my_stock` to `pitt`.
 #' Leave out the dashed line.
 #' 
@@ -793,13 +793,13 @@ c(ricker = lag1(my_stock$res_ricker), walk = lag1(my_stock$res_walk),
 #' 
 #' Run the three checks (shape, pattern over time and independence) for the Upper Pitt River Ricker and random-walk models.
 #' Which checks does each model pass?
-#' Write row 5 of your report card in `report-card.R`.
+#' Add the code to `upper-pitt-river.R` and write row 5 of your report card under it.
 #' Row 5 records these three checks; the plot against spawners is optional.
 #' 
 #' :::::::::::::::::::::::: hint
 #' 
 #' Copy the recipe chunks in order and change three names: `my_stock` to `pitt`, `res_long` to `res_long_pitt`, and the fitted models in `osa_residuals(ricker)` and `osa_residuals(walk)` to `ricker_pitt` and `walk_pitt`.
-#' If `ricker_pitt` and `walk_pitt` are not in your workspace, fit them first, as in Episodes 5 and 6.
+#' If `ricker_pitt` and `walk_pitt` are not in your workspace, run `upper-pitt-river.R` from the top: it has them from Episodes 4 and 6.
 #' For the random walk's QQ plot, change `res_ricker` to `res_walk` and `(Ricker)` to `(random walk)`, as you did for Stellako.
 #' 
 #' :::::::::::::::::::::::::
@@ -917,14 +917,14 @@ st_walk %>%
 #' ### Challenge 5: Your Turn: Upper Pitt River, Row 6 (10 minutes)
 #' 
 #' Run the simulated-data check (lag-1) for both Upper Pitt River models and a self-test of the random walk with `n_sim = 30`.
-#' Write row 6 of your report card in `report-card.R`:
+#' Add the code to `upper-pitt-river.R` and write row 6 of your report card under it:
 #' 
 #' - for each model, the share of simulations with a lag-1 correlation at least as large as the data's;
 #' - for the self-test, the median estimates against the truth, the number of refits that pass, and the number of sd\_walk estimates that collapse to zero.
 #' 
 #' :::::::::::::::::::::::: hint
 #' 
-#' If `walk_pitt` is not in your workspace (for example, in a new R session), make the Upper Pitt River objects as in [Episode 7](07-residuals.Rmd), Challenge 2: `pitt <- filter(sockeye, stock == "Upper Pitt River")`, then `dat_pitt <- make_dat(pitt, S_new = mean(tail(pitt$spawners, 4)))`, then fit `ricker_pitt` and `walk_pitt` with `fit_model()` as in the warm-up.
+#' If `walk_pitt` is not in your workspace (for example, in a new R session), run `upper-pitt-river.R` from the top: it makes `pitt`, `dat_pitt`, `ricker_pitt` and `walk_pitt`.
 #' Then use `simulate_stat()` and `self_test()` as in this episode: call `set.seed(2026)` once before the two `simulate_stat()` calls, and again before `self_test()`.
 #' 
 #' :::::::::::::::::::::::::
@@ -1014,7 +1014,7 @@ nll_ricker_npgo <- function(par, dat) {
 #' 
 #' ### Challenge 4: Your Turn: Upper Pitt River, Row 7 (12 minutes)
 #' 
-#' Fit the four candidate models to Upper Pitt River, make the AIC table, and write row 7 of your report card in `report-card.R`, using the four rules.
+#' Fit the four candidate models to Upper Pitt River, make the AIC table, and write row 7 of your report card under the code in `upper-pitt-river.R`, using the four rules.
 #' Add the new models' checks to row 2.
 #' 
 #' :::::::::::::::::::::::: hint
@@ -1196,7 +1196,7 @@ score_forecasts(hc)
 #' 
 #' For Upper Pitt River, run the hindcast from 2007 for the Ricker, the random walk and the benchmark, and score it.
 #' Then forecast from the random walk, with `S_new` set to the average spawners of the last four brood years.
-#' Write rows 8 and 9 of your report card in `report-card.R`:
+#' Add the code to `upper-pitt-river.R` and write rows 8 and 9 of your report card under it:
 #' 
 #' - row 8: the bias, MAE, skill and 80% coverage of each model and the benchmark, in one or two sentences;
 #' - row 9: the median and 80% prediction interval from the random walk, with units and the word "median".
@@ -1205,7 +1205,7 @@ score_forecasts(hc)
 #' 
 #' :::::::::::::::::::::::: hint
 #' 
-#' Start from the Upper Pitt River code of [Checking a Model with Residuals](07-residuals.Rmd), Challenge 2: it makes `pitt`, `dat_pitt`, `ricker_pitt` and `walk_pitt`.
+#' `pitt`, `dat_pitt`, `ricker_pitt` and `walk_pitt` are in `upper-pitt-river.R`; run it from the top if they are not in your workspace.
 #' Then copy the `hc <- bind_rows(...)` chunk that ran the hindcast from 2007 and change the names: `pitt` for `my_stock`, `ricker_pitt` and `walk_pitt` for `ricker` and `walk`, and `hc_pitt` for `hc`.
 #' If row 7 is not in your report card, run `aic_table(list(ricker = ricker_pitt, walk = walk_pitt))`.
 #' Row 9 can follow this frame: "From \_\_\_ thousand spawners, the random walk forecasts a median of \_\_\_ thousand recruits (80% prediction interval \_\_\_ to \_\_\_ thousand)."
