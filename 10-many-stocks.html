@@ -408,7 +408,7 @@
       </div>
     </nav><main id="main-content" class="main-content"><div class="container lesson-content">
         <h1>Many Stocks: Random Effects for Groups</h1>
-        <p>Last updated on 2026-11-24 |
+        <p>Last updated on 2026-11-25 |
 
         <a href="https://github.com/Br-Johnson/rtmb-cookbook/edit/main/episodes/10-many-stocks.Rmd" class="external-link">Edit this page <i aria-hidden="true" data-feather="edit"></i></a></p>
 
@@ -644,7 +644,7 @@ Report the estimate, and say that its uncertainty is large.</p>
 <button class="accordion-button spoiler-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSpoiler1" aria-expanded="false" aria-controls="collapseSpoiler1">
   <h3 class="accordion-header" id="headingSpoiler1">  <div class="note-square"><i aria-hidden="true" class="callout-icon" data-feather="eye"></i></div> Going Further: A Profile Interval for sd_stock (optional) </h3>
 </button>
-<div id="collapseSpoiler1" class="accordion-collapse collapse" data-bs-parent="#accordionSpoiler1" aria-labelledby="headingSpoiler1">
+<div id="collapseSpoiler1" class="accordion-collapse collapse" aria-labelledby="headingSpoiler1" data-bs-parent="#accordionSpoiler1">
 <div class="accordion-body">
 <p>A profile interval refits the model with <code>log_sd_stock</code>
 held at many values in turn, and keeps the values whose <a href="reference.html#glossary">negative log-likelihood</a> is close to
@@ -704,7 +704,7 @@ are uncertain.</li>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution1" aria-expanded="false" aria-controls="collapseSolution1">
   <h4 class="accordion-header" id="headingSolution1"> Show me the solution </h4>
 </button>
-<div id="collapseSolution1" class="accordion-collapse collapse" data-bs-parent="#accordionSolution1" aria-labelledby="headingSolution1">
+<div id="collapseSolution1" class="accordion-collapse collapse" aria-labelledby="headingSolution1" data-bs-parent="#accordionSolution1">
 <div class="accordion-body">
 <p>The answer is (b).</p>
 <div class="codewrapper sourceCode" id="cb15">
@@ -817,7 +817,7 @@ weighs each stock’s own data against what the other stocks suggest.</p>
 <button class="accordion-button spoiler-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSpoiler2" aria-expanded="false" aria-controls="collapseSpoiler2">
   <h3 class="accordion-header" id="headingSpoiler2">  <div class="note-square"><i aria-hidden="true" class="callout-icon" data-feather="eye"></i></div> Does Pooling Always Win on AIC? (optional) </h3>
 </button>
-<div id="collapseSpoiler2" class="accordion-collapse collapse" data-bs-parent="#accordionSpoiler2" aria-labelledby="headingSpoiler2">
+<div id="collapseSpoiler2" class="accordion-collapse collapse" aria-labelledby="headingSpoiler2" data-bs-parent="#accordionSpoiler2">
 <div class="accordion-body">
 <p>The <a href="reference.html#glossary">Akaike information criterion
 (AIC)</a> from <a href="09-model-selection.html">Episode 9</a> can
@@ -966,7 +966,7 @@ from about 15.6 recruits per spawner in 1980 to about 3.8 in 2021.</p>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution2" aria-expanded="false" aria-controls="collapseSolution2">
   <h4 class="accordion-header" id="headingSolution2"> Show me the solution </h4>
 </button>
-<div id="collapseSolution2" class="accordion-collapse collapse" data-bs-parent="#accordionSolution2" aria-labelledby="headingSolution2">
+<div id="collapseSolution2" class="accordion-collapse collapse" aria-labelledby="headingSolution2" data-bs-parent="#accordionSolution2">
 <div class="accordion-body">
 <p>“A Fraser-wide decline, with the same timing as Stellako’s.”</p>
 <div class="codewrapper sourceCode" id="cb30">
@@ -1075,7 +1075,7 @@ blanks, fit it, and compare its AIC with that of
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution3" aria-expanded="false" aria-controls="collapseSolution3">
   <h4 class="accordion-header" id="headingSolution3"> Show me the solution </h4>
 </button>
-<div id="collapseSolution3" class="accordion-collapse collapse" data-bs-parent="#accordionSolution3" aria-labelledby="headingSolution3">
+<div id="collapseSolution3" class="accordion-collapse collapse" aria-labelledby="headingSolution3" data-bs-parent="#accordionSolution3">
 <div class="accordion-body">
 <p>The blanks are <code>b_npgo * npgo</code> and <code>0</code>: a
 covariate’s effect starts at 0, no effect.</p>
@@ -1159,7 +1159,7 @@ Discuss in pairs.</p>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution4" aria-expanded="false" aria-controls="collapseSolution4">
   <h4 class="accordion-header" id="headingSolution4"> Show me the solution </h4>
 </button>
-<div id="collapseSolution4" class="accordion-collapse collapse" data-bs-parent="#accordionSolution4" aria-labelledby="headingSolution4">
+<div id="collapseSolution4" class="accordion-collapse collapse" aria-labelledby="headingSolution4" data-bs-parent="#accordionSolution4">
 <div class="accordion-body">
 <p>The model without year effects, fitted to the same rows:</p>
 <div class="codewrapper sourceCode" id="cb43">
@@ -1226,7 +1226,7 @@ before you trust a covariate comparison.</li>
 <button class="accordion-button spoiler-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSpoiler3" aria-expanded="false" aria-controls="collapseSpoiler3">
   <h3 class="accordion-header" id="headingSpoiler3">  <div class="note-square"><i aria-hidden="true" class="callout-icon" data-feather="eye"></i></div> Residuals for Many Stocks (optional) </h3>
 </button>
-<div id="collapseSpoiler3" class="accordion-collapse collapse" data-bs-parent="#accordionSpoiler3" aria-labelledby="headingSpoiler3">
+<div id="collapseSpoiler3" class="accordion-collapse collapse" aria-labelledby="headingSpoiler3" data-bs-parent="#accordionSpoiler3">
 <div class="accordion-body">
 <p>The <a href="reference.html#glossary">one-step-ahead residuals</a>
 from <a href="07-residuals.html">Episode 7</a> work for this model too.
@@ -1372,8 +1372,8 @@ Links used on more than one page. Any page of the lesson can refer to these labe
   "url": "https://Br-Johnson.github.io/rtmb-cookbook/10-many-stocks.html",
   "identifier": "https://Br-Johnson.github.io/rtmb-cookbook/10-many-stocks.html",
   "dateCreated": "2026-11-19",
-  "dateModified": "2026-11-24",
-  "datePublished": "2026-11-24"
+  "dateModified": "2026-11-25",
+  "datePublished": "2026-11-25"
 }
 
   </script><script>
